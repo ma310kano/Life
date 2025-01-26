@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Life.Application.Data;
 using Life.Sqlite;
-using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using System.Data;
 
@@ -10,27 +9,15 @@ namespace Life.Application.Sqlite;
 /// <summary>
 /// アイテム概要の問い合わせサービス
 /// </summary>
-public class ItemSummaryQueryService : IItemSummaryQueryService
+/// <param name="configuration">設定</param>
+public class ItemSummaryQueryService(IConfiguration configuration) : IItemSummaryQueryService
 {
 	#region Fields
 
 	/// <summary>
 	/// 言語コード
 	/// </summary>
-	private readonly string _languageCode;
-
-	#endregion
-
-	#region Constructors
-
-	/// <summary>
-	/// アイテム概要を
-	/// </summary>
-	/// <param name="configuration"></param>
-	public ItemSummaryQueryService(IConfiguration configuration)
-	{
-		_languageCode = configuration.GetValue<string>("LanguageCode") ?? throw new InvalidOperationException("言語コードが取得できません。");
-	}
+	private readonly string _languageCode = configuration.GetValue<string>("LanguageCode") ?? throw new InvalidOperationException("言語コードが取得できません。");
 
 	#endregion
 
