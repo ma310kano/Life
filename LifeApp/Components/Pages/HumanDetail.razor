@@ -1,0 +1,59 @@
+﻿@page "/humans/{HumanId}"
+
+@using Life.Application
+@using Life.Application.Data
+
+@inject IHumanQueryService HumanQueryService
+
+@if (_human is not null)
+{
+	<h1>@_human.FirstName @_human.Family.FamilyName</h1>
+
+	<h2>家族</h2>
+	<table class="table">
+		<tbody>
+			<tr>
+				<th>家族ID</th>
+				<td>@_human.Family.FamilyId</td>
+			</tr>
+			<tr>
+				<th>家族名</th>
+				<td>@_human.Family.FamilyName</td>
+			</tr>
+		</tbody>
+	</table>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// 人間
+	/// </summary>
+	private HumanData? _human;
+
+	#endregion
+
+	#region Properties
+
+	/// <summary>
+	/// 人間IDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string HumanId { get; set; } = string.Empty;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		_human = await HumanQueryService.QuerySingleAsync(HumanId);
+	}
+
+	#endregion
+}
