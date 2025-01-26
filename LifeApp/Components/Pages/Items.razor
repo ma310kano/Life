@@ -1,0 +1,53 @@
+﻿@page "/items"
+
+@using Life.Application
+@using Life.Application.Data
+
+@inject IItemSummaryQueryService ItemSummaryQueryService
+
+<h1>アイテム</h1>
+
+@if (_items is not null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>アイテムID</th>
+                <th>アイテム名</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (ItemSummaryData item in _items)
+            {
+                <tr>
+                    <td>@item.ItemId</td>
+                    <td>@item.ItemName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    #region Fields
+
+    /// <summary>
+    /// アイテムのコレクション
+    /// </summary>
+    private IEnumerable<ItemSummaryData>? _items;
+
+    #endregion
+
+    #region Methods
+
+    /// <summary>
+    /// 初期化された際に呼び出されます。
+    /// </summary>
+    /// <returns>非同期操作を返します。</returns>
+    protected override async Task OnInitializedAsync()
+    {
+        _items = await ItemSummaryQueryService.QueryAsync();
+    }
+
+    #endregion
+}
