@@ -1,0 +1,53 @@
+﻿@page "/humans"
+
+@using Life.Application
+@using Life.Application.Data
+
+@inject IHumanSummaryQueryService HumanSummaryQueryService
+
+<h1>人間</h1>
+
+@if (_humans is not null)
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>人間ID</th>
+				<th>人間名</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (HumanSummaryData human in _humans)
+			{
+				<tr>
+					<td class="id">@human.HumanId</td>
+					<td>@human.HumanName</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// 人間のコレクション
+	/// </summary>
+	private IEnumerable<HumanSummaryData>? _humans;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		_humans = await HumanSummaryQueryService.QueryAsync();
+	}
+
+	#endregion
+}
