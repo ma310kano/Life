@@ -1,24 +1,23 @@
-﻿@page "/humans/{HumanId}"
+﻿@page "/families/{FamilyId}"
 
 @using Life.Application
 @using Life.Application.Data
 
-@inject IHumanQueryService HumanQueryService
+@inject IFamilyQueryService FamilyQueryService
 
-@if (_human is not null)
+@if (_family is not null)
 {
-	<h1>@_human.FirstName @_human.Family.FamilyName</h1>
+	<h1>@_family.FamilyName</h1>
 
-	<h2>家族</h2>
 	<table class="table">
 		<tbody>
 			<tr>
 				<th>家族ID</th>
-				<td>@_human.Family.FamilyId</td>
+				<td>@_family.FamilyId</td>
 			</tr>
 			<tr>
 				<th>家族名</th>
-				<td><a href="/families/@_human.Family.FamilyId">@_human.Family.FamilyName</a></td>
+				<td>@_family.FamilyName</td>
 			</tr>
 		</tbody>
 	</table>
@@ -28,19 +27,19 @@
 	#region Fields
 
 	/// <summary>
-	/// 人間
+	/// 家族
 	/// </summary>
-	private HumanData? _human;
+	private FamilyData? _family;
 
 	#endregion
 
 	#region Properties
 
 	/// <summary>
-	/// 人間IDを設定または取得します。
+	/// 家族IDを設定または取得します。
 	/// </summary>
 	[Parameter]
-	public string HumanId { get; set; } = string.Empty;
+	public string FamilyId { get; set; } = string.Empty;
 
 	#endregion
 
@@ -52,7 +51,7 @@
 	/// <returns>非同期操作を返します。</returns>
 	protected override async Task OnInitializedAsync()
 	{
-		_human = await HumanQueryService.QuerySingleAsync(HumanId);
+		_family = await FamilyQueryService.QuerySingleAsync(FamilyId);
 	}
 
 	#endregion
