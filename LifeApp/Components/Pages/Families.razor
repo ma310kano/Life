@@ -1,0 +1,53 @@
+﻿@page "/families"
+
+@using Life.Application
+@using Life.Application.Data
+
+@inject IFamilySummaryQueryService FamilySummaryQueryService
+
+<h1>家族</h1>
+
+@if (_families is not null)
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>家族ID</th>
+				<th>家族名</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (FamilySummaryData family in _families)
+			{
+				<tr>
+					<td>@family.FamilyId</td>
+					<td>@family.FamilyName</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// 家族のコレクション
+	/// </summary>
+	private IEnumerable<FamilySummaryData>? _families;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		_families = await FamilySummaryQueryService.QueryAsync();
+	}
+
+	#endregion
+}
