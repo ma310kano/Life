@@ -36,6 +36,27 @@
 			</tr>
 		</tbody>
 	</table>
+
+	<h2>インベントリー</h2>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>アイテムID</th>
+				<th>アイテム名</th>
+				<th>数量</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (InventorySlotData inventorySlot in _human.InventorySlots)
+			{
+				<tr>
+					<td class="id">@inventorySlot.Item.ItemId</td>
+					<td>@inventorySlot.Item.ItemName</td>
+					<td>@inventorySlot.Quantity</td>
+				</tr>
+			}
+		</tbody>
+	</table>
 }
 
 @code {

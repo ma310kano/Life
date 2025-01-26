@@ -6,4 +6,5 @@
 /// <param name="HumanId">人間ID</param>
 /// <param name="FirstName">名</param>
 /// <param name="Family">家族</param>
-public record class HumanData(string HumanId, string FirstName, FamilySummaryData Family);
+/// <param name="InventorySlots">インベントリースロットのコレクション</param>
+public record class HumanData(string HumanId, string FirstName, FamilySummaryData Family, IReadOnlyCollection<InventorySlotData> InventorySlots);
