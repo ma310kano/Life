@@ -1,0 +1,59 @@
+﻿@page "/items/{ItemId}"
+
+@using Life.Application
+@using Life.Application.Data
+
+@inject IItemQueryService ItemQueryService
+
+@if (_item is not null)
+{
+	<h1>@_item.ItemName</h1>
+
+	<h2>アイテム</h2>
+	<table class="table">
+		<tbody>
+			<tr>
+				<th>アイテムID</th>
+				<td>@_item.ItemId</td>
+			</tr>
+			<tr>
+				<th>アイテム名</th>
+				<td>@_item.ItemName</td>
+			</tr>
+		</tbody>
+	</table>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// アイテム
+	/// </summary>
+	private ItemData? _item;
+
+	#endregion
+
+	#region Properties
+
+	/// <summary>
+	/// アイテムIDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string ItemId { get; set; } = string.Empty;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		_item = await ItemQueryService.QuerySingleAsync(ItemId);
+	}
+
+	#endregion
+}

@@ -18,7 +18,7 @@
 			</tr>
 			<tr>
 				<th>アイテム名</th>
-				<td>@_recipe.Item.ItemName</td>
+				<td><a href="/items/@_recipe.Item.ItemId">@_recipe.Item.ItemName</a></td>
 			</tr>
 		</tbody>
 	</table>
@@ -37,7 +37,7 @@
 			{
 				<tr>
 					<td class="item-id">@ingredient.Item.ItemId</td>
-					<td>@ingredient.Item.ItemName</td>
+					<td><a href="/items/@ingredient.Item.ItemId">@ingredient.Item.ItemName</a></td>
 					<td>@ingredient.Quantity</td>
 				</tr>
 			}
