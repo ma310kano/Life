@@ -32,6 +32,8 @@ namespace LifeApp
 				builder.Services.AddSingleton(configuration);
 			}
 
+			builder.Services.AddSingleton<IAreaSummaryQueryService, AreaSummaryQueryService>();
+			builder.Services.AddSingleton<IAreaQueryService, AreaQueryService>();
 			builder.Services.AddSingleton<IFamilySummaryQueryService, FamilySummaryQueryService>();
 			builder.Services.AddSingleton<IFamilyQueryService, FamilyQueryService>();
 			builder.Services.AddSingleton<IHumanSummaryQueryService, HumanSummaryQueryService>();

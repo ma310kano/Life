@@ -58,6 +58,30 @@ WHERE
 			family = new FamilySummaryData(record.FamilyId, record.FamilyName);
 		}
 
+		AreaSummaryData area;
+		{
+			const string sql = @"SELECT
+	  ahm.area_id
+	, anm.area_name
+FROM
+	area_humans ahm
+	INNER JOIN areas are
+		ON ahm.area_id = are.area_id
+	INNER JOIN area_names anm
+		ON  are.area_id = anm.area_id
+		AND anm.language_code = :language_code
+WHERE
+	ahm.human_id = :human_id";
+
+			var param = new
+			{
+				human_id = humanId,
+				language_code = _languageCode,
+			};
+
+			area = connection.QuerySingle<AreaSummaryData>(sql, param);
+		}
+
 		List<InventorySlotData> inventorySlots = [];
 		{
 			const string sql = @"SELECT
@@ -99,7 +123,7 @@ ORDER BY
 			}
 		}
 
-		HumanData result = new(record.HumanId, record.FirstName, family, inventorySlots);
+		HumanData result = new(record.HumanId, record.FirstName, family, area, inventorySlots);
 
 		return result;
 	}

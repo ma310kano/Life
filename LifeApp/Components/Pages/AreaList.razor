@@ -1,0 +1,53 @@
+﻿@page "/areas"
+
+@using Life.Application
+@using Life.Application.Data
+
+@inject IAreaSummaryQueryService AreaSummaryQueryService
+
+<h1>エリア</h1>
+
+@if (_areas is not null)
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>エリアID</th>
+				<th>エリア名</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (AreaSummaryData area in _areas)
+			{
+				<tr>
+					<td class="id">@area.AreaId</td>
+					<td><a href="/areas/@area.AreaId">@area.AreaName</a></td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// エリアのコレクション
+	/// </summary>
+	private IEnumerable<AreaSummaryData>? _areas;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		_areas = await AreaSummaryQueryService.QueryAsync();
+	}
+
+	#endregion
+}

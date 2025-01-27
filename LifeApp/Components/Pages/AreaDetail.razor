@@ -1,0 +1,97 @@
+﻿@page "/areas/{AreaId}"
+
+@using Life.Application
+@using Life.Application.Data
+
+@inject IAreaQueryService AreaQueryService
+
+@if (_area is not null)
+{
+	<h1>@_area.AreaName</h1>
+
+	<h2>エリア</h2>
+	<table class="table">
+		<tbody>
+			<tr>
+				<th>エリアID</th>
+				<td>@_area.AreaId</td>
+			</tr>
+			<tr>
+				<th>エリア名</th>
+				<td>@_area.AreaName</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<h2>人間</h2>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>人間ID</th>
+				<th>人間名</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (HumanSummaryData human in _area.Humans)
+			{
+				<tr>
+					<td class="id">@human.HumanId</td>
+					<td><a href="/humans/@human.HumanId">@human.HumanName</a></td>
+				</tr>
+			}
+		</tbody>
+	</table>
+
+	<h2>アイテム</h2>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>アイテムID</th>
+				<th>アイテム名</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (ItemSummaryData item in _area.Items)
+			{
+				<tr>
+					<td class="id">@item.ItemId</td>
+					<td><a href="/items/@item.ItemId">@item.ItemName</a></td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// エリア
+	/// </summary>
+	private AreaData? _area;
+
+	#endregion
+
+	#region Properties
+
+	/// <summary>
+	/// エリアIDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string AreaId { get; set; } = string.Empty;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		_area = await AreaQueryService.QuerySingleAsync(AreaId);
+	}
+
+	#endregion
+}
