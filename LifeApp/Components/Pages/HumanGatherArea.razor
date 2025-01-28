@@ -1,0 +1,169 @@
+﻿@page "/humans/{HumanId}/gather/{AreaId}"
+
+@using Life.Application
+@using Life.Application.Command
+@using Life.Application.Data
+
+@inject NavigationManager NavigationManager
+@inject IAreaQueryService AreaQueryService
+@inject IHumanGatheringService HumanGatheringService
+
+@if (_areaName != string.Empty)
+{
+	<h1>@(_areaName)で採集</h1>
+}
+
+@if (_model is not null)
+{
+	<EditForm Model="_model" OnValidSubmit="SubmitAsync">
+		@foreach (ItemModel item in _model.Items)
+		{
+			<div class="form-check">
+				<InputCheckbox class="form-check-input" id="@item.ItemId" @bind-Value="@item.IsSubject" />
+				<label class="form-check-label" for="@item.ItemId">@item.ItemName</label>
+			</div>
+		}
+		<button type="submit" class="btn btn-primary">採集</button>
+	</EditForm>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// エリア名
+	/// </summary>
+	private string _areaName = string.Empty;
+
+	/// <summary>
+	/// モデル
+	/// </summary>
+	private GatheringModel? _model;
+
+	#endregion
+
+	#region Properties
+
+	/// <summary>
+	/// 人間IDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string HumanId { get; set; } = string.Empty;
+
+	/// <summary>
+	/// エリアIDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string AreaId { get; set; } = string.Empty;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		AreaData area = await AreaQueryService.QuerySingleAsync(AreaId);
+
+		_areaName = area.AreaName;
+
+		{
+			List<ItemModel> items = area.Items.Select(x => new ItemModel(x.ItemId, x.ItemName)).ToList();
+
+			_model = new GatheringModel(HumanId, items);
+		}
+	}
+
+	/// <summary>
+	/// 送信します。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	private async Task SubmitAsync()
+	{
+		{
+			HumanGatheringCommand command = _model!.CreateCommand();
+
+			await HumanGatheringService.GatherAsync(command);
+		}
+
+		NavigationManager.NavigateTo($"/humans/{HumanId}");
+	}
+
+	#endregion
+
+	#region Nested types
+
+	/// <summary>
+	/// 採集モデル
+	/// </summary>
+	/// <param name="humanId">人間ID</param>
+	/// <param name="items">アイテムのコレクション</param>
+	private class GatheringModel(string humanId, IReadOnlyCollection<ItemModel> items)
+	{
+		#region Properties
+
+		/// <summary>
+		/// 人間IDを取得します。
+		/// </summary>
+		public string HumanId { get; } = humanId;
+
+		/// <summary>
+		/// アイテムのコレクションを取得します。
+		/// </summary>
+		public IReadOnlyCollection<ItemModel> Items { get; } = items;
+
+		#endregion
+
+		#region Methods
+
+		/// <summary>
+		/// コマンドを作成します。
+		/// </summary>
+		/// <returns>作成したコマンドを返します。</returns>
+		public HumanGatheringCommand CreateCommand()
+		{
+			HumanGatheringCommand command;
+			{
+				List<string> itemIds = Items.Select(x => x.ItemId).ToList();
+
+				command = new HumanGatheringCommand(HumanId, itemIds);
+			}
+
+			return command;
+		}
+
+		#endregion
+	}
+
+	/// <summary>
+	/// アイテムモデル
+	/// </summary>
+	/// <param name="itemId">アイテムID</param>
+	/// <param name="itemName">アイテム名</param>
+	private class ItemModel(string itemId, string itemName)
+	{
+		#region Properties
+
+		/// <summary>
+		/// アイテムIDを取得します。
+		/// </summary>
+		public string ItemId { get; } = itemId;
+
+		/// <summary>
+		/// アイテム名を取得します。
+		/// </summary>
+		public string ItemName { get; } = itemName;
+
+		/// <summary>
+		/// 対象かどうかを設定または取得します。
+		/// </summary>
+		public bool IsSubject { get; set; }
+
+		#endregion
+	}
+
+	#endregion
+}

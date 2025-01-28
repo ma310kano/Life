@@ -1,5 +1,7 @@
 ﻿using Life.Application;
 using Life.Application.Sqlite;
+using Life.Domain.Model;
+using Life.Domain.Model.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -38,6 +40,8 @@ namespace LifeApp
 			builder.Services.AddSingleton<IFamilyQueryService, FamilyQueryService>();
 			builder.Services.AddSingleton<IHumanSummaryQueryService, HumanSummaryQueryService>();
 			builder.Services.AddSingleton<IHumanQueryService, HumanQueryService>();
+			builder.Services.AddSingleton<IHumanGatheringService, HumanGatheringService>();
+			builder.Services.AddSingleton<IHumanInventorySlotContextFactory, HumanInventorySlotContextFactory>();
 			builder.Services.AddSingleton<IRecipeSummaryQueryService, RecipeSummaryQueryService>();
 			builder.Services.AddSingleton<IRecipeQueryService, RecipeQueryService>();
 			builder.Services.AddSingleton<IItemSummaryQueryService, ItemSummaryQueryService>();
