@@ -40,8 +40,9 @@ namespace LifeApp
 			builder.Services.AddSingleton<IFamilyQueryService, FamilyQueryService>();
 			builder.Services.AddSingleton<IHumanSummaryQueryService, HumanSummaryQueryService>();
 			builder.Services.AddSingleton<IHumanQueryService, HumanQueryService>();
+			builder.Services.AddSingleton<IHumanAreaMovementService, HumanAreaMovementService>();
 			builder.Services.AddSingleton<IHumanGatheringService, HumanGatheringService>();
-			builder.Services.AddSingleton<IHumanInventorySlotContextFactory, HumanInventorySlotContextFactory>();
+			builder.Services.AddSingleton<IHumanContextFactory, HumanContextFactory>();
 			builder.Services.AddSingleton<IRecipeSummaryQueryService, RecipeSummaryQueryService>();
 			builder.Services.AddSingleton<IRecipeQueryService, RecipeQueryService>();
 			builder.Services.AddSingleton<IItemSummaryQueryService, ItemSummaryQueryService>();

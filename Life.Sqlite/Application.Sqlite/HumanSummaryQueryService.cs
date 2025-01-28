@@ -23,7 +23,8 @@ public class HumanSummaryQueryService : IHumanSummaryQueryService
 
 		const string sql = @"SELECT
 	  hum.human_id
-	, hum.first_name || ' ' || fam.family_name AS human_name
+	, hum.first_name
+	, fam.family_name
 FROM
 	humans hum
 	INNER JOIN families fam

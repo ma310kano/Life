@@ -1,0 +1,110 @@
+﻿@page "/humans/{HumanId}/move-area"
+
+@using Life.Application
+@using Life.Application.Command
+@using Life.Application.Data
+
+@inject NavigationManager NavigationManager
+@inject IHumanQueryService HumanQueryService
+@inject IAreaSummaryQueryService AreaSummaryQueryService
+@inject IHumanAreaMovementService HumanAreaMovementService
+
+<h1>エリアを移動</h1>
+
+@if (_human is not null && _model is not null && _areas is not null)
+{
+	<EditForm Model="_model" OnValidSubmit="SubmitAsync">
+		<div class="mb-3">
+			<label class="form-label" for="area">エリア</label>
+			<InputSelect class="form-control" id="area" @bind-Value="_model.AreaId">
+				@foreach (AreaSummaryData area in _areas)
+				{
+					<option value="@area.AreaId">@area.AreaName</option>
+				}
+			</InputSelect>
+		</div>
+		<div class="right">
+			<button type="submit" class="btn btn-primary">変更</button>
+		</div>
+	</EditForm>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// 人間
+	/// </summary>
+	private HumanData? _human;
+
+	/// <summary>
+	/// モデル
+	/// </summary>
+	private Model? _model;
+
+	/// <summary>
+	/// エリアのコレクション
+	/// </summary>
+	private IEnumerable<AreaSummaryData>? _areas;
+
+	#endregion
+
+	#region Properties
+
+	/// <summary>
+	/// 人間IDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string HumanId { get; set; } = string.Empty;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		_human = await HumanQueryService.QuerySingleAsync(HumanId);
+		_model = new Model(_human.Area.AreaId);
+
+		_areas = await AreaSummaryQueryService.QueryAsync();
+	}
+
+	/// <summary>
+	/// 送信します。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	private async Task SubmitAsync()
+	{
+		HumanAreaMovementCommand command = new(_human!.HumanId, _model!.AreaId);
+
+		await HumanAreaMovementService.MoveAreaAsync(command);
+
+		NavigationManager.NavigateTo($"/humans/{_human.HumanId}");
+	}
+
+	#endregion
+
+	#region Nested types
+
+	/// <summary>
+	/// モデル
+	/// </summary>
+	/// <param name="areaId">エリアID</param>
+	private class Model(string areaId)
+	{
+		#region Properties
+
+		/// <summary>
+		/// エリアIDを設定または取得します。
+		/// </summary>
+		public string AreaId { get; set; } = areaId;
+
+		#endregion
+	}
+
+	#endregion
+}

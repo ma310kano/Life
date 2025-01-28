@@ -58,18 +58,17 @@ WHERE
 		List<HumanSummaryData> humans;
 		{
 			const string sql = @"SELECT
-	  ahm.human_id
-	, hum.first_name || ' ' || fam.family_name AS human_name
+	  hum.human_id
+	, hum.first_name
+	, fam.family_name
 FROM
-	area_humans ahm
-	INNER JOIN humans hum
-		ON ahm.human_id = hum.human_id
+	humans hum
 	INNER JOIN families fam
 		ON hum.family_id = fam.family_id
 WHERE
-	ahm.area_id = :area_id
+	hum.area_id = :area_id
 ORDER BY
-	ahm.human_id";
+	hum.human_id";
 
 			var param = new
 			{

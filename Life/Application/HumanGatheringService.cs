@@ -7,7 +7,7 @@ namespace Life.Application;
 /// 人間の採集サービス
 /// </summary>
 /// <param name="contextFactory">コンテキストのファクトリー</param>
-public class HumanGatheringService(IHumanInventorySlotContextFactory contextFactory) : IHumanGatheringService
+public class HumanGatheringService(IHumanContextFactory contextFactory) : IHumanGatheringService
 {
 	#region Methods
 
@@ -19,7 +19,7 @@ public class HumanGatheringService(IHumanInventorySlotContextFactory contextFact
 	{
 		HumanId humanId = new(command.HumanId);
 
-		using IHumanInventorySlotContext context = contextFactory.Create();
+		using IHumanContext context = contextFactory.Create();
 
 		try
 		{
@@ -27,12 +27,12 @@ public class HumanGatheringService(IHumanInventorySlotContextFactory contextFact
 			{
 				ItemId itemId = new(source);
 
-				HumanInventorySlot? inventorySlot = context.Repository.FindOrDefault(humanId, itemId);
-				inventorySlot ??= context.Factory.Create(humanId, itemId);
+				HumanInventorySlot? inventorySlot = context.InventorySlotRepository.FindOrDefault(humanId, itemId);
+				inventorySlot ??= context.InventorySlotFactory.Create(humanId, itemId);
 
 				inventorySlot.AddQuantity(1);
 
-				context.Repository.Save(inventorySlot);
+				context.InventorySlotRepository.Save(inventorySlot);
 			}
 
 			context.Commit();

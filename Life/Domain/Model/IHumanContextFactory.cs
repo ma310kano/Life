@@ -1,9 +1,9 @@
 ﻿namespace Life.Domain.Model;
 
 /// <summary>
-/// 人間のインベントリースロットのコンテキストファクトリー
+/// 人間のコンテキストファクトリー
 /// </summary>
-public interface IHumanInventorySlotContextFactory
+public interface IHumanContextFactory
 {
 	#region Methods
 
@@ -11,7 +11,7 @@ public interface IHumanInventorySlotContextFactory
 	/// コンテキストを作成します。
 	/// </summary>
 	/// <returns>作成したコンテキストを返します。</returns>
-	IHumanInventorySlotContext Create();
+	IHumanContext Create();
 
 	#endregion
 }

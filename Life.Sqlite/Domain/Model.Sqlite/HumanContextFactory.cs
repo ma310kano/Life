@@ -1,9 +1,9 @@
 ﻿namespace Life.Domain.Model.Sqlite;
 
 /// <summary>
-/// 人間のインベントリースロットのコンテキストファクトリー
+/// 人間のコンテキストファクトリー
 /// </summary>
-public class HumanInventorySlotContextFactory : IHumanInventorySlotContextFactory
+public class HumanContextFactory : IHumanContextFactory
 {
 	#region Methods
 
@@ -11,9 +11,9 @@ public class HumanInventorySlotContextFactory : IHumanInventorySlotContextFactor
 	/// コンテキストを作成します。
 	/// </summary>
 	/// <returns>作成したコンテキストを返します。</returns>
-	public IHumanInventorySlotContext Create()
+	public IHumanContext Create()
 	{
-		HumanInventorySlotContext context = new();
+		HumanContext context = new();
 
 		return context;
 	}

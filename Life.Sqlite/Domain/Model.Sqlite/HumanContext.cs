@@ -4,9 +4,9 @@ using System.Data;
 namespace Life.Domain.Model.Sqlite;
 
 /// <summary>
-/// 人間のインベントリースロットのコンテキスト
+/// 人間のコンテキスト
 /// </summary>
-public class HumanInventorySlotContext : IHumanInventorySlotContext
+public class HumanContext : IHumanContext
 {
 	#region Fields
 
@@ -21,14 +21,19 @@ public class HumanInventorySlotContext : IHumanInventorySlotContext
 	private readonly IDbTransaction _transaction;
 
 	/// <summary>
-	/// ファクトリー
-	/// </summary>
-	private IHumanInventorySlotFactory? _factory;
-
-	/// <summary>
 	/// リポジトリー
 	/// </summary>
-	private IHumanInventorySlotRepository? _repository;
+	private IHumanRepository? _repository;
+
+	/// <summary>
+	/// インベントリースロットのファクトリー
+	/// </summary>
+	private IHumanInventorySlotFactory? _inventorySlotFactory;
+
+	/// <summary>
+	/// インベントリースロットのリポジトリー
+	/// </summary>
+	private IHumanInventorySlotRepository? _inventorySlotRepository;
 
 	/// <summary>
 	/// 破棄したかどうか
@@ -40,9 +45,9 @@ public class HumanInventorySlotContext : IHumanInventorySlotContext
 	#region Constructors
 
 	/// <summary>
-	/// 人間のインベントリースロットのコンテキストを初期化します。
+	/// 人間のコンテキストを初期化します。
 	/// </summary>
-	public HumanInventorySlotContext()
+	public HumanContext()
 	{
 		_connection = ConnectionFactory.Create();
 		_connection.Open();
@@ -55,14 +60,19 @@ public class HumanInventorySlotContext : IHumanInventorySlotContext
 	#region Properties
 
 	/// <summary>
-	/// ファクトリーを取得します。
-	/// </summary>
-	public IHumanInventorySlotFactory Factory => _factory ??= new HumanInventorySlotFactory();
-
-	/// <summary>
 	/// リポジトリーを取得します。
 	/// </summary>
-	public IHumanInventorySlotRepository Repository => _repository ??= new HumanInventorySlotRepository(_connection, _transaction);
+	public IHumanRepository Repository => _repository ??= new HumanRepository(_connection, _transaction);
+
+	/// <summary>
+	/// インベントリースロットのファクトリーを取得します。
+	/// </summary>
+	public IHumanInventorySlotFactory InventorySlotFactory => _inventorySlotFactory ??= new HumanInventorySlotFactory();
+
+	/// <summary>
+	/// インベントリースロットのリポジトリーを取得します。
+	/// </summary>
+	public IHumanInventorySlotRepository InventorySlotRepository => _inventorySlotRepository ??= new HumanInventorySlotRepository(_connection, _transaction);
 
 	#endregion
 

@@ -61,17 +61,17 @@ WHERE
 		AreaSummaryData area;
 		{
 			const string sql = @"SELECT
-	  ahm.area_id
+	  hum.area_id
 	, anm.area_name
 FROM
-	area_humans ahm
+	humans hum
 	INNER JOIN areas are
-		ON ahm.area_id = are.area_id
+		ON hum.area_id = are.area_id
 	INNER JOIN area_names anm
 		ON  are.area_id = anm.area_id
 		AND anm.language_code = :language_code
 WHERE
-	ahm.human_id = :human_id";
+	hum.human_id = :human_id";
 
 			var param = new
 			{
