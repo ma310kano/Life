@@ -1,0 +1,102 @@
+﻿@page "/humans/{HumanId}/build"
+
+@using Life.Application
+@using Life.Application.Command
+@using Life.Application.Data
+
+@inject NavigationManager NavigationManager
+@inject IHumanQueryService HumanQueryService
+@inject IHumanAreaBuidingService HumanAreaBuidingService
+
+@if (_human is not null && _model is not null)
+{
+	<h1>@(_human.Area.AreaName)で建築</h1>
+
+	<EditForm Model="_model" OnValidSubmit="SubmitAsync">
+		<div class="mb-3">
+			<label class="form-label" for="building">建造物</label>
+			<InputSelect class="form-control" id="building" @bind-Value="_model.BuildingRecipeId">
+				@foreach (BuildingRecipeSummaryData buildingRecipe in _human.BuildingRecipes)
+				{
+					<option value="@buildingRecipe.BuildingRecipeId">@buildingRecipe.BuildingName</option>
+				}
+			</InputSelect>
+		</div>
+		<div class="right">
+			<button type="submit" class="btn btn-primary">建造</button>
+		</div>
+	</EditForm>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// 人間
+	/// </summary>
+	private HumanData? _human;
+
+	/// <summary>
+	/// モデル
+	/// </summary>
+	private Model? _model;
+
+	#endregion
+
+	#region Properties
+
+	/// <summary>
+	/// 人間IDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string HumanId { get; set; } = string.Empty;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		_human = await HumanQueryService.QuerySingleAsync(HumanId);
+		_model = new Model(_human.BuildingRecipes.FirstOrDefault()?.BuildingRecipeId ?? string.Empty);
+	}
+
+	/// <summary>
+	/// 送信します。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	private async Task SubmitAsync()
+	{
+		HumanAreaBuildingCommand command = new(_human!.HumanId, _model!.BuildingRecipeId);
+
+		await HumanAreaBuidingService.BuildAsync(command);
+
+		NavigationManager.NavigateTo($"/humans/{_human.HumanId}");
+	}
+
+	#endregion
+
+	#region Nested types
+
+	/// <summary>
+	/// モデル
+	/// </summary>
+	/// <param name="buildingRecipeId">建造物レシピID</param>
+	private class Model(string buildingRecipeId)
+	{
+		#region Properties
+
+		/// <summary>
+		/// 建造物レシピIDを設定または取得します。
+		/// </summary>
+		public string BuildingRecipeId { get; set; } = buildingRecipeId;
+
+		#endregion
+	}
+
+	#endregion
+}

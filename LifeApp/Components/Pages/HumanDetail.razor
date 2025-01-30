@@ -52,6 +52,26 @@
 	</table>
 	<a class="btn btn-secondary" href="/humans/@_human.HumanId/move-area">エリア移動</a>
 	<a class="btn btn-secondary" href="/humans/@_human.HumanId/gather/@_human.Area.AreaId">採集</a>
+	<a class="btn btn-secondary" href="/humans/@_human.HumanId/build">建造</a>
+
+	<h2>レシピ(建造物)</h2>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>建造物レシピID</th>
+				<th>建造物名</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (BuildingRecipeSummaryData buildingRecipe in _human.BuildingRecipes)
+			{
+				<tr>
+					<td class="id">@buildingRecipe.BuildingRecipeId</td>
+					<td>@buildingRecipe.BuildingName</td>
+				</tr>
+			}
+		</tbody>
+	</table>
 
 	<h2>インベントリー</h2>
 	<table class="table">

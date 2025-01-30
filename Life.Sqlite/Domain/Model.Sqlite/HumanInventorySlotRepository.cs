@@ -15,6 +15,15 @@ public class HumanInventorySlotRepository(IDbConnection connection, IDbTransacti
 	/// <summary>
 	/// 人間のインベントリースロットを削除します。
 	/// </summary>
+	/// <param name="humanInventorySlot">人間のインベントリースロット</param>
+	public void Delete(HumanInventorySlot humanInventorySlot)
+	{
+		Delete(humanInventorySlot.HumanId, humanInventorySlot.ItemId);
+	}
+
+	/// <summary>
+	/// 人間のインベントリースロットを削除します。
+	/// </summary>
 	/// <param name="humanId">人間ID</param>
 	/// <param name="itemId">アイテムID</param>
 	public void Delete(HumanId humanId, ItemId itemId)

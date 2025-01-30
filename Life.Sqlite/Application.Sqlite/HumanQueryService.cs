@@ -82,6 +82,34 @@ WHERE
 			area = connection.QuerySingle<AreaSummaryData>(sql, param);
 		}
 
+		List<BuildingRecipeSummaryData> buildingRecipes;
+		{
+			const string sql = @"SELECT
+	  brc.building_recipe_id
+	, bnm.building_name
+FROM
+	human_building_recipes hbr
+	INNER JOIN building_recipes brc
+		ON hbr.building_recipe_id = brc.building_recipe_id
+	INNER JOIN buildings bui
+		ON brc.building_id = bui.building_id
+	INNER JOIN building_names bnm
+		ON  bui.building_id = bnm.building_id
+		AND bnm.language_code = :language_code
+WHERE
+	hbr.human_id = :human_id
+ORDER BY
+	brc.building_recipe_id";
+
+			var param = new
+			{
+				human_id = humanId,
+				language_code = _languageCode,
+			};
+
+			buildingRecipes = connection.Query<BuildingRecipeSummaryData>(sql, param).ToList();
+		}
+
 		List<InventorySlotData> inventorySlots = [];
 		{
 			const string sql = @"SELECT
@@ -123,7 +151,7 @@ ORDER BY
 			}
 		}
 
-		HumanData result = new(record.HumanId, record.FirstName, family, area, inventorySlots);
+		HumanData result = new(record.HumanId, record.FirstName, family, area, buildingRecipes, inventorySlots);
 
 		return result;
 	}

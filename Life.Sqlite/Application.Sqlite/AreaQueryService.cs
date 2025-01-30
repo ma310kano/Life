@@ -55,6 +55,32 @@ WHERE
 			record = connection.QuerySingle<AreaRecord>(sql, param);
 		}
 
+		List<BuildingSummaryData> buildings;
+		{
+			const string sql = @"SELECT
+	  abl.building_id
+	, bnm.building_name
+FROM
+	area_buildings abl
+	INNER JOIN buildings bui
+		ON abl.building_id = bui.building_id
+	INNER JOIN building_names bnm
+		ON  bui.building_id = bnm.building_id
+		AND bnm.language_code = :language_code
+WHERE
+	abl.area_id = :area_id
+ORDER BY
+	abl.building_id";
+
+			var param = new
+			{
+				area_id = areaId,
+				language_code = _languageCode,
+			};
+
+			buildings = connection.Query<BuildingSummaryData>(sql, param).ToList();
+		}
+
 		List<HumanSummaryData> humans;
 		{
 			const string sql = @"SELECT
@@ -102,7 +128,7 @@ WHERE
 			items = connection.Query<ItemSummaryData>(sql, param).ToList();
 		}
 
-		AreaData result = new(record.AreaId, record.AreaName, humans, items);
+		AreaData result = new(record.AreaId, record.AreaName, buildings, humans, items);
 
 		return result;
 	}

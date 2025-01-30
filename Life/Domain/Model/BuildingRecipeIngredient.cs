@@ -1,19 +1,13 @@
 ﻿namespace Life.Domain.Model;
 
 /// <summary>
-/// 人間のインベントリースロット
+/// 建造物レシピの材料
 /// </summary>
-/// <param name="humanId">人間ID</param>
 /// <param name="itemId">アイテムID</param>
 /// <param name="quantity">数量</param>
-public class HumanInventorySlot(HumanId humanId, ItemId itemId, Quantity quantity) : IEquatable<HumanInventorySlot>
+public class BuildingRecipeIngredient(ItemId itemId, Quantity quantity) : IEquatable<BuildingRecipeIngredient>
 {
     #region Properties
-
-    /// <summary>
-    /// 人間IDを取得します。
-    /// </summary>
-    public HumanId HumanId { get; } = humanId;
 
     /// <summary>
     /// アイテムIDを取得します。
@@ -23,7 +17,7 @@ public class HumanInventorySlot(HumanId humanId, ItemId itemId, Quantity quantit
     /// <summary>
     /// 数量を取得します。
     /// </summary>
-    public Quantity Quantity { get; private set; } = quantity;
+    public Quantity Quantity { get; } = quantity;
 
     #endregion
 
@@ -35,7 +29,7 @@ public class HumanInventorySlot(HumanId humanId, ItemId itemId, Quantity quantit
     /// <param name="lhs">左辺</param>
     /// <param name="rhs">右辺</param>
     /// <returns>オペランドが等しい場合は、 <c>true</c>。それ以外の場合は、 <c>false</c>。</returns>
-    public static bool operator ==(HumanInventorySlot lhs, HumanInventorySlot rhs)
+    public static bool operator ==(BuildingRecipeIngredient lhs, BuildingRecipeIngredient rhs)
     {
         if (lhs is null) return rhs is null;
 
@@ -50,7 +44,7 @@ public class HumanInventorySlot(HumanId humanId, ItemId itemId, Quantity quantit
     /// <param name="lhs">左辺</param>
     /// <param name="rhs">右辺</param>
     /// <returns>オペランドが等しくない場合は、 <c>true</c>。それ以外の場合は、 <c>false</c>。</returns>
-    public static bool operator !=(HumanInventorySlot lhs, HumanInventorySlot rhs)
+    public static bool operator !=(BuildingRecipeIngredient lhs, BuildingRecipeIngredient rhs)
     {
         bool result = !(lhs == rhs);
 
@@ -62,24 +56,6 @@ public class HumanInventorySlot(HumanId humanId, ItemId itemId, Quantity quantit
     #region Methods
 
     /// <summary>
-    /// 数量を加算します。
-    /// </summary>
-    /// <param name="quantity">数量</param>
-    public void AddQuantity(int quantity)
-    {
-        Quantity += quantity;
-    }
-
-    /// <summary>
-    /// 数量を減算します。
-    /// </summary>
-    /// <param name="quantity">数量</param>
-    public void SubtractQuantity(int quantity)
-    {
-        Quantity -= quantity;
-    }
-
-    /// <summary>
     /// 指定されたオブジェクトが現在のオブジェクトと等しいかどうかを判断します。
     /// </summary>
     /// <param name="obj">現在のオブジェクトと比較するオブジェクト。</param>
@@ -88,7 +64,7 @@ public class HumanInventorySlot(HumanId humanId, ItemId itemId, Quantity quantit
     {
         bool result = obj switch
         {
-            HumanInventorySlot other => Equals(other),
+            BuildingRecipeIngredient other => Equals(other),
             _ => base.Equals(obj),
         };
 
@@ -99,11 +75,11 @@ public class HumanInventorySlot(HumanId humanId, ItemId itemId, Quantity quantit
     /// </summary>
     /// <param name="other">このオブジェクトと比較するオブジェクト。</param>
     /// <returns>現在のオブジェクトが <c>other</c> パラメーターと等しい場合は <c>true</c>、それ以外の場合は <c>false</c> です。</returns>
-    public bool Equals(HumanInventorySlot? other)
+    public bool Equals(BuildingRecipeIngredient? other)
     {
         if (other is null) return false;
 
-        bool result = HumanId == other.HumanId && ItemId == other.ItemId;
+        bool result = ItemId == other.ItemId;
 
         return result;
     }
@@ -114,7 +90,7 @@ public class HumanInventorySlot(HumanId humanId, ItemId itemId, Quantity quantit
     /// <returns>現在のオブジェクトのハッシュ コード。</returns>
     public override int GetHashCode()
     {
-        int result = HashCode.Combine(HumanId, ItemId);
+        int result = HashCode.Combine(ItemId);
 
         return result;
     }
@@ -125,7 +101,7 @@ public class HumanInventorySlot(HumanId humanId, ItemId itemId, Quantity quantit
     /// <returns>現在のオブジェクトを表す文字列。</returns>
     public override string ToString()
     {
-        string str = $"{nameof(HumanInventorySlot)} {{ {nameof(HumanId)} = {HumanId}, {nameof(ItemId)} = {ItemId}, {nameof(Quantity)} = {Quantity} }}";
+        string str = $"{nameof(BuildingRecipeIngredient)} {{ {nameof(ItemId)} = {ItemId}, {nameof(Quantity)} = {Quantity} }}";
 
         return str;
     }

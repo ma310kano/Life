@@ -22,6 +22,16 @@ public interface IHumanContext : IDisposable
 	/// </summary>
 	IHumanInventorySlotRepository InventorySlotRepository { get; }
 
+	/// <summary>
+	/// 建造物レシピのリポジトリーを取得します。
+	/// </summary>
+	IBuildingRecipeRepository BuildingRecipeRepository { get; }
+
+	/// <summary>
+	/// エリアの建造物のリポジトリーを取得します。
+	/// </summary>
+	IAreaBuildingRepository AreaBuildingRepository { get; }
+
 	#endregion
 
 	#region Methods

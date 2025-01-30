@@ -10,6 +10,12 @@ public interface IHumanInventorySlotRepository
 	/// <summary>
 	/// 人間のインベントリースロットを削除します。
 	/// </summary>
+	/// <param name="humanInventorySlot">人間のインベントリースロット</param>
+	void Delete(HumanInventorySlot humanInventorySlot);
+
+	/// <summary>
+	/// 人間のインベントリースロットを削除します。
+	/// </summary>
 	/// <param name="humanId">人間ID</param>
 	/// <param name="itemId">アイテムID</param>
 	void Delete(HumanId humanId, ItemId itemId);

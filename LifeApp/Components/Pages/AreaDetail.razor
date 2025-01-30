@@ -23,6 +23,25 @@
 		</tbody>
 	</table>
 
+	<h2>建造物</h2>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>建造物ID</th>
+				<th>建造物名</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (BuildingSummaryData building in _area.Buildings)
+			{
+				<tr>
+					<td class="id">@building.BuildingId</td>
+					<td><a href="/buildings/@building.BuildingId">@building.BuildingName</a></td>
+				</tr>
+			}
+		</tbody>
+	</table>
+
 	<h2>人間</h2>
 	<table class="table">
 		<thead>

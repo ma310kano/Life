@@ -1,0 +1,53 @@
+﻿@page "/buildings"
+
+@using Life.Application
+@using Life.Application.Data
+
+@inject IBuildingSummaryQueryService BuildingSummaryQueryService
+
+<h1>建造物一覧</h1>
+
+@if (_buildings is not null)
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>建造物ID</th>
+				<th>建造物名</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (BuildingSummaryData building in _buildings)
+			{
+				<tr>
+					<td class="id">@building.BuildingId</td>
+					<td><a href="/buildings/@building.BuildingId">@building.BuildingName</a></td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// 建造物のコレクション
+	/// </summary>
+	private IEnumerable<BuildingSummaryData>? _buildings;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		_buildings = await BuildingSummaryQueryService.QueryAsync();
+	}
+
+	#endregion
+}

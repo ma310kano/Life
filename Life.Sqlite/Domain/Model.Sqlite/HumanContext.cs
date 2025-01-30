@@ -36,6 +36,16 @@ public class HumanContext : IHumanContext
 	private IHumanInventorySlotRepository? _inventorySlotRepository;
 
 	/// <summary>
+	/// 建造物レシピのリポジトリー
+	/// </summary>
+	private IBuildingRecipeRepository? _buildingRecipeRepository;
+
+	/// <summary>
+	/// エリアの建造物のリポジトリー
+	/// </summary>
+	private IAreaBuildingRepository? _areaBuildingRepository;
+
+	/// <summary>
 	/// 破棄したかどうか
 	/// </summary>
 	private bool disposedValue;
@@ -73,6 +83,16 @@ public class HumanContext : IHumanContext
 	/// インベントリースロットのリポジトリーを取得します。
 	/// </summary>
 	public IHumanInventorySlotRepository InventorySlotRepository => _inventorySlotRepository ??= new HumanInventorySlotRepository(_connection, _transaction);
+
+	/// <summary>
+	/// 建造物レシピのリポジトリーを取得します。
+	/// </summary>
+	public IBuildingRecipeRepository BuildingRecipeRepository => _buildingRecipeRepository ??= new BuildingRecipeRepository(_connection, _transaction);
+
+	/// <summary>
+	/// エリアの建造物のリポジトリーを取得します。
+	/// </summary>
+	public IAreaBuildingRepository AreaBuildingRepository => _areaBuildingRepository ??= new AreaBuildingRepository(_connection, _transaction);
 
 	#endregion
 
