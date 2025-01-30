@@ -46,10 +46,10 @@ namespace LifeApp
 			builder.Services.AddSingleton<IHumanGatheringService, HumanGatheringService>();
 			builder.Services.AddSingleton<IHumanAreaBuidingService, HumanAreaBuidingService>();
 			builder.Services.AddSingleton<IHumanContextFactory, HumanContextFactory>();
-			builder.Services.AddSingleton<IRecipeSummaryQueryService, RecipeSummaryQueryService>();
-			builder.Services.AddSingleton<IRecipeQueryService, RecipeQueryService>();
 			builder.Services.AddSingleton<IItemSummaryQueryService, ItemSummaryQueryService>();
 			builder.Services.AddSingleton<IItemQueryService, ItemQueryService>();
+			builder.Services.AddSingleton<IItemRecipeSummaryQueryService, ItemRecipeSummaryQueryService>();
+			builder.Services.AddSingleton<IItemRecipeQueryService, ItemRecipeQueryService>();
 
 			return builder.Build();
 		}

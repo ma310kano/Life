@@ -1,24 +1,24 @@
-﻿@page "/recipes/{RecipeId}"
+﻿@page "/item-recipes/{ItemRecipeId}"
 
 @using Life.Application
 @using Life.Application.Data
 
-@inject IRecipeQueryService RecipeQueryService
+@inject IItemRecipeQueryService ItemRecipeQueryService
 
-@if (_recipe is not null)
+@if (_itemRecipe is not null)
 {
-	<h1>@(_recipe.Item.ItemName)のレシピ</h1>
+	<h1>@(_itemRecipe.Item.ItemName)のレシピ</h1>
 
 	<h2>アイテム</h2>
 	<table class="table">
 		<tbody>
 			<tr>
 				<th>アイテムID</th>
-				<td>@_recipe.Item.ItemId</td>
+				<td>@_itemRecipe.Item.ItemId</td>
 			</tr>
 			<tr>
 				<th>アイテム名</th>
-				<td><a href="/items/@_recipe.Item.ItemId">@_recipe.Item.ItemName</a></td>
+				<td><a href="/items/@_itemRecipe.Item.ItemId">@_itemRecipe.Item.ItemName</a></td>
 			</tr>
 		</tbody>
 	</table>
@@ -33,7 +33,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (RecipeIngredientData ingredient in _recipe.Ingredients)
+			@foreach (ItemRecipeIngredientData ingredient in _itemRecipe.Ingredients)
 			{
 				<tr>
 					<td class="item-id">@ingredient.Item.ItemId</td>
@@ -49,19 +49,19 @@
 	#region Fields
 
 	/// <summary>
-	/// レシピ
+	/// アイテムのレシピ
 	/// </summary>
-	private RecipeData? _recipe;
+	private ItemRecipeData? _itemRecipe;
 
 	#endregion
 
 	#region Properties
 
 	/// <summary>
-	/// レシピIDを設定または取得します。
+	/// アイテムのレシピIDを設定または取得します。
 	/// </summary>
 	[Parameter]
-	public string RecipeId { get; set; } = string.Empty;
+	public string ItemRecipeId { get; set; } = string.Empty;
 
 	#endregion
 
@@ -73,7 +73,7 @@
 	/// <returns>非同期操作を返します。</returns>
 	protected override async Task OnInitializedAsync()
 	{
-		_recipe = await RecipeQueryService.QuerySingleAsync(RecipeId);
+		_itemRecipe = await ItemRecipeQueryService.QuerySingleAsync(ItemRecipeId);
 	}
 
 	#endregion

@@ -7,10 +7,10 @@ using System.Data;
 namespace Life.Application.Sqlite;
 
 /// <summary>
-/// レシピの問い合わせサービス
+/// アイテムのレシピの問い合わせサービス
 /// </summary>
 /// <param name="configuration">設定</param>
-public class RecipeQueryService(IConfiguration configuration) : IRecipeQueryService
+public class ItemRecipeQueryService(IConfiguration configuration) : IItemRecipeQueryService
 {
 	#region Fields
 
@@ -24,11 +24,11 @@ public class RecipeQueryService(IConfiguration configuration) : IRecipeQueryServ
 	#region Methods
 
 	/// <summary>
-	/// レシピを問い合わせします。
+	/// アイテムのレシピを問い合わせします。
 	/// </summary>
-	/// <param name="recipeId">レシピID</param>
-	/// <returns>問い合わせしたレシピデータを返します。</returns>
-	public RecipeData QuerySingle(string recipeId)
+	/// <param name="itemRecipeId">アイテムのレシピID</param>
+	/// <returns>問い合わせしたアイテムのレシピデータを返します。</returns>
+	public ItemRecipeData QuerySingle(string itemRecipeId)
 	{
 		using IDbConnection connection = ConnectionFactory.Create();
 		connection.Open();
@@ -37,22 +37,22 @@ public class RecipeQueryService(IConfiguration configuration) : IRecipeQueryServ
 		ItemSummaryData item;
 		{
 			const string sql = @"SELECT
-	  rec.recipe_id
+	  irc.item_recipe_id
 	, ite.item_id
 	, inm.item_name
 FROM
-	recipes rec
+	item_recipes irc
 	INNER JOIN items ite
-		ON rec.item_id = ite.item_id
+		ON irc.item_id = ite.item_id
 	INNER JOIN item_names inm
 		ON  ite.item_id = inm.item_id
 		AND inm.language_code = :language_code
 WHERE
-	recipe_id = :recipe_id";
+	irc.item_recipe_id = :item_recipe_id";
 
 			var param = new
 			{
-				recipe_id = recipeId,
+				item_recipe_id = itemRecipeId,
 				language_code = _languageCode,
 			};
 
@@ -61,27 +61,27 @@ WHERE
 			item = new ItemSummaryData(record.ItemId, record.ItemName);
 		}
 
-		List<RecipeIngredientData> ingredients = [];
+		List<ItemRecipeIngredientData> ingredients = [];
 		{
 			const string sql = @"SELECT
-	  rig.item_id
+	  iri.item_id
 	, inm.item_name
-	, rig.quantity
+	, iri.quantity
 FROM
-	recipe_ingredients rig
+	item_recipe_ingredients iri
 	INNER JOIN items ite
-		ON rig.item_id = ite.item_id
+		ON iri.item_id = ite.item_id
 	INNER JOIN item_names inm
 		ON  ite.item_id = inm.item_id
 		AND inm.language_code = :language_code
 WHERE
-	rig.recipe_id = :recipe_id
+	iri.item_recipe_id = :item_recipe_id
 ORDER BY
-	rig.item_id";
+	iri.item_id";
 
 			var param = new
 			{
-				recipe_id = recipeId,
+				item_recipe_id = itemRecipeId,
 				language_code = _languageCode,
 			};
 
@@ -89,19 +89,19 @@ ORDER BY
 
 			foreach (IngredientRecord source in sources)
 			{
-				RecipeIngredientData ingredient;
+				ItemRecipeIngredientData ingredient;
 				{
 					ItemSummaryData ingredientItem = new(source.ItemId, source.ItemName);
 					int quantity = (int)source.Quantity;
 
-					ingredient = new RecipeIngredientData(ingredientItem, quantity);
+					ingredient = new ItemRecipeIngredientData(ingredientItem, quantity);
 				}
 
 				ingredients.Add(ingredient);
 			}
 		}
 
-		RecipeData result = new(record.RecipeId, item, ingredients);
+		ItemRecipeData result = new(record.ItemRecipeId, item, ingredients);
 
 		return result;
 	}
@@ -111,7 +111,7 @@ ORDER BY
 	/// </summary>
 	/// <param name="recipeId">レシピID</param>
 	/// <returns>問い合わせしたレシピデータを返します。</returns>
-	public async Task<RecipeData> QuerySingleAsync(string recipeId)
+	public async Task<ItemRecipeData> QuerySingleAsync(string recipeId)
 	{
 		return await Task.Run(() => QuerySingle(recipeId));
 	}
@@ -123,10 +123,10 @@ ORDER BY
 	/// <summary>
 	/// レシピのレコード
 	/// </summary>
-	/// <param name="RecipeId">レシピID</param>
+	/// <param name="ItemRecipeId">レシピID</param>
 	/// <param name="ItemId">アイテムID</param>
 	/// <param name="ItemName">アイテム名</param>
-	private record class RecipeRecord(string RecipeId, string ItemId, string ItemName);
+	private record class RecipeRecord(string ItemRecipeId, string ItemId, string ItemName);
 
 	/// <summary>
 	/// 材料のレコード

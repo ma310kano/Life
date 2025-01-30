@@ -1,0 +1,53 @@
+﻿@page "/item-recipes"
+
+@using Life.Application
+@using Life.Application.Data
+
+@inject IItemRecipeSummaryQueryService ItemRecipeSummaryQueryService
+
+<h1>アイテムのレシピ</h1>
+
+@if (_itemRecipes is not null)
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>アイテムのレシピID</th>
+				<th>アイテム名</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (ItemRecipeSummaryData itemRecipe in _itemRecipes)
+			{
+				<tr>
+					<td class="id">@itemRecipe.ItemRecipeId</td>
+					<td><a href="/item-recipes/@itemRecipe.ItemRecipeId">@itemRecipe.ItemName</a></td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// アイテムのレシピのコレクション
+	/// </summary>
+	private IEnumerable<ItemRecipeSummaryData>? _itemRecipes;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		_itemRecipes = await ItemRecipeSummaryQueryService.QueryAsync();
+	}
+
+	#endregion
+}
