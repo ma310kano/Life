@@ -1,0 +1,80 @@
+﻿@page "/building-recipes/{BuildingRecipeId}"
+
+@using Life.Application
+@using Life.Application.Data
+
+@inject IBuildingRecipeQueryService BuildingRecipeQueryService
+
+@if (_buildingRecipe is not null)
+{
+	<h1>@(_buildingRecipe.Building.BuildingName)のレシピ</h1>
+
+	<h2>建造物</h2>
+	<table class="table">
+		<tbody>
+			<tr>
+				<th>建造物ID</th>
+				<td>@_buildingRecipe.Building.BuildingId</td>
+			</tr>
+			<tr>
+				<th>建造物名</th>
+				<td><a href="/buildings/@_buildingRecipe.Building.BuildingId">@_buildingRecipe.Building.BuildingName</a></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<h2>材料</h2>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>アイテムID</th>
+				<th>アイテム名</th>
+				<th>数量</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (BuildingRecipeIngredientData ingredient in _buildingRecipe.Ingredients)
+			{
+				<tr>
+					<td class="item-id">@ingredient.Item.ItemId</td>
+					<td><a href="/items/@ingredient.Item.ItemId">@ingredient.Item.ItemName</a></td>
+					<td>@ingredient.Quantity</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// 建造物レシピ
+	/// </summary>
+	private BuildingRecipeData? _buildingRecipe;
+
+	#endregion
+
+	#region Properties
+
+	/// <summary>
+	/// 建造物レシピIDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string BuildingRecipeId { get; set; } = string.Empty;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		_buildingRecipe = await BuildingRecipeQueryService.QuerySingleAsync(BuildingRecipeId);
+	}
+
+	#endregion
+}

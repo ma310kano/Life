@@ -1,0 +1,53 @@
+﻿@page "/building-recipes"
+
+@using Life.Application
+@using Life.Application.Data
+
+@inject IBuildingRecipeSummaryQueryService BuildingRecipeSummaryService
+
+<h1>レシピ(建造物)</h1>
+
+@if (_buildingRecipes is not null)
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>建造物レシピID</th>
+				<th>建造物名</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (BuildingRecipeSummaryData buildingRecipe in _buildingRecipes)
+			{
+				<tr>
+					<td class="id">@buildingRecipe.BuildingRecipeId</td>
+					<td><a href="/building-recipes/@buildingRecipe.BuildingRecipeId">@buildingRecipe.BuildingName</a></td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// レシピ(建造物)のコレクション
+	/// </summary>
+	private IEnumerable<BuildingRecipeSummaryData>? _buildingRecipes;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		_buildingRecipes = await BuildingRecipeSummaryService.QueryAsync();
+	}
+
+	#endregion
+}
