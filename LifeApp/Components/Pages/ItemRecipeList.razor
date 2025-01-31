@@ -5,7 +5,14 @@
 
 @inject IItemRecipeSummaryQueryService ItemRecipeSummaryQueryService
 
-<h1>アイテムのレシピ</h1>
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"><a href="/">ホーム</a></li>
+		<li class="breadcrumb-item active" aria-current="page">レシピ(アイテム)</li>
+	</ol>
+</nav>
+
+<h1>レシピ(アイテム)</h1>
 
 @if (_itemRecipes is not null)
 {

@@ -7,6 +7,14 @@
 
 @if (_buildingRecipe is not null)
 {
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">ホーム</a></li>
+			<li class="breadcrumb-item"><a href="/building-recipes">レシピ(建造物)</a></li>
+			<li class="breadcrumb-item active" aria-current="page">@(_buildingRecipe.Building.BuildingName)のレシピ</li>
+		</ol>
+	</nav>
+
 	<h1>@(_buildingRecipe.Building.BuildingName)のレシピ</h1>
 
 	<h2>建造物</h2>

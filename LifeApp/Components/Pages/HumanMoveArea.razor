@@ -9,10 +9,19 @@
 @inject IAreaSummaryQueryService AreaSummaryQueryService
 @inject IHumanAreaMovementService HumanAreaMovementService
 
-<h1>エリアを移動</h1>
-
 @if (_human is not null && _model is not null && _areas is not null)
 {
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">ホーム</a></li>
+			<li class="breadcrumb-item"><a href="/humans">人間</a></li>
+			<li class="breadcrumb-item"><a href="/humans/@_human.HumanId">@_human.FirstName @_human.Family.FamilyName</a></li>
+			<li class="breadcrumb-item active" aria-current="page">エリアを移動</li>
+		</ol>
+	</nav>
+
+	<h1>エリアを移動</h1>
+
 	<EditForm Model="_model" OnValidSubmit="SubmitAsync">
 		<div class="mb-3">
 			<label class="form-label" for="area">エリア</label>

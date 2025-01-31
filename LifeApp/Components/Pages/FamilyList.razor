@@ -5,6 +5,13 @@
 
 @inject IFamilySummaryQueryService FamilySummaryQueryService
 
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"><a href="/">ホーム</a></li>
+		<li class="breadcrumb-item active" aria-current="page">家族</li>
+	</ol>
+</nav>
+
 <h1>家族</h1>
 
 @if (_families is not null)

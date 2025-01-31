@@ -5,6 +5,13 @@
 
 @inject IItemSummaryQueryService ItemSummaryQueryService
 
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">ホーム</a></li>
+        <li class="breadcrumb-item active" aria-current="page">アイテム</li>
+    </ol>
+</nav>
+
 <h1>アイテム</h1>
 
 @if (_items is not null)

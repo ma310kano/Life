@@ -7,6 +7,14 @@
 
 @if (_itemRecipe is not null)
 {
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">ホーム</a></li>
+			<li class="breadcrumb-item"><a href="/item-recipes">レシピ(アイテム)</a></li>
+			<li class="breadcrumb-item active" aria-current="page">@(_itemRecipe.Item.ItemName)のレシピ</li>
+		</ol>
+	</nav>
+
 	<h1>@(_itemRecipe.Item.ItemName)のレシピ</h1>
 
 	<h2>アイテム</h2>

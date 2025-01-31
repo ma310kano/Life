@@ -5,6 +5,13 @@
 
 @inject IAreaSummaryQueryService AreaSummaryQueryService
 
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"><a href="/">ホーム</a></li>
+		<li class="breadcrumb-item active" aria-current="page">エリア</li>
+	</ol>
+</nav>
+
 <h1>エリア</h1>
 
 @if (_areas is not null)

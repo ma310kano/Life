@@ -5,7 +5,14 @@
 
 @inject IBuildingSummaryQueryService BuildingSummaryQueryService
 
-<h1>建造物一覧</h1>
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"><a href="/">ホーム</a></li>
+		<li class="breadcrumb-item active" aria-current="page">建造物</li>
+	</ol>
+</nav>
+
+<h1>建造物</h1>
 
 @if (_buildings is not null)
 {

@@ -7,6 +7,14 @@
 
 @if (_building is not null)
 {
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">ホーム</a></li>
+			<li class="breadcrumb-item"><a href="/buildings">建造物</a></li>
+			<li class="breadcrumb-item active" aria-current="page">@_building.BuildingName</li>
+		</ol>
+	</nav>
+
 	<h1>@_building.BuildingName</h1>
 
 	<h2>建造物</h2>

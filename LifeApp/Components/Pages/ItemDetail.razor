@@ -7,6 +7,14 @@
 
 @if (_item is not null)
 {
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">ホーム</a></li>
+			<li class="breadcrumb-item"><a href="/items">アイテム</a></li>
+			<li class="breadcrumb-item active" aria-current="page">@_item.ItemName</li>
+		</ol>
+	</nav>
+
 	<h1>@_item.ItemName</h1>
 
 	<h2>アイテム</h2>
