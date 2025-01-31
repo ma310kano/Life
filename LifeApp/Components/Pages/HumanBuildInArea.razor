@@ -84,7 +84,7 @@
 
 		await HumanAreaBuidingService.BuildAsync(command);
 
-		NavigationManager.NavigateTo($"/humans/{_human.HumanId}");
+		NavigationManager.NavigateTo($"/areas/{_human.Area.AreaId}");
 	}
 
 	#endregion
