@@ -51,6 +51,7 @@ public class HumanAreaBuidingService(IHumanContextFactory contextFactory) : IHum
 		catch
 		{
 			context.Rollback();
+			throw;
 		}
 	}
 

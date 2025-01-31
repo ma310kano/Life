@@ -35,6 +35,7 @@ public class HumanAreaMovementService(IHumanContextFactory contextFactory) : IHu
 		catch
 		{
 			context.Rollback();
+			throw;
 		}
 	}
 

@@ -40,6 +40,7 @@ public class HumanGatheringService(IHumanContextFactory contextFactory) : IHuman
 		catch
 		{
 			context.Rollback();
+			throw;
 		}
 	}
 
