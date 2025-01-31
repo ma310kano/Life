@@ -1,4 +1,4 @@
-﻿@page "/humans/{HumanId}/gather/{AreaId}"
+﻿@page "/humans/{HumanId}/gather"
 
 @using Life.Application
 @using Life.Application.Command
@@ -9,18 +9,18 @@
 @inject IAreaQueryService AreaQueryService
 @inject IHumanGatheringService HumanGatheringService
 
-@if (_human is not null && _areaName != string.Empty)
+@if (_human is not null)
 {
 	<nav aria-label="breadcrumb">
 		<ol class="breadcrumb">
 			<li class="breadcrumb-item"><a href="/">ホーム</a></li>
 			<li class="breadcrumb-item"><a href="/humans">人間</a></li>
 			<li class="breadcrumb-item"><a href="/humans/@_human.HumanId">@_human.FirstName @_human.Family.FamilyName</a></li>
-			<li class="breadcrumb-item active" aria-current="page">@(_areaName)で採集</li>
+			<li class="breadcrumb-item active" aria-current="page">@(_human.Area.AreaName)で採集</li>
 		</ol>
 	</nav>
 
-	<h1>@(_areaName)で採集</h1>
+	<h1>@(_human.Area.AreaName)で採集</h1>
 }
 
 @if (_model is not null)
@@ -46,11 +46,6 @@
 	private HumanData? _human;
 
 	/// <summary>
-	/// エリア名
-	/// </summary>
-	private string _areaName = string.Empty;
-
-	/// <summary>
 	/// モデル
 	/// </summary>
 	private GatheringModel? _model;
@@ -65,12 +60,6 @@
 	[Parameter]
 	public string HumanId { get; set; } = string.Empty;
 
-	/// <summary>
-	/// エリアIDを設定または取得します。
-	/// </summary>
-	[Parameter]
-	public string AreaId { get; set; } = string.Empty;
-
 	#endregion
 
 	#region Methods
@@ -83,11 +72,8 @@
 	{
 		_human = await HumanQueryService.QuerySingleAsync(HumanId);
 
-		AreaData area = await AreaQueryService.QuerySingleAsync(AreaId);
-
-		_areaName = area.AreaName;
-
 		{
+			AreaData area = await AreaQueryService.QuerySingleAsync(_human.Area.AreaId);
 			List<ItemModel> items = area.Items.Select(x => new ItemModel(x.ItemId, x.ItemName)).ToList();
 
 			_model = new GatheringModel(HumanId, items);
