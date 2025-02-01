@@ -1,0 +1,134 @@
+﻿@page "/humans/{HumanId}/building-recipes/{BuildingRecipeId}"
+
+@using Life.Application
+@using Life.Application.Command
+@using Life.Application.Data
+
+@inject NavigationManager NavigationManager
+@inject IHumanQueryService HumanQueryService
+@inject IBuildingRecipeQueryService BuildingRecipeQueryService
+@inject IHumanAreaBuidingService HumanAreaBuidingService
+
+@if (_human is not null && _buildingRecipe is not null && _rows is not null)
+{
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">ホーム</a></li>
+			<li class="breadcrumb-item"><a href="/humans">人間</a></li>
+			<li class="breadcrumb-item"><a href="/humans/@_human.HumanId">@_human.FirstName @_human.Family.FamilyName</a></li>
+			<li class="breadcrumb-item active" aria-current="page">@(_buildingRecipe.Building.BuildingName)を建造</li>
+		</ol>
+	</nav>
+
+	<h1>@(_buildingRecipe.Building.BuildingName)を建造</h1>
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>アイテム</th>
+				<th>必要数 / 所持数</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (ItemRow row in _rows)
+			{
+				<tr>
+					<td class="id">@row.ItemName</td>
+					<td>@row.RequiredQuantity.ToString("#,0") / @row.PossessionQuantity.ToString("#,0")</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+
+	<button type="button" class="btn btn-primary" disabled="@_disabled" @onclick="BuildAsync">建造</button>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// 人間
+	/// </summary>
+	private HumanData? _human;
+
+	/// <summary>
+	/// 建造物レシピ
+	/// </summary>
+	private BuildingRecipeData? _buildingRecipe;
+
+	/// <summary>
+	/// 行のコレクション
+	/// </summary>
+	private IEnumerable<ItemRow>? _rows;
+
+	/// <summary>
+	/// 無効
+	/// </summary>
+	private string? _disabled;
+
+	#endregion
+
+	#region Properties
+
+	/// <summary>
+	/// 人間IDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string HumanId { get; set; } = string.Empty;
+
+	/// <summary>
+	/// 建造物レシピIDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string BuildingRecipeId { get; set; } = string.Empty;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		_human = await HumanQueryService.QuerySingleAsync(HumanId);
+		_buildingRecipe = await BuildingRecipeQueryService.QuerySingleAsync(BuildingRecipeId);
+
+		_rows =
+			from ing in _buildingRecipe.Ingredients
+			join his in _human.InventorySlots
+			on ing.Item.ItemId equals his.Item.ItemId into hisJoin
+			from hij in hisJoin.DefaultIfEmpty()
+			select new ItemRow(ing.Item.ItemName, ing.Quantity, hij?.Quantity ?? 0);
+
+		_disabled = _rows.Any(row => row.RequiredQuantity > row.PossessionQuantity) ? "disabled" : null;
+	}
+
+	/// <summary>
+	/// 建造します。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	private async Task BuildAsync()
+	{
+		HumanAreaBuildingCommand command = new(_human!.HumanId, _buildingRecipe!.BuildingRecipeId);
+
+		await HumanAreaBuidingService.BuildAsync(command);
+
+		NavigationManager.NavigateTo($"/areas/{_human.Area.AreaId}");
+	}
+
+	#endregion
+
+	#region Nested types
+
+	/// <summary>
+	/// アイテム行
+	/// </summary>
+	/// <param name="ItemName">アイテム名</param>
+	/// <param name="RequiredQuantity">必要数</param>
+	/// <param name="PossessionQuantity">所持数</param>
+	private record class ItemRow(string ItemName, int RequiredQuantity, int PossessionQuantity);
+
+	#endregion
+}
