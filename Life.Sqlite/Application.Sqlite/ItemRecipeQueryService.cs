@@ -33,13 +33,15 @@ public class ItemRecipeQueryService(IConfiguration configuration) : IItemRecipeQ
 		using IDbConnection connection = ConnectionFactory.Create();
 		connection.Open();
 
-		RecipeRecord record;
+		string rItemRecipeId;
 		ItemSummaryData item;
+		int quantity;
 		{
 			const string sql = @"SELECT
 	  irc.item_recipe_id
 	, ite.item_id
 	, inm.item_name
+	, irc.quantity
 FROM
 	item_recipes irc
 	INNER JOIN items ite
@@ -56,9 +58,11 @@ WHERE
 				language_code = _languageCode,
 			};
 
-			record = connection.QuerySingle<RecipeRecord>(sql, param);
+			RecipeRecord record = connection.QuerySingle<RecipeRecord>(sql, param);
 
+			rItemRecipeId = record.ItemRecipeId;
 			item = new ItemSummaryData(record.ItemId, record.ItemName);
+			quantity = (int)record.Quantity;
 		}
 
 		List<ItemRecipeIngredientData> ingredients = [];
@@ -92,16 +96,16 @@ ORDER BY
 				ItemRecipeIngredientData ingredient;
 				{
 					ItemSummaryData ingredientItem = new(source.ItemId, source.ItemName);
-					int quantity = (int)source.Quantity;
+					int ingredientQuantity = (int)source.Quantity;
 
-					ingredient = new ItemRecipeIngredientData(ingredientItem, quantity);
+					ingredient = new ItemRecipeIngredientData(ingredientItem, ingredientQuantity);
 				}
 
 				ingredients.Add(ingredient);
 			}
 		}
 
-		ItemRecipeData result = new(record.ItemRecipeId, item, ingredients);
+		ItemRecipeData result = new(rItemRecipeId, item, quantity, ingredients);
 
 		return result;
 	}
@@ -126,7 +130,8 @@ ORDER BY
 	/// <param name="ItemRecipeId">レシピID</param>
 	/// <param name="ItemId">アイテムID</param>
 	/// <param name="ItemName">アイテム名</param>
-	private record class RecipeRecord(string ItemRecipeId, string ItemId, string ItemName);
+	/// <param name="Quantity">数量</param>
+	private record class RecipeRecord(string ItemRecipeId, string ItemId, string ItemName, long Quantity);
 
 	/// <summary>
 	/// 材料のレコード

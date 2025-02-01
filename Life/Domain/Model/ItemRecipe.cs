@@ -5,8 +5,9 @@
 /// </summary>
 /// <param name="itemRecipeId">アイテムレシピID</param>
 /// <param name="itemId">アイテムID</param>
+/// <param name="quantity">数量</param>
 /// <param name="ingredients">材料のコレクション</param>
-public class ItemRecipe(ItemRecipeId itemRecipeId, ItemId itemId, IReadOnlyCollection<ItemRecipeIngredient> ingredients) : IEquatable<ItemRecipe>
+public class ItemRecipe(ItemRecipeId itemRecipeId, ItemId itemId, Quantity quantity, IReadOnlyCollection<ItemRecipeIngredient> ingredients) : IEquatable<ItemRecipe>
 {
     #region Properties
 
@@ -19,6 +20,11 @@ public class ItemRecipe(ItemRecipeId itemRecipeId, ItemId itemId, IReadOnlyColle
     /// アイテムIDを取得します。
     /// </summary>
     public ItemId ItemId { get; } = itemId;
+
+    /// <summary>
+    /// 数量を取得します。
+    /// </summary>
+    public Quantity Quantity { get; } = quantity;
 
     /// <summary>
     /// 材料のコレクションを取得します。
@@ -107,7 +113,7 @@ public class ItemRecipe(ItemRecipeId itemRecipeId, ItemId itemId, IReadOnlyColle
     /// <returns>現在のオブジェクトを表す文字列。</returns>
     public override string ToString()
     {
-        string str = $"{nameof(ItemRecipe)} {{ {nameof(ItemRecipeId)} = {ItemRecipeId}, {nameof(ItemId)} = {ItemId}, {nameof(Ingredients)} = {Ingredients} }}";
+        string str = $"{nameof(ItemRecipe)} {{ {nameof(ItemRecipeId)} = {ItemRecipeId}, {nameof(ItemId)} = {ItemId}, {nameof(Quantity)} = {Quantity}, {nameof(Ingredients)} = {Ingredients} }}";
 
         return str;
     }

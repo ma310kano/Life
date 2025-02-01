@@ -24,6 +24,7 @@ public class ItemRecipeRepository(IDbConnection connection, IDbTransaction trans
 			const string sql = @"SELECT
 	  item_recipe_id
 	, item_id
+	, quantity
 FROM
 	item_recipes
 WHERE
@@ -61,6 +62,7 @@ ORDER BY
 		{
 			ItemRecipeId rItemRecipeId = new(recipe.ItemRecipeId);
 			ItemId rItemId = new(recipe.ItemId);
+			Quantity rQuantity = new((int)recipe.Quantity);
 
 			List<ItemRecipeIngredient> rIngredients = [];
 			foreach (ItemRecipeIngredientRecord recipeIngredient in recipeIngredients)
@@ -68,15 +70,15 @@ ORDER BY
 				ItemRecipeIngredient rIngredient;
 				{
 					ItemId rIngredientItemId = new(recipeIngredient.ItemId);
-					Quantity rQuantity = new((int)recipeIngredient.Quantity);
+					Quantity rIngredientQuantity = new((int)recipeIngredient.Quantity);
 
-					rIngredient = new ItemRecipeIngredient(rIngredientItemId, rQuantity);
+					rIngredient = new ItemRecipeIngredient(rIngredientItemId, rIngredientQuantity);
 				}
 
 				rIngredients.Add(rIngredient);
 			}
 
-			result = new ItemRecipe(rItemRecipeId, rItemId, rIngredients);
+			result = new ItemRecipe(rItemRecipeId, rItemId, rQuantity, rIngredients);
 		}
 
 		return result;
@@ -91,7 +93,8 @@ ORDER BY
 	/// </summary>
 	/// <param name="ItemRecipeId">アイテムレシピID</param>
 	/// <param name="ItemId">アイテムID</param>
-	private record class ItemRecipeRecord(string ItemRecipeId, string ItemId);
+	/// <param name="Quantity">数量</param>
+	private record class ItemRecipeRecord(string ItemRecipeId, string ItemId, long Quantity);
 
 	/// <summary>
 	/// アイテムレシピの材料レコード

@@ -44,7 +44,7 @@ public class HumanItemMakingService(IHumanContextFactory contextFactory) : IHuma
 
 			HumanInventorySlot productSlot = context.InventorySlotRepository.FindOrDefault(humanId, itemRecipe.ItemId) ?? context.InventorySlotFactory.Create(humanId, itemRecipe.ItemId);
 
-			productSlot.AddQuantity(1);
+			productSlot.AddQuantity(itemRecipe.Quantity.Value);
 
 			context.InventorySlotRepository.Save(productSlot);
 
