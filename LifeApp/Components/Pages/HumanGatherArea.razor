@@ -130,7 +130,7 @@
 		{
 			HumanGatheringCommand command;
 			{
-				List<string> itemIds = Items.Select(x => x.ItemId).ToList();
+				List<string> itemIds = Items.Where(x => x.IsSubject).Select(x => x.ItemId).ToList();
 
 				command = new HumanGatheringCommand(HumanId, itemIds);
 			}
