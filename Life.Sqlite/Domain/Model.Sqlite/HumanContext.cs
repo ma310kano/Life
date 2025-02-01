@@ -41,6 +41,11 @@ public class HumanContext : IHumanContext
 	private IBuildingRecipeRepository? _buildingRecipeRepository;
 
 	/// <summary>
+	/// アイテムレシピのリポジトリー
+	/// </summary>
+	private IItemRecipeRepository? _itemRecipeRepository;
+
+	/// <summary>
 	/// エリアの建造物のリポジトリー
 	/// </summary>
 	private IAreaBuildingRepository? _areaBuildingRepository;
@@ -88,6 +93,11 @@ public class HumanContext : IHumanContext
 	/// 建造物レシピのリポジトリーを取得します。
 	/// </summary>
 	public IBuildingRecipeRepository BuildingRecipeRepository => _buildingRecipeRepository ??= new BuildingRecipeRepository(_connection, _transaction);
+
+	/// <summary>
+	/// アイテムレシピのリポジトリーを取得します。
+	/// </summary>
+	public IItemRecipeRepository ItemRecipeRepository => _itemRecipeRepository ??= new ItemRecipeRepository(_connection, _transaction);
 
 	/// <summary>
 	/// エリアの建造物のリポジトリーを取得します。

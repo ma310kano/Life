@@ -28,6 +28,11 @@ public interface IHumanContext : IDisposable
 	IBuildingRecipeRepository BuildingRecipeRepository { get; }
 
 	/// <summary>
+	/// アイテムレシピのリポジトリーを取得します。
+	/// </summary>
+	IItemRecipeRepository ItemRecipeRepository { get; }
+
+	/// <summary>
 	/// エリアの建造物のリポジトリーを取得します。
 	/// </summary>
 	IAreaBuildingRepository AreaBuildingRepository { get; }

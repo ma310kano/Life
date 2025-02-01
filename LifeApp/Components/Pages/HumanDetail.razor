@@ -81,6 +81,25 @@
 		</tbody>
 	</table>
 
+	<h2 class="mt-4">レシピ(アイテム)</h2>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>アイテムレシピID</th>
+				<th>アイテム名</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (ItemRecipeSummaryData itemRecipe in _human.ItemRecipes)
+			{
+				<tr>
+					<td class="id">@itemRecipe.ItemRecipeId</td>
+					<td><a href="/humans/@_human.HumanId/item-recipes/@itemRecipe.ItemRecipeId">@itemRecipe.ItemName</a></td>
+				</tr>
+			}
+		</tbody>
+	</table>
+
 	<h2 class="mt-4">インベントリー</h2>
 	<table class="table">
 		<thead>

@@ -1,0 +1,134 @@
+﻿@page "/humans/{HumanId}/item-recipes/{ItemRecipeId}"
+
+@using Life.Application
+@using Life.Application.Command
+@using Life.Application.Data
+
+@inject NavigationManager NavigationManager
+@inject IHumanQueryService HumanQueryService
+@inject IItemRecipeQueryService ItemRecipeQueryService
+@inject IHumanItemMakingService HumanItemMakingService
+
+@if (_human is not null && _itemRecipe is not null && _rows is not null)
+{
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">ホーム</a></li>
+			<li class="breadcrumb-item"><a href="/humans">人間</a></li>
+			<li class="breadcrumb-item"><a href="/humans/@_human.HumanId">@_human.FirstName @_human.Family.FamilyName</a></li>
+			<li class="breadcrumb-item active" aria-current="page">@(_itemRecipe.Item.ItemName)を作成</li>
+		</ol>
+	</nav>
+
+	<h1>@(_itemRecipe.Item.ItemName)を作成</h1>
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>アイテム</th>
+				<th>必要数 / 所持数</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (ItemRow row in _rows)
+			{
+				<tr>
+					<td class="id">@row.ItemName</td>
+					<td>@row.RequiredQuantity.ToString("#,0") / @row.PossessionQuantity.ToString("#,0")</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+
+	<button type="button" class="btn btn-primary" disabled="@_disabled" @onclick="MakeAsync">作成</button>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// 人間
+	/// </summary>
+	private HumanData? _human;
+
+	/// <summary>
+	/// アイテムレシピ
+	/// </summary>
+	private ItemRecipeData? _itemRecipe;
+
+	/// <summary>
+	/// 行のコレクション
+	/// </summary>
+	private IEnumerable<ItemRow>? _rows;
+
+	/// <summary>
+	/// 無効
+	/// </summary>
+	private string? _disabled;
+
+	#endregion
+
+	#region Properties
+
+	/// <summary>
+	/// 人間IDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string HumanId { get; set; } = string.Empty;
+
+	/// <summary>
+	/// アイテムレシピIDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string ItemRecipeId { get; set; } = string.Empty;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		_human = await HumanQueryService.QuerySingleAsync(HumanId);
+		_itemRecipe = await ItemRecipeQueryService.QuerySingleAsync(ItemRecipeId);
+
+		_rows =
+			from ing in _itemRecipe.Ingredients
+			join his in _human.InventorySlots
+			on ing.Item.ItemId equals his.Item.ItemId into hisJoin
+			from hij in hisJoin.DefaultIfEmpty()
+			select new ItemRow(ing.Item.ItemName, ing.Quantity, hij?.Quantity ?? 0);
+
+		_disabled = _rows.Any(row => row.RequiredQuantity > row.PossessionQuantity) ? "disabled" : null;
+	}
+
+	/// <summary>
+	/// 作成します。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	private async Task MakeAsync()
+	{
+		HumanItemMakingCommand command = new(_human!.HumanId, _itemRecipe!.ItemRecipeId);
+
+		await HumanItemMakingService.MakeAsync(command);
+
+		NavigationManager.NavigateTo($"/humans/{_human.HumanId}");
+	}
+
+	#endregion
+
+	#region Nested types
+
+	/// <summary>
+	/// アイテム行
+	/// </summary>
+	/// <param name="ItemName">アイテム名</param>
+	/// <param name="RequiredQuantity">必要数</param>
+	/// <param name="PossessionQuantity">所持数</param>
+	private record class ItemRow(string ItemName, int RequiredQuantity, int PossessionQuantity);
+
+	#endregion
+}
