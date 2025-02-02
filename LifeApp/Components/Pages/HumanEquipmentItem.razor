@@ -1,0 +1,84 @@
+﻿@page "/humans/{HumanId}/equipment-items/{ItemId}"
+
+@using Life.Application
+@using Life.Application.Command
+@using Life.Application.Data
+
+@inject NavigationManager NavigationManager
+@inject IHumanQueryService HumanQueryService
+@inject IHumanEquipmentRemovalService HumanEquipmentRemovalService
+
+@if (_human is not null && _item is not null)
+{
+	<h1>@_item.ItemName</h1>
+
+	<table class="table">
+		<tbody>
+			<tr>
+				<th>アイテム</th>
+				<td>@_item.ItemName</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<button type="button" class="btn btn-secondary" @onclick="RemoveAsync">解除</button>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// 人間
+	/// </summary>
+	private HumanData? _human;
+
+	/// <summary>
+	/// アイテム
+	/// </summary>
+	private ItemSummaryData? _item;
+
+	#endregion
+
+	#region Properties
+
+	/// <summary>
+	/// 人間IDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string HumanId { get; set; } = string.Empty;
+
+	/// <summary>
+	/// アイテムIDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string ItemId { get; set; } = string.Empty;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		_human = await HumanQueryService.QuerySingleAsync(HumanId);
+		_item = _human.EquipmentItems.Single(x => x.ItemId == ItemId);
+	}
+
+	/// <summary>
+	/// 装備を外します。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	private async Task RemoveAsync()
+	{
+		HumanEquipmentRemovalCommand command = new(_human!.HumanId, _item!.ItemId);
+
+		await HumanEquipmentRemovalService.RemoveAsync(command);
+
+		NavigationManager.NavigateTo($"/humans/{_human.HumanId}");
+	}
+
+	#endregion
+}

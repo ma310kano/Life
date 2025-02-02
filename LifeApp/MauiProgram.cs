@@ -49,6 +49,7 @@ namespace LifeApp
 			builder.Services.AddSingleton<IHumanAreaBuidingService, HumanAreaBuidingService>();
 			builder.Services.AddSingleton<IHumanItemMakingService, HumanItemMakingService>();
 			builder.Services.AddSingleton<IHumanEquipmentService, HumanEquipmentService>();
+			builder.Services.AddSingleton<IHumanEquipmentRemovalService, HumanEquipmentRemovalService>();
 			builder.Services.AddSingleton<IHumanContextFactory, HumanContextFactory>();
 			builder.Services.AddSingleton<IItemSummaryQueryService, ItemSummaryQueryService>();
 			builder.Services.AddSingleton<IItemQueryService, ItemQueryService>();
