@@ -26,6 +26,16 @@ public class HumanContext : IHumanContext
 	private IHumanRepository? _repository;
 
 	/// <summary>
+	/// 装備アイテムのファクトリー
+	/// </summary>
+	private IEquipmentItemFactory? _equipmentItemFactory;
+
+	/// <summary>
+	/// 装備アイテムのリポジトリー
+	/// </summary>
+	private IEquipmentItemRepository? _equipmentItemRepository;
+
+	/// <summary>
 	/// インベントリースロットのファクトリー
 	/// </summary>
 	private IHumanInventorySlotFactory? _inventorySlotFactory;
@@ -78,6 +88,16 @@ public class HumanContext : IHumanContext
 	/// リポジトリーを取得します。
 	/// </summary>
 	public IHumanRepository Repository => _repository ??= new HumanRepository(_connection, _transaction);
+
+	/// <summary>
+	/// 装備アイテムのファクトリーを取得します。
+	/// </summary>
+	public IEquipmentItemFactory EquipmentItemFactory => _equipmentItemFactory ??= new EquipmentItemFactory();
+
+	/// <summary>
+	/// 装備アイテムのリポジトリーを取得します。
+	/// </summary>
+	public IEquipmentItemRepository EquipmentItemRepository => _equipmentItemRepository ??= new EquipmentItemRepository(_connection, _transaction);
 
 	/// <summary>
 	/// インベントリースロットのファクトリーを取得します。

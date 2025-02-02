@@ -99,6 +99,25 @@
 		</tbody>
 	</table>
 
+	<h2 class="mt-4">装備</h2>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>アイテムID</th>
+				<th>アイテム名</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (ItemSummaryData item in _human.EquipmentItems)
+			{
+				<tr>
+					<td class="id">@item.ItemId</td>
+					<td>@item.ItemName</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+
 	<h2 class="mt-4">インベントリー</h2>
 	<table class="table">
 		<thead>
@@ -113,7 +132,7 @@
 			{
 				<tr>
 					<td class="id">@inventorySlot.Item.ItemId</td>
-					<td><a href="/items/@inventorySlot.Item.ItemId">@inventorySlot.Item.ItemName</a></td>
+					<td><a href="/humans/@_human.HumanId/inventory-slots/@inventorySlot.Item.ItemId">@inventorySlot.Item.ItemName</a></td>
 					<td>@inventorySlot.Quantity</td>
 				</tr>
 			}

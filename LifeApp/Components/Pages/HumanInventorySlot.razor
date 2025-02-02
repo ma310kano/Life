@@ -1,0 +1,86 @@
+﻿@page "/humans/{HumanId}/inventory-slots/{ItemId}"
+
+@using Life.Application
+@using Life.Application.Command
+@using Life.Application.Data
+
+@inject NavigationManager NavigationManager
+@inject IHumanQueryService HumanQueryService
+@inject IHumanEquipmentService HumanEquipmentService
+
+@if (_human is not null && _inventorySlot is not null)
+{
+	<h1>@_inventorySlot.Item.ItemName</h1>
+	<table class="table">
+		<tbody>
+			<tr>
+				<th>アイテム</th>
+				<td>@_inventorySlot.Item.ItemName</td>
+			</tr>
+			<tr>
+				<th>数量</th>
+				<td>@_inventorySlot.Quantity.ToString("#,0")</td>
+			</tr>
+		</tbody>
+	</table>
+	<button type="button" class="btn btn-secondary" @onclick="EquipAsync">装備</button>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// 人間
+	/// </summary>
+	private HumanData? _human;
+
+	/// <summary>
+	/// インベントリースロット
+	/// </summary>
+	private InventorySlotData? _inventorySlot;
+
+	#endregion
+
+	#region Properties
+
+	/// <summary>
+	/// 人間IDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string HumanId { get; set; } = string.Empty;
+
+	/// <summary>
+	/// アイテムIDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string ItemId { get; set; } = string.Empty;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		_human = await HumanQueryService.QuerySingleAsync(HumanId);
+		_inventorySlot = _human.InventorySlots.Single(x => x.Item.ItemId == ItemId);
+	}
+
+	/// <summary>
+	/// 装備します。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	private async Task EquipAsync()
+	{
+		HumanEquipmentCommand command = new(_human!.HumanId, _inventorySlot!.Item.ItemId);
+
+		await HumanEquipmentService.EquipAsync(command);
+
+		NavigationManager.NavigateTo($"humans/{_human.HumanId}");
+	}
+
+	#endregion
+}

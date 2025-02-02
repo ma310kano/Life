@@ -13,6 +13,16 @@ public interface IHumanContext : IDisposable
 	IHumanRepository Repository { get; }
 
 	/// <summary>
+	/// 装備アイテムのファクトリーを取得します。
+	/// </summary>
+	IEquipmentItemFactory EquipmentItemFactory { get; }
+
+	/// <summary>
+	/// 装備アイテムのリポジトリーを取得します。
+	/// </summary>
+	IEquipmentItemRepository EquipmentItemRepository { get; }
+
+	/// <summary>
 	/// インベントリースロットのファクトリーを取得します。
 	/// </summary>
 	IHumanInventorySlotFactory InventorySlotFactory { get; }

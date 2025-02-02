@@ -138,6 +138,33 @@ ORDER BY
 			itemRecipes = connection.Query<ItemRecipeSummaryData>(sql, param).ToList();
 		}
 
+		List<ItemSummaryData> equipmentItems = [];
+		{
+			const string sql = @"SELECT
+	  hei.item_id
+	, inm.item_name
+FROM
+	human_equipment_items hei
+	INNER JOIN items ite
+		ON hei.item_id = ite.item_id
+	INNER JOIN item_names inm
+		ON  ite.item_id= inm.item_id
+		AND inm.language_code = :language_code
+WHERE
+	hei.human_id = :human_id
+ORDER BY
+	  hei.human_id
+	, hei.item_id";
+
+			var param = new
+			{
+				human_id = humanId,
+				language_code = _languageCode,
+			};
+
+			equipmentItems = connection.Query<ItemSummaryData>(sql, param).ToList();
+		}
+
 		List<InventorySlotData> inventorySlots = [];
 		{
 			const string sql = @"SELECT
@@ -179,7 +206,7 @@ ORDER BY
 			}
 		}
 
-		HumanData result = new(record.HumanId, record.FirstName, family, area, buildingRecipes, itemRecipes, inventorySlots);
+		HumanData result = new(record.HumanId, record.FirstName, family, area, buildingRecipes, itemRecipes, equipmentItems, inventorySlots);
 
 		return result;
 	}
