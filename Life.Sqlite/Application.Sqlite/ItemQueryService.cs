@@ -36,6 +36,7 @@ public class ItemQueryService(IConfiguration configuration) : IItemQueryService
 		const string sql = @"SELECT
 	  ite.item_id
 	, inm.item_name
+	, ite.can_equip
 FROM
 	items ite
 	INNER JOIN item_names inm
@@ -50,7 +51,14 @@ WHERE
 			language_code = _languageCode,
 		};
 
-		ItemData result = connection.QuerySingle<ItemData>(sql, param);
+		ItemRecord source = connection.QuerySingle<ItemRecord>(sql, param);
+
+		ItemData result;
+		{
+			bool canEquip = source.CanEquip == "1";
+
+			result = new ItemData(source.ItemId, source.ItemName, canEquip);
+		}
 
 		return result;
 	}
@@ -64,6 +72,18 @@ WHERE
 	{
 		return await Task.Run(() => QuerySingle(itemId));
 	}
+
+	#endregion
+
+	#region Nested types
+
+	/// <summary>
+	/// アイテムのレコード
+	/// </summary>
+	/// <param name="ItemId">アイテムID</param>
+	/// <param name="ItemName">アイテム名</param>
+	/// <param name="CanEquip">装備できるか</param>
+	private record class ItemRecord(string ItemId, string ItemName, string CanEquip);
 
 	#endregion
 }

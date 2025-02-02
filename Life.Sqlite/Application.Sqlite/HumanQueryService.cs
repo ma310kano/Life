@@ -170,6 +170,7 @@ ORDER BY
 			const string sql = @"SELECT
 	  his.item_id
 	, inm.item_name
+	, ite.can_equip
 	, his.quantity
 FROM
 	human_inventory_slots his
@@ -196,7 +197,13 @@ ORDER BY
 			{
 				InventorySlotData inventorySlot;
 				{
-					ItemSummaryData item = new(source.ItemId, source.ItemName);
+					ItemData item;
+					{
+						bool canEquip = source.CanEquip == "1";
+
+						item = new ItemData(source.ItemId, source.ItemName, canEquip);
+					}
+
 					int quantity = (int)source.Quantity;
 
 					inventorySlot = new InventorySlotData(item, quantity);
@@ -239,8 +246,9 @@ ORDER BY
 	/// </summary>
 	/// <param name="ItemId">アイテムID</param>
 	/// <param name="ItemName">アイテム名</param>
+	/// <param name="CanEquip">装備できるか</param>
 	/// <param name="Quantity">数量</param>
-	private record class InventorySlotRecord(string ItemId, string ItemName, long Quantity);
+	private record class InventorySlotRecord(string ItemId, string ItemName, string CanEquip, long Quantity);
 
 	#endregion
 }

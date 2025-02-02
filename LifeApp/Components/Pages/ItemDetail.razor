@@ -28,6 +28,10 @@
 				<th>アイテム名</th>
 				<td>@_item.ItemName</td>
 			</tr>
+			<tr>
+				<th>装備</th>
+				<td>@(_item.CanEquip ? "可" : "不可")</td>
+			</tr>
 		</tbody>
 	</table>
 }

@@ -23,7 +23,7 @@
 			</tr>
 		</tbody>
 	</table>
-	<button type="button" class="btn btn-secondary" @onclick="EquipAsync">装備</button>
+	<button type="button" class="btn btn-secondary" disabled="@(!_inventorySlot.Item.CanEquip ? "disabled" : null)" @onclick="EquipAsync">装備</button>
 }
 
 @code {
