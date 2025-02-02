@@ -13,6 +13,16 @@ public interface IHumanContext : IDisposable
 	IHumanRepository Repository { get; }
 
 	/// <summary>
+	/// 建造物レシピのリポジトリーを取得します。
+	/// </summary>
+	IBuildingRecipeRepository BuildingRecipeRepository { get; }
+
+	/// <summary>
+	/// アイテムレシピのリポジトリーを取得します。
+	/// </summary>
+	IItemRecipeRepository ItemRecipeRepository { get; }
+
+	/// <summary>
 	/// 装備アイテムのファクトリーを取得します。
 	/// </summary>
 	IEquipmentItemFactory EquipmentItemFactory { get; }
@@ -31,16 +41,6 @@ public interface IHumanContext : IDisposable
 	/// インベントリースロットのリポジトリーを取得します。
 	/// </summary>
 	IHumanInventorySlotRepository InventorySlotRepository { get; }
-
-	/// <summary>
-	/// 建造物レシピのリポジトリーを取得します。
-	/// </summary>
-	IBuildingRecipeRepository BuildingRecipeRepository { get; }
-
-	/// <summary>
-	/// アイテムレシピのリポジトリーを取得します。
-	/// </summary>
-	IItemRecipeRepository ItemRecipeRepository { get; }
 
 	/// <summary>
 	/// エリアの建造物のリポジトリーを取得します。

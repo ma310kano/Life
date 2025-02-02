@@ -26,6 +26,16 @@ public class HumanContext : IHumanContext
 	private IHumanRepository? _repository;
 
 	/// <summary>
+	/// 建造物レシピのリポジトリー
+	/// </summary>
+	private IBuildingRecipeRepository? _buildingRecipeRepository;
+
+	/// <summary>
+	/// アイテムレシピのリポジトリー
+	/// </summary>
+	private IItemRecipeRepository? _itemRecipeRepository;
+
+	/// <summary>
 	/// 装備アイテムのファクトリー
 	/// </summary>
 	private IEquipmentItemFactory? _equipmentItemFactory;
@@ -44,16 +54,6 @@ public class HumanContext : IHumanContext
 	/// インベントリースロットのリポジトリー
 	/// </summary>
 	private IHumanInventorySlotRepository? _inventorySlotRepository;
-
-	/// <summary>
-	/// 建造物レシピのリポジトリー
-	/// </summary>
-	private IBuildingRecipeRepository? _buildingRecipeRepository;
-
-	/// <summary>
-	/// アイテムレシピのリポジトリー
-	/// </summary>
-	private IItemRecipeRepository? _itemRecipeRepository;
 
 	/// <summary>
 	/// エリアの建造物のリポジトリー
@@ -90,6 +90,16 @@ public class HumanContext : IHumanContext
 	public IHumanRepository Repository => _repository ??= new HumanRepository(_connection, _transaction);
 
 	/// <summary>
+	/// 建造物レシピのリポジトリーを取得します。
+	/// </summary>
+	public IBuildingRecipeRepository BuildingRecipeRepository => _buildingRecipeRepository ??= new BuildingRecipeRepository(_connection, _transaction);
+
+	/// <summary>
+	/// アイテムレシピのリポジトリーを取得します。
+	/// </summary>
+	public IItemRecipeRepository ItemRecipeRepository => _itemRecipeRepository ??= new ItemRecipeRepository(_connection, _transaction);
+
+	/// <summary>
 	/// 装備アイテムのファクトリーを取得します。
 	/// </summary>
 	public IEquipmentItemFactory EquipmentItemFactory => _equipmentItemFactory ??= new EquipmentItemFactory();
@@ -108,16 +118,6 @@ public class HumanContext : IHumanContext
 	/// インベントリースロットのリポジトリーを取得します。
 	/// </summary>
 	public IHumanInventorySlotRepository InventorySlotRepository => _inventorySlotRepository ??= new HumanInventorySlotRepository(_connection, _transaction);
-
-	/// <summary>
-	/// 建造物レシピのリポジトリーを取得します。
-	/// </summary>
-	public IBuildingRecipeRepository BuildingRecipeRepository => _buildingRecipeRepository ??= new BuildingRecipeRepository(_connection, _transaction);
-
-	/// <summary>
-	/// アイテムレシピのリポジトリーを取得します。
-	/// </summary>
-	public IItemRecipeRepository ItemRecipeRepository => _itemRecipeRepository ??= new ItemRecipeRepository(_connection, _transaction);
 
 	/// <summary>
 	/// エリアの建造物のリポジトリーを取得します。
