@@ -29,7 +29,7 @@
 		@foreach (ItemModel item in _model.Items)
 		{
 			<div class="form-check">
-				<InputCheckbox class="form-check-input" id="@item.ItemId" @bind-Value="@item.IsSubject" />
+				<InputCheckbox class="form-check-input" id="@item.ItemId" disabled="@(item.IsValid ? null : "disabled")" @bind-Value="@item.IsSubject" />
 				<label class="form-check-label" for="@item.ItemId">@item.ItemName</label>
 			</div>
 		}
@@ -74,9 +74,21 @@
 
 		{
 			AreaData area = await AreaQueryService.QuerySingleAsync(_human.Area.AreaId);
-			List<ItemModel> items = area.Items.Select(x => new ItemModel(x.ItemId, x.ItemName)).ToList();
 
-			_model = new GatheringModel(HumanId, items);
+			List<ItemModel> itemModels = [];
+			foreach (ItemSummaryData source in area.Items)
+			{
+				ItemModel itemModel;
+				{
+					bool isValid = _human.GatheringItems.Any(x => x.ItemId == source.ItemId);
+
+					itemModel = new ItemModel(source.ItemId, source.ItemName, isValid);
+				}
+
+				itemModels.Add(itemModel);
+			}
+
+			_model = new GatheringModel(HumanId, itemModels);
 		}
 	}
 
@@ -146,7 +158,8 @@
 	/// </summary>
 	/// <param name="itemId">アイテムID</param>
 	/// <param name="itemName">アイテム名</param>
-	private class ItemModel(string itemId, string itemName)
+	/// <param name="isValid">有効かどうか</param>
+	private class ItemModel(string itemId, string itemName, bool isValid)
 	{
 		#region Properties
 
@@ -159,6 +172,11 @@
 		/// アイテム名を取得します。
 		/// </summary>
 		public string ItemName { get; } = itemName;
+
+		/// <summary>
+		/// 有効かどうかを取得します。
+		/// </summary>
+		public bool IsValid { get; } = isValid;
 
 		/// <summary>
 		/// 対象かどうかを設定または取得します。
