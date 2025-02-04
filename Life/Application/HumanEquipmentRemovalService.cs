@@ -24,12 +24,19 @@ public class HumanEquipmentRemovalService(IHumanContextFactory contextFactory) :
 
 		try
 		{
+			// Equipment item
 			{
 				EquipmentItem equipmentItem = context.EquipmentItemRepository.Find(humanId, itemId);
 
 				context.EquipmentItemRepository.Delete(equipmentItem);
 			}
 
+			// Gthering item
+			{
+				context.GatheringItemRepository.Remove(humanId, itemId);
+			}
+
+			// Inventory slot
 			{
 				HumanInventorySlot inventorySlot = context.InventorySlotRepository.FindOrDefault(humanId, itemId) ?? context.InventorySlotFactory.Create(humanId, itemId);
 

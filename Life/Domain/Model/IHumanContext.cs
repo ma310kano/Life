@@ -13,6 +13,11 @@ public interface IHumanContext : IDisposable
 	IHumanRepository Repository { get; }
 
 	/// <summary>
+	/// 採集アイテムのリポジトリーを取得します。
+	/// </summary>
+	IHumanGatheringItemRepository GatheringItemRepository { get; }
+
+	/// <summary>
 	/// 建造物レシピのリポジトリーを取得します。
 	/// </summary>
 	IBuildingRecipeRepository BuildingRecipeRepository { get; }
