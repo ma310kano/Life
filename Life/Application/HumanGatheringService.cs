@@ -23,14 +23,14 @@ public class HumanGatheringService(IHumanContextFactory contextFactory) : IHuman
 
 		try
 		{
-			foreach (string source in command.ItemIds)
+			foreach (HumanGatheringItemCommand source in command.Items)
 			{
-				ItemId itemId = new(source);
+				ItemId itemId = new(source.ItemId);
 
 				HumanInventorySlot? inventorySlot = context.InventorySlotRepository.FindOrDefault(humanId, itemId);
 				inventorySlot ??= context.InventorySlotFactory.Create(humanId, itemId);
 
-				inventorySlot.AddQuantity(1);
+				inventorySlot.AddQuantity(source.Quantity);
 
 				context.InventorySlotRepository.Save(inventorySlot);
 			}
