@@ -10,6 +10,16 @@
 
 @if (_human is not null && _item is not null)
 {
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">ホーム</a></li>
+			<li class="breadcrumb-item"><a href="/humans">人間</a></li>
+			<li class="breadcrumb-item"><a href="/humans/@_human.HumanId">@_human.FirstName @_human.Family.FamilyName</a></li>
+			<li class="breadcrumb-item">装備</li>
+			<li class="breadcrumb-item active" aria-current="page">@_item.ItemName</li>
+		</ol>
+	</nav>
+
 	<h1>@_item.ItemName</h1>
 
 	<table class="table">
