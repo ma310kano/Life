@@ -32,6 +32,10 @@
 				<th>数量</th>
 				<td>@_itemRecipe.Quantity.ToString("#,0")</td>
 			</tr>
+			<tr>
+				<th>建造物</th>
+				<td>@(_itemRecipe.Building?.BuildingName ?? string.Empty)</td>
+			</tr>
 		</tbody>
 	</table>
 

@@ -26,6 +26,13 @@ public class HumanItemMakingService(IHumanContextFactory contextFactory) : IHuma
 		{
 			ItemRecipe itemRecipe = context.ItemRecipeRepository.Find(itemRecipeId);
 
+			if (itemRecipe.BuildingId is not null)
+			{
+				Human human = context.Repository.Find(humanId);
+				bool existsBuilding = context.AreaBuildingRepository.Exists(human.AreaId, itemRecipe.BuildingId);
+				if (!existsBuilding) throw new InvalidOperationException($"エリア {human.AreaId} に建造物 {itemRecipe.BuildingId} がありません。");
+			}
+
 			foreach (ItemRecipeIngredient ingredient in itemRecipe.Ingredients)
 			{
 				HumanInventorySlot ingredientSlot = context.InventorySlotRepository.FindOrDefault(humanId, ingredient.ItemId) ?? throw new InvalidOperationException("アイテムが見つかりません。");

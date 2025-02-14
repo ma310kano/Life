@@ -25,6 +25,7 @@ public class ItemRecipeRepository(IDbConnection connection, IDbTransaction trans
 	  item_recipe_id
 	, item_id
 	, quantity
+	, building_id
 FROM
 	item_recipes
 WHERE
@@ -63,6 +64,7 @@ ORDER BY
 			ItemRecipeId rItemRecipeId = new(recipe.ItemRecipeId);
 			ItemId rItemId = new(recipe.ItemId);
 			Quantity rQuantity = new((int)recipe.Quantity);
+			BuildingId? rBuildingId = recipe.BuildingId is not null ? new(recipe.BuildingId) : null;
 
 			List<ItemRecipeIngredient> rIngredients = [];
 			foreach (ItemRecipeIngredientRecord recipeIngredient in recipeIngredients)
@@ -78,7 +80,7 @@ ORDER BY
 				rIngredients.Add(rIngredient);
 			}
 
-			result = new ItemRecipe(rItemRecipeId, rItemId, rQuantity, rIngredients);
+			result = new ItemRecipe(rItemRecipeId, rItemId, rQuantity, rBuildingId, rIngredients);
 		}
 
 		return result;
@@ -94,7 +96,8 @@ ORDER BY
 	/// <param name="ItemRecipeId">アイテムレシピID</param>
 	/// <param name="ItemId">アイテムID</param>
 	/// <param name="Quantity">数量</param>
-	private record class ItemRecipeRecord(string ItemRecipeId, string ItemId, long Quantity);
+	/// <param name="BuildingId">建造物ID</param>
+	private record class ItemRecipeRecord(string ItemRecipeId, string ItemId, long Quantity, string? BuildingId);
 
 	/// <summary>
 	/// アイテムレシピの材料レコード

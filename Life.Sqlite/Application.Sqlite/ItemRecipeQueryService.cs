@@ -36,12 +36,15 @@ public class ItemRecipeQueryService(IConfiguration configuration) : IItemRecipeQ
 		string rItemRecipeId;
 		ItemSummaryData item;
 		int quantity;
+		BuildingSummaryData? building;
 		{
 			const string sql = @"SELECT
 	  irc.item_recipe_id
 	, ite.item_id
 	, inm.item_name
 	, irc.quantity
+	, irc.building_id
+	, bnm.building_name
 FROM
 	item_recipes irc
 	INNER JOIN items ite
@@ -49,6 +52,9 @@ FROM
 	INNER JOIN item_names inm
 		ON  ite.item_id = inm.item_id
 		AND inm.language_code = :language_code
+	LEFT JOIN building_names bnm
+		ON  irc.building_id = bnm.building_id
+		AND bnm.language_code = :language_code
 WHERE
 	irc.item_recipe_id = :item_recipe_id";
 
@@ -63,6 +69,7 @@ WHERE
 			rItemRecipeId = record.ItemRecipeId;
 			item = new ItemSummaryData(record.ItemId, record.ItemName);
 			quantity = (int)record.Quantity;
+			building = record.BuildingId is not null ? new BuildingSummaryData(record.BuildingId, record.BuildingName) : null;
 		}
 
 		List<ItemRecipeIngredientData> ingredients = [];
@@ -105,7 +112,7 @@ ORDER BY
 			}
 		}
 
-		ItemRecipeData result = new(rItemRecipeId, item, quantity, ingredients);
+		ItemRecipeData result = new(rItemRecipeId, item, quantity, building, ingredients);
 
 		return result;
 	}
@@ -131,7 +138,9 @@ ORDER BY
 	/// <param name="ItemId">アイテムID</param>
 	/// <param name="ItemName">アイテム名</param>
 	/// <param name="Quantity">数量</param>
-	private record class RecipeRecord(string ItemRecipeId, string ItemId, string ItemName, long Quantity);
+	/// <param name="BuildingId">建造物ID</param>
+	/// <param name="BuildingName">建造物名</param>
+	private record class RecipeRecord(string ItemRecipeId, string ItemId, string ItemName, long Quantity, string? BuildingId, string? BuildingName);
 
 	/// <summary>
 	/// 材料のレコード
