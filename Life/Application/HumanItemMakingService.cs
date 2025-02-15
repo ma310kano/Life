@@ -37,7 +37,9 @@ public class HumanItemMakingService(IHumanContextFactory contextFactory) : IHuma
 			{
 				HumanInventorySlot ingredientSlot = context.InventorySlotRepository.FindOrDefault(humanId, ingredient.ItemId) ?? throw new InvalidOperationException("アイテムが見つかりません。");
 
-				ingredientSlot.SubtractQuantity(ingredient.Quantity.Value);
+				int subtrahend = ingredient.Quantity.Value * command.Frequencty;
+
+				ingredientSlot.SubtractQuantity(subtrahend);
 
 				if (ingredientSlot.Quantity.Value > 0)
 				{
@@ -51,7 +53,9 @@ public class HumanItemMakingService(IHumanContextFactory contextFactory) : IHuma
 
 			HumanInventorySlot productSlot = context.InventorySlotRepository.FindOrDefault(humanId, itemRecipe.ItemId) ?? context.InventorySlotFactory.Create(humanId, itemRecipe.ItemId);
 
-			productSlot.AddQuantity(itemRecipe.Quantity.Value);
+			int addend = itemRecipe.Quantity.Value * command.Frequencty;
+
+			productSlot.AddQuantity(addend);
 
 			context.InventorySlotRepository.Save(productSlot);
 

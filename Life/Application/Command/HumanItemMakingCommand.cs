@@ -5,4 +5,5 @@
 /// </summary>
 /// <param name="HumanId">人間ID</param>
 /// <param name="ItemRecipeId">アイテムレシピID</param>
-public record class HumanItemMakingCommand(string HumanId, string ItemRecipeId);
+/// <param name="Frequencty">回数</param>
+public record class HumanItemMakingCommand(string HumanId, string ItemRecipeId, int Frequencty);

@@ -9,7 +9,7 @@
 @inject IItemRecipeQueryService ItemRecipeQueryService
 @inject IHumanItemMakingService HumanItemMakingService
 
-@if (_human is not null && _itemRecipe is not null && _rows is not null)
+@if (_human is not null && _itemRecipe is not null && _model is not null)
 {
 	<nav aria-label="breadcrumb">
 		<ol class="breadcrumb">
@@ -22,34 +22,40 @@
 
 	<h1>@(_itemRecipe.Item.ItemName)を作成</h1>
 
-	<table class="table">
-		<tbody>
-			<tr>
-				<th>数量</th>
-				<td>@_itemRecipe.Quantity.ToString("#,0")</td>
-			</tr>
-		</tbody>
-	</table>
-
-	<table class="table">
-		<thead>
-			<tr>
-				<th>アイテム</th>
-				<th>必要数 / 所持数</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (ItemRow row in _rows)
-			{
+	<EditForm Model="_model" OnValidSubmit="MakeAsync">
+		<table class="table">
+			<tbody>
 				<tr>
-					<td class="id">@row.ItemName</td>
-					<td>@row.RequiredQuantity.ToString("#,0") / @row.PossessionQuantity.ToString("#,0")</td>
+					<th>回数</th>
+					<td><InputNumber class="form-control" min="1" @bind-Value="_model.Frequency" /></td>
 				</tr>
-			}
-		</tbody>
-	</table>
+				<tr>
+					<th>数量</th>
+					<td>@_model.Quantity.ToString("#,0")</td>
+				</tr>
+			</tbody>
+		</table>
 
-	<button type="button" class="btn btn-primary" disabled="@_disabled" @onclick="MakeAsync">作成</button>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>アイテム</th>
+					<th>必要数 / 所持数</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (ItemRow item in _model.Items)
+				{
+					<tr>
+						<td class="id">@item.ItemName</td>
+						<td>@item.RequiredQuantity.ToString("#,0") / @item.PossessionQuantity.ToString("#,0")</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+		<button type="submit" class="btn btn-primary" disabled="@(!_model.IsValid ? "disabled" : null)">作成</button>
+	</EditForm>
 }
 
 @code {
@@ -66,14 +72,9 @@
 	private ItemRecipeData? _itemRecipe;
 
 	/// <summary>
-	/// 行のコレクション
+	/// モデル
 	/// </summary>
-	private IEnumerable<ItemRow>? _rows;
-
-	/// <summary>
-	/// 無効
-	/// </summary>
-	private string? _disabled;
+	private ItemRecipeModel? _model;
 
 	#endregion
 
@@ -104,14 +105,7 @@
 		_human = await HumanQueryService.QuerySingleAsync(HumanId);
 		_itemRecipe = await ItemRecipeQueryService.QuerySingleAsync(ItemRecipeId);
 
-		_rows =
-			from ing in _itemRecipe.Ingredients
-			join his in _human.InventorySlots
-			on ing.Item.ItemId equals his.Item.ItemId into hisJoin
-			from hij in hisJoin.DefaultIfEmpty()
-			select new ItemRow(ing.Item.ItemName, ing.Quantity, hij?.Quantity ?? 0);
-
-		_disabled = _rows.Any(row => row.RequiredQuantity > row.PossessionQuantity) ? "disabled" : null;
+		_model = new ItemRecipeModel(_human, _itemRecipe);
 	}
 
 	/// <summary>
@@ -120,11 +114,11 @@
 	/// <returns>非同期操作を返します。</returns>
 	private async Task MakeAsync()
 	{
-		HumanItemMakingCommand command = new(_human!.HumanId, _itemRecipe!.ItemRecipeId);
+		HumanItemMakingCommand command = _model!.CreateCommand();
 
 		await HumanItemMakingService.MakeAsync(command);
 
-		NavigationManager.NavigateTo($"/humans/{_human.HumanId}");
+		NavigationManager.NavigateTo($"/humans/{_human!.HumanId}");
 	}
 
 	#endregion
@@ -132,12 +126,151 @@
 	#region Nested types
 
 	/// <summary>
+	/// アイテムレシピのモデル
+	/// </summary>
+	private class ItemRecipeModel
+	{
+		#region Fields
+
+		/// <summary>
+		/// 人間
+		/// </summary>
+		private readonly HumanData _human;
+
+		/// <summary>
+		/// アイテムレシピ
+		/// </summary>
+		private readonly ItemRecipeData _itemRecipe;
+
+		/// <summary>
+		/// 回数
+		/// </summary>
+		private int _frequency = 1;
+
+		#endregion
+
+		#region Constructors
+
+		/// <summary>
+		/// アイテムレシピのモデルを初期化します。
+		/// </summary>
+		/// <param name="human">人間</param>
+		/// <param name="itemRecipe">アイテムレシピ</param>
+		public ItemRecipeModel(HumanData human, ItemRecipeData itemRecipe)
+		{
+			_human = human;
+			_itemRecipe = itemRecipe;
+			Items =
+				(
+					from ing in _itemRecipe.Ingredients
+					join his in _human.InventorySlots
+					on ing.Item.ItemId equals his.Item.ItemId into hisJoin
+					from hij in hisJoin.DefaultIfEmpty()
+					select new ItemRow(ing.Item.ItemName, ing.Quantity, _frequency, hij?.Quantity ?? 0)
+				).ToList();
+		}
+
+		#endregion
+
+		#region Properties
+
+		/// <summary>
+		/// 回数を設定または取得します。
+		/// </summary>
+		public int Frequency
+		{
+			get
+			{
+				return _frequency;
+			}
+
+			set
+			{
+				_frequency = value;
+
+				foreach (ItemRow item in Items)
+				{
+					item.Frequency = value;
+				}
+			}
+		}
+
+		/// <summary>
+		/// 数量を取得します。
+		/// </summary>
+		public int Quantity => _itemRecipe.Quantity * _frequency;
+
+		/// <summary>
+		/// アイテムのコレクションを取得します。
+		/// </summary>
+		public IReadOnlyCollection<ItemRow> Items { get; }
+
+		/// <summary>
+		/// 有効かどうかを取得します。
+		/// </summary>
+		/// <remarks>All ではなく Any の否定を使用 (All は全件走査だが、Any は 1 件の検出で終了する)</remarks>
+		public bool IsValid => !Items.Any(x => x.RequiredQuantity > x.PossessionQuantity);
+
+		#endregion
+
+		#region Methods
+
+		/// <summary>
+		/// コマンドを作成します。
+		/// </summary>
+		/// <returns>作成したコマンドを返します。</returns>
+		public HumanItemMakingCommand CreateCommand()
+		{
+			HumanItemMakingCommand command = new(_human.HumanId, _itemRecipe.ItemRecipeId, _frequency);
+
+			return command;
+		}
+
+		#endregion
+	}
+
+	/// <summary>
 	/// アイテム行
 	/// </summary>
-	/// <param name="ItemName">アイテム名</param>
-	/// <param name="RequiredQuantity">必要数</param>
-	/// <param name="PossessionQuantity">所持数</param>
-	private record class ItemRow(string ItemName, int RequiredQuantity, int PossessionQuantity);
+	/// <param name="itemName">アイテム名</param>
+	/// <param name="requiredQuantity">必要数</param>
+	/// <param name="frequency">回数</param>
+	/// <param name="possessionQuantity">所持数</param>
+	private class ItemRow(string itemName, int requiredQuantity, int frequency, int possessionQuantity)
+	{
+		#region Fields
+
+		/// <summary>
+		/// 必要数
+		/// </summary>
+		private readonly int _requiredQuantity = requiredQuantity;
+
+		#endregion
+
+		#region Properties
+
+		/// <summary>
+		/// アイテム名を取得します。
+		/// </summary>
+		public string ItemName { get; } = itemName;
+
+		/// <summary>
+		/// 必要数を取得します。
+		/// </summary>
+		public int RequiredQuantity => _requiredQuantity * Frequency;
+
+		/// <summary>
+		/// 回数を取得します。
+		/// </summary>
+		public int Frequency { get; set; } = frequency;
+
+		/// <summary>
+		/// 所持数を取得します。
+		/// </summary>
+		public int PossessionQuantity { get; } = possessionQuantity;
+
+		#endregion
+	}
 
 	#endregion
 }
