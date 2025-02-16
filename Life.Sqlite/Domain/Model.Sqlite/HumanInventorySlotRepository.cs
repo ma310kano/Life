@@ -28,19 +28,42 @@ public class HumanInventorySlotRepository(IDbConnection connection, IDbTransacti
 	/// <param name="itemId">アイテムID</param>
 	public void Delete(HumanId humanId, ItemId itemId)
 	{
-		const string sql = @"DELETE FROM
-	human_inventory_slots
+		string[] itemMatterIds;
+		{
+			const string sql = @"SELECT
+	him.item_matter_id
+FROM
+	human_item_matters him
+	INNER JOIN item_matters imt
+		ON him.item_matter_id = imt.item_matter_id
+WHERE
+		him.human_id = :human_id
+	AND imt.item_id = :item_id";
+
+			var param = new
+			{
+				human_id = humanId.Value,
+				item_id = itemId.Value,
+			};
+
+			itemMatterIds = connection.Query<string>(sql, param, transaction).ToArray();
+		}
+
+		{
+			const string sql = @"DELETE FROM
+	human_item_matters
 WHERE
 		human_id = :human_id
-	AND item_id = :item_id";
+	AND item_matter_id IN :item_matter_ids";
 
-		var param = new
-		{
-			human_id = humanId.Value,
-			item_id = itemId.Value,
-		};
+			var param = new
+			{
+				human_id = humanId.Value,
+				item_matter_ids = itemMatterIds,
+			};
 
-		connection.Execute(sql, param, transaction);
+			connection.Execute(sql, param, transaction);
+		}
 	}
 
 	/// <summary>
@@ -52,14 +75,17 @@ WHERE
 	public HumanInventorySlot? FindOrDefault(HumanId humainId, ItemId itemId)
 	{
 		const string sql = @"SELECT
-	  human_id
-	, item_id
-	, quantity
+	  him.human_id
+	, him.item_matter_id
+	, imt.item_id
+	, imt.quantity
 FROM
-	human_inventory_slots
+	human_item_matters him
+	INNER JOIN item_matters imt
+		ON him.item_matter_id = imt.item_matter_id
 WHERE
-		human_id = :human_id
-	AND item_id = :item_id";
+		him.human_id = :human_id
+	AND imt.item_id = :item_id";
 
 		var param = new
 		{
@@ -73,10 +99,11 @@ WHERE
 		HumanInventorySlot result;
 		{
 			HumanId rHumanId = new(source.HumanId);
+			ItemMatterId rItemMatterId = new(source.ItemMatterId);
 			ItemId rItemId = new(source.ItemId);
 			Quantity rQuantity = new((int)source.Quantity);
 
-			result = new HumanInventorySlot(rHumanId, rItemId, rQuantity);
+			result = new HumanInventorySlot(rHumanId, rItemMatterId, rItemId, rQuantity);
 		}
 
 		return result;
@@ -88,35 +115,64 @@ WHERE
 	/// <param name="humanInventorySlot">人間のインベントリースロット</param>
 	public void Save(HumanInventorySlot humanInventorySlot)
 	{
-		const string sql = @"INSERT INTO
-	human_inventory_slots
+		{
+			const string sql = @"INSERT INTO
+	human_item_matters
 	(
 		  human_id
+		, item_matter_id
+	)
+	VALUES
+	(
+		  :human_id
+		, :item_matter_id
+	)
+	ON CONFLICT
+	(
+		  human_id
+		, item_matter_id
+	)
+	DO NOTHING";
+
+			var param = new
+			{
+				human_id = humanInventorySlot.HumanId.Value,
+				item_matter_id = humanInventorySlot.ItemMatterId.Value,
+			};
+
+			connection.Execute(sql, param, transaction);
+		}
+
+		{
+			const string sql = @"INSERT INTO
+	item_matters
+	(
+		  item_matter_id
 		, item_id
 		, quantity
 	)
 	VALUES
 	(
-		  :human_id
+		  :item_matter_id
 		, :item_id
 		, :quantity
 	)
 	ON CONFLICT
 	(
-		  human_id
-		, item_id
+		item_matter_id
 	)
 	DO UPDATE SET
 		quantity = :quantity";
 
-		var param = new
-		{
-			human_id = humanInventorySlot.HumanId.Value,
-			item_id = humanInventorySlot.ItemId.Value,
-			quantity = humanInventorySlot.Quantity.Value,
-		};
+			var param = new
+			{
+				item_matter_id = humanInventorySlot.ItemMatterId.Value,
+				item_id = humanInventorySlot.ItemId.Value,
+				quantity = humanInventorySlot.Quantity.Value,
+			};
 
-		connection.Execute(sql, param, transaction);
+			connection.Execute(sql, param, transaction);
+		}
 	}
 
 	#endregion
@@ -127,9 +183,10 @@ WHERE
 	/// スロットのレコード
 	/// </summary>
 	/// <param name="HumanId">人間ID</param>
+	/// <param name="ItemMatterId">アイテム物質ID</param>
 	/// <param name="ItemId">アイテムID</param>
 	/// <param name="Quantity">数量</param>
-	private record class SlotRecord(string HumanId, string ItemId, long Quantity);
+	private record class SlotRecord(string HumanId, string ItemMatterId, string ItemId, long Quantity);
 
 	#endregion
 }

@@ -4,9 +4,10 @@
 /// 人間のインベントリースロット
 /// </summary>
 /// <param name="humanId">人間ID</param>
+/// <param name="itemMatterId">アイテム物質ID</param>
 /// <param name="itemId">アイテムID</param>
 /// <param name="quantity">数量</param>
-public class HumanInventorySlot(HumanId humanId, ItemId itemId, Quantity quantity) : IEquatable<HumanInventorySlot>
+public class HumanInventorySlot(HumanId humanId, ItemMatterId itemMatterId, ItemId itemId, Quantity quantity) : IEquatable<HumanInventorySlot>
 {
     #region Properties
 
@@ -14,6 +15,11 @@ public class HumanInventorySlot(HumanId humanId, ItemId itemId, Quantity quantit
     /// 人間IDを取得します。
     /// </summary>
     public HumanId HumanId { get; } = humanId;
+
+    /// <summary>
+    /// アイテム物質IDを取得します。
+    /// </summary>
+    public ItemMatterId ItemMatterId { get; } = itemMatterId;
 
     /// <summary>
     /// アイテムIDを取得します。
@@ -103,7 +109,7 @@ public class HumanInventorySlot(HumanId humanId, ItemId itemId, Quantity quantit
     {
         if (other is null) return false;
 
-        bool result = HumanId == other.HumanId && ItemId == other.ItemId;
+        bool result = HumanId == other.HumanId && ItemMatterId == other.ItemMatterId;
 
         return result;
     }
@@ -114,7 +120,7 @@ public class HumanInventorySlot(HumanId humanId, ItemId itemId, Quantity quantit
     /// <returns>現在のオブジェクトのハッシュ コード。</returns>
     public override int GetHashCode()
     {
-        int result = HashCode.Combine(HumanId, ItemId);
+        int result = HashCode.Combine(HumanId, ItemMatterId);
 
         return result;
     }
@@ -125,7 +131,7 @@ public class HumanInventorySlot(HumanId humanId, ItemId itemId, Quantity quantit
     /// <returns>現在のオブジェクトを表す文字列。</returns>
     public override string ToString()
     {
-        string str = $"{nameof(HumanInventorySlot)} {{ {nameof(HumanId)} = {HumanId}, {nameof(ItemId)} = {ItemId}, {nameof(Quantity)} = {Quantity} }}";
+        string str = $"{nameof(HumanInventorySlot)} {{ {nameof(HumanId)} = {HumanId}, {nameof(ItemMatterId)} = {ItemMatterId}, {nameof(ItemId)} = {ItemId}, {nameof(Quantity)} = {Quantity} }}";
 
         return str;
     }

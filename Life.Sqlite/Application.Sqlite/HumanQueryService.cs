@@ -195,22 +195,24 @@ ORDER BY
 		List<InventorySlotData> inventorySlots = [];
 		{
 			const string sql = @"SELECT
-	  his.item_id
+	  imt.item_id
 	, inm.item_name
 	, ite.can_equip
-	, his.quantity
+	, imt.quantity
 FROM
-	human_inventory_slots his
+	human_item_matters him
+	INNER JOIN item_matters imt
+		ON him.item_matter_id = imt.item_matter_id
 	INNER JOIN items ite
-		ON his.item_id = ite.item_id
+		ON imt.item_id = ite.item_id
 	INNER JOIN item_names inm
 		ON  ite.item_id = inm.item_id
 		AND inm.language_code = :language_code
 WHERE
-	his.human_id = :human_id
+	him.human_id = :human_id
 ORDER BY
-	  his.human_id
-	, his.item_id";
+	  him.human_id
+	, imt.item_id";
 
 			var param = new
 			{

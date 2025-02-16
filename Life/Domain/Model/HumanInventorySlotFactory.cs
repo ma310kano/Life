@@ -17,9 +17,10 @@ public class HumanInventorySlotFactory : IHumanInventorySlotFactory
 	{
 		HumanInventorySlot product;
 		{
+			ItemMatterId itemMatterId = ItemMatterId.Create();
 			Quantity quantity = new(0);
 
-			product = new(humanId, itemId, quantity);
+			product = new(humanId, itemMatterId, itemId, quantity);
 		}
 
 		return product;
