@@ -69,7 +69,7 @@ WHERE
 			rItemRecipeId = record.ItemRecipeId;
 			item = new ItemSummaryData(record.ItemId, record.ItemName);
 			quantity = (int)record.Quantity;
-			building = record.BuildingId is not null ? new BuildingSummaryData(record.BuildingId, record.BuildingName) : null;
+			building = record.BuildingId is not null && record.BuildingName is not null ? new BuildingSummaryData(record.BuildingId, record.BuildingName) : null;
 		}
 
 		List<ItemRecipeIngredientData> ingredients = [];
