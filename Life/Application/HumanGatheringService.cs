@@ -1,5 +1,6 @@
 ﻿using Life.Application.Command;
 using Life.Domain.Model;
+using Life.Domain.Service;
 
 namespace Life.Application;
 
@@ -23,16 +24,13 @@ public class HumanGatheringService(IHumanContextFactory contextFactory) : IHuman
 
 		try
 		{
+			HumanInventoryAdditionService inventoryAdditionService = new(context, humanId);
 			foreach (HumanGatheringItemCommand source in command.Items)
 			{
 				ItemId itemId = new(source.ItemId);
+				Quantity quantity = new(source.Quantity);
 
-				HumanInventorySlot? inventorySlot = context.InventorySlotRepository.FindOrDefault(humanId, itemId);
-				inventorySlot ??= context.InventorySlotFactory.Create(humanId, itemId);
-
-				inventorySlot.AddQuantity(source.Quantity);
-
-				context.InventorySlotRepository.Save(inventorySlot);
+				inventoryAdditionService.Add(itemId, quantity);
 			}
 
 			context.Commit();

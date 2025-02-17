@@ -31,9 +31,9 @@ public record class Quantity
 	/// <param name="lhs">左側のオペランド</param>
 	/// <param name="rhs">右側のオペランド</param>
 	/// <returns>加算した数量を返します。</returns>
-	public static Quantity operator +(Quantity lhs,  int rhs)
+	public static Quantity operator +(Quantity lhs, Quantity rhs)
     {
-        Quantity result = new(lhs.Value + rhs);
+        Quantity result = new(lhs.Value + rhs.Value);
 
         return result;
     }
@@ -44,9 +44,9 @@ public record class Quantity
 	/// <param name="lhs">左側のオペランド</param>
 	/// <param name="rhs">右側のオペランド</param>
 	/// <returns>減算した数量を返します。</returns>
-	public static Quantity operator -(Quantity lhs, int rhs)
+	public static Quantity operator -(Quantity lhs, Quantity rhs)
     {
-        Quantity result = new(lhs.Value - rhs);
+        Quantity result = new(lhs.Value - rhs.Value);
 
         return result;
     }

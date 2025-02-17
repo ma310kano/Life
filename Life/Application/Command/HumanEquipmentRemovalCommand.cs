@@ -4,5 +4,5 @@
 /// 人間の装備解除コマンド
 /// </summary>
 /// <param name="HumanId">人間ID</param>
-/// <param name="ItemId">アイテムID</param>
-public record class HumanEquipmentRemovalCommand(string HumanId, string ItemId);
+/// <param name="ItemMatterId">アイテム物質ID</param>
+public record class HumanEquipmentRemovalCommand(string HumanId, string ItemMatterId);

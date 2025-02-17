@@ -41,19 +41,24 @@ public class HumanContext : IHumanContext
 	private IItemRecipeRepository? _itemRecipeRepository;
 
 	/// <summary>
-	/// 装備アイテムのファクトリー
+	/// アイテムのリポジトリー
 	/// </summary>
-	private IEquipmentItemFactory? _equipmentItemFactory;
+	private IItemRepository? _itemRepository;
+
+	/// <summary>
+	/// アイテム物質のファクトリー
+	/// </summary>
+	private IItemMatterFactory? _itemMatterFactory;
+
+	/// <summary>
+	/// アイテム物質のリポジトリー
+	/// </summary>
+	private IItemMatterRepository? _itemMatterRepository;
 
 	/// <summary>
 	/// 装備アイテムのリポジトリー
 	/// </summary>
 	private IEquipmentItemRepository? _equipmentItemRepository;
-
-	/// <summary>
-	/// インベントリースロットのファクトリー
-	/// </summary>
-	private IHumanInventorySlotFactory? _inventorySlotFactory;
 
 	/// <summary>
 	/// インベントリースロットのリポジトリー
@@ -110,19 +115,24 @@ public class HumanContext : IHumanContext
 	public IItemRecipeRepository ItemRecipeRepository => _itemRecipeRepository ??= new ItemRecipeRepository(_connection, _transaction);
 
 	/// <summary>
-	/// 装備アイテムのファクトリーを取得します。
+	/// アイテムリポジトリーを取得します。
 	/// </summary>
-	public IEquipmentItemFactory EquipmentItemFactory => _equipmentItemFactory ??= new EquipmentItemFactory();
+	public IItemRepository ItemRepository => _itemRepository ??= new ItemRepository(_connection, _transaction);
+
+	/// <summary>
+	/// アイテム物質のファクトリーを取得します。
+	/// </summary>
+	public IItemMatterFactory ItemMatterFactory => _itemMatterFactory ??= new ItemMatterFactory();
+
+	/// <summary>
+	/// アイテム物質のリポジトリーを取得します。
+	/// </summary>
+	public IItemMatterRepository ItemMatterRepository => _itemMatterRepository ??= new ItemMatterRepository(_connection, _transaction);
 
 	/// <summary>
 	/// 装備アイテムのリポジトリーを取得します。
 	/// </summary>
 	public IEquipmentItemRepository EquipmentItemRepository => _equipmentItemRepository ??= new EquipmentItemRepository(_connection, _transaction);
-
-	/// <summary>
-	/// インベントリースロットのファクトリーを取得します。
-	/// </summary>
-	public IHumanInventorySlotFactory InventorySlotFactory => _inventorySlotFactory ??= new HumanInventorySlotFactory();
 
 	/// <summary>
 	/// インベントリースロットのリポジトリーを取得します。

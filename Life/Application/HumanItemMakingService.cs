@@ -1,5 +1,6 @@
 ﻿using Life.Application.Command;
 using Life.Domain.Model;
+using Life.Domain.Service;
 
 namespace Life.Application;
 
@@ -33,31 +34,33 @@ public class HumanItemMakingService(IHumanContextFactory contextFactory) : IHuma
 				if (!existsBuilding) throw new InvalidOperationException($"エリア {human.AreaId} に建造物 {itemRecipe.BuildingId} がありません。");
 			}
 
+			// Ingredients
 			foreach (ItemRecipeIngredient ingredient in itemRecipe.Ingredients)
 			{
-				HumanInventorySlot ingredientSlot = context.InventorySlotRepository.FindOrDefault(humanId, ingredient.ItemId) ?? throw new InvalidOperationException("アイテムが見つかりません。");
+				ItemMatter itemMatter = context.ItemMatterRepository.FindInHumanInventory(humanId, ingredient.ItemId).Single();
 
-				int subtrahend = ingredient.Quantity.Value * command.Frequencty;
+				Quantity quantity = new(ingredient.Quantity.Value * command.Frequencty);
 
-				ingredientSlot.SubtractQuantity(subtrahend);
+				itemMatter.SubtractQuantity(quantity);
 
-				if (ingredientSlot.Quantity.Value > 0)
+				if (itemMatter.Quantity.Value > 0)
 				{
-					context.InventorySlotRepository.Save(ingredientSlot);
+					context.ItemMatterRepository.Save(itemMatter);
 				}
 				else
 				{
-					context.InventorySlotRepository.Delete(ingredientSlot);
+					context.InventorySlotRepository.Remove(humanId, itemMatter.ItemMatterId);
+					context.ItemMatterRepository.Delete(itemMatter);
 				}
 			}
 
-			HumanInventorySlot productSlot = context.InventorySlotRepository.FindOrDefault(humanId, itemRecipe.ItemId) ?? context.InventorySlotFactory.Create(humanId, itemRecipe.ItemId);
+			// Product
+			{
+				Quantity quantity = new(itemRecipe.Quantity.Value * command.Frequencty);
 
-			int addend = itemRecipe.Quantity.Value * command.Frequencty;
-
-			productSlot.AddQuantity(addend);
-
-			context.InventorySlotRepository.Save(productSlot);
+				HumanInventoryAdditionService inventoryAdditionService = new(context, humanId);
+				inventoryAdditionService.Add(itemRecipe.ItemId, quantity);
+			}
 
 			context.Commit();
 		}

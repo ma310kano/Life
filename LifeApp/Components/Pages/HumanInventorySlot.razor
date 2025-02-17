@@ -1,4 +1,4 @@
-﻿@page "/humans/{HumanId}/inventory-slots/{ItemId}"
+﻿@page "/humans/{HumanId}/inventory-slots/{ItemMatterId}"
 
 @using Life.Application
 @using Life.Application.Command
@@ -47,7 +47,7 @@
 	/// <summary>
 	/// インベントリースロット
 	/// </summary>
-	private InventorySlotData? _inventorySlot;
+	private ItemMatterData? _inventorySlot;
 
 	#endregion
 
@@ -60,10 +60,10 @@
 	public string HumanId { get; set; } = string.Empty;
 
 	/// <summary>
-	/// アイテムIDを設定または取得します。
+	/// アイテム物質IDを設定または取得します。
 	/// </summary>
 	[Parameter]
-	public string ItemId { get; set; } = string.Empty;
+	public string ItemMatterId { get; set; } = string.Empty;
 
 	#endregion
 
@@ -76,7 +76,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		_human = await HumanQueryService.QuerySingleAsync(HumanId);
-		_inventorySlot = _human.InventorySlots.Single(x => x.Item.ItemId == ItemId);
+		_inventorySlot = _human.InventorySlots.Single(x => x.ItemMatterId == ItemMatterId);
 	}
 
 	/// <summary>
@@ -85,7 +85,7 @@
 	/// <returns>非同期操作を返します。</returns>
 	private async Task EquipAsync()
 	{
-		HumanEquipmentCommand command = new(_human!.HumanId, _inventorySlot!.Item.ItemId);
+		HumanEquipmentCommand command = new(_human!.HumanId, _inventorySlot!.ItemMatterId);
 
 		await HumanEquipmentService.EquipAsync(command);
 

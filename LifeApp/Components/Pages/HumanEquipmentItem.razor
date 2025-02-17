@@ -1,4 +1,4 @@
-﻿@page "/humans/{HumanId}/equipment-items/{ItemId}"
+﻿@page "/humans/{HumanId}/equipment-items/{ItemMatterId}"
 
 @using Life.Application
 @using Life.Application.Command
@@ -8,7 +8,7 @@
 @inject IHumanQueryService HumanQueryService
 @inject IHumanEquipmentRemovalService HumanEquipmentRemovalService
 
-@if (_human is not null && _item is not null)
+@if (_human is not null && _equipmentItemMatter is not null)
 {
 	<nav aria-label="breadcrumb">
 		<ol class="breadcrumb">
@@ -16,17 +16,17 @@
 			<li class="breadcrumb-item"><a href="/humans">人間</a></li>
 			<li class="breadcrumb-item"><a href="/humans/@_human.HumanId">@_human.FirstName @_human.Family.FamilyName</a></li>
 			<li class="breadcrumb-item">装備</li>
-			<li class="breadcrumb-item active" aria-current="page">@_item.ItemName</li>
+			<li class="breadcrumb-item active" aria-current="page">@_equipmentItemMatter.Item.ItemName</li>
 		</ol>
 	</nav>
 
-	<h1>@_item.ItemName</h1>
+	<h1>@_equipmentItemMatter.Item.ItemName</h1>
 
 	<table class="table">
 		<tbody>
 			<tr>
 				<th>アイテム</th>
-				<td>@_item.ItemName</td>
+				<td>@_equipmentItemMatter.Item.ItemName</td>
 			</tr>
 		</tbody>
 	</table>
@@ -45,7 +45,7 @@
 	/// <summary>
 	/// アイテム
 	/// </summary>
-	private ItemSummaryData? _item;
+	private EquipmentItemMatterData? _equipmentItemMatter;
 
 	#endregion
 
@@ -58,10 +58,10 @@
 	public string HumanId { get; set; } = string.Empty;
 
 	/// <summary>
-	/// アイテムIDを設定または取得します。
+	/// アイテム物質IDを設定または取得します。
 	/// </summary>
 	[Parameter]
-	public string ItemId { get; set; } = string.Empty;
+	public string ItemMatterId { get; set; } = string.Empty;
 
 	#endregion
 
@@ -74,7 +74,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		_human = await HumanQueryService.QuerySingleAsync(HumanId);
-		_item = _human.EquipmentItems.Single(x => x.ItemId == ItemId);
+		_equipmentItemMatter = _human.EquipmentItems.Single(x => x.ItemMatterId == ItemMatterId);
 	}
 
 	/// <summary>
@@ -83,7 +83,7 @@
 	/// <returns>非同期操作を返します。</returns>
 	private async Task RemoveAsync()
 	{
-		HumanEquipmentRemovalCommand command = new(_human!.HumanId, _item!.ItemId);
+		HumanEquipmentRemovalCommand command = new(_human!.HumanId, _equipmentItemMatter!.ItemMatterId);
 
 		await HumanEquipmentRemovalService.RemoveAsync(command);
 

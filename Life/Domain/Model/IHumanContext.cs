@@ -28,19 +28,24 @@ public interface IHumanContext : IDisposable
 	IItemRecipeRepository ItemRecipeRepository { get; }
 
 	/// <summary>
-	/// 装備アイテムのファクトリーを取得します。
+	/// アイテムのリポジトリーを取得します。
 	/// </summary>
-	IEquipmentItemFactory EquipmentItemFactory { get; }
+	IItemRepository ItemRepository { get; }
+
+	/// <summary>
+	/// アイテム物質のファクトリーを取得します。
+	/// </summary>
+	IItemMatterFactory ItemMatterFactory { get; }
+
+	/// <summary>
+	/// アイテム物質のリポジトリーを取得します。
+	/// </summary>
+	IItemMatterRepository ItemMatterRepository { get; }
 
 	/// <summary>
 	/// 装備アイテムのリポジトリーを取得します。
 	/// </summary>
 	IEquipmentItemRepository EquipmentItemRepository { get; }
-
-	/// <summary>
-	/// インベントリースロットのファクトリーを取得します。
-	/// </summary>
-	IHumanInventorySlotFactory InventorySlotFactory { get; }
 
 	/// <summary>
 	/// インベントリースロットのリポジトリーを取得します。

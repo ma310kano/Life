@@ -30,17 +30,18 @@ public class HumanAreaBuidingService(IHumanContextFactory contextFactory) : IHum
 
 			foreach (BuildingRecipeIngredient ingredient in buildingRecipe.Ingredients)
 			{
-				HumanInventorySlot inventorySlot = context.InventorySlotRepository.FindOrDefault(humanId, ingredient.ItemId) ?? throw new InvalidOperationException("アイテムが見つかりません。");
+				ItemMatter itemMatter = context.ItemMatterRepository.FindInHumanInventory(humanId, ingredient.ItemId).Single();
 
-				inventorySlot.SubtractQuantity(ingredient.Quantity.Value);
+				itemMatter.SubtractQuantity(ingredient.Quantity);
 
-				if (inventorySlot.Quantity.Value > 0)
+				if (itemMatter.Quantity.Value > 0)
 				{
-					context.InventorySlotRepository.Save(inventorySlot);
+					context.ItemMatterRepository.Save(itemMatter);
 				}
 				else
 				{
-					context.InventorySlotRepository.Delete(inventorySlot);
+					context.InventorySlotRepository.Remove(humanId, itemMatter.ItemMatterId);
+					context.ItemMatterRepository.Delete(itemMatter);
 				}
 			}
 

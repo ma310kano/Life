@@ -165,15 +165,18 @@ ORDER BY
 			itemRecipes = connection.Query<ItemRecipeSummaryData>(sql, param).ToList();
 		}
 
-		List<ItemSummaryData> equipmentItems = [];
+		List<EquipmentItemMatterData> equipmentItems = [];
 		{
 			const string sql = @"SELECT
-	  hei.item_id
+	  hei.item_matter_id
+	, imt.item_id
 	, inm.item_name
 FROM
 	human_equipment_items hei
+	INNER JOIN item_matters imt
+		ON hei.item_matter_id = imt.item_matter_id
 	INNER JOIN items ite
-		ON hei.item_id = ite.item_id
+		ON imt.item_id = ite.item_id
 	INNER JOIN item_names inm
 		ON  ite.item_id= inm.item_id
 		AND inm.language_code = :language_code
@@ -181,7 +184,8 @@ WHERE
 	hei.human_id = :human_id
 ORDER BY
 	  hei.human_id
-	, hei.item_id";
+	, imt.item_id
+	, hei.item_matter_id";
 
 			var param = new
 			{
@@ -189,13 +193,26 @@ ORDER BY
 				language_code = _languageCode,
 			};
 
-			equipmentItems = connection.Query<ItemSummaryData>(sql, param).ToList();
+			IEnumerable<EquipmentItemMatterRecord> sources = connection.Query<EquipmentItemMatterRecord>(sql, param);
+
+			foreach (EquipmentItemMatterRecord source in sources)
+			{
+				EquipmentItemMatterData equipmentItem;
+				{
+					ItemSummaryData item = new(source.ItemId, source.ItemName);
+
+					equipmentItem = new EquipmentItemMatterData(source.ItemMatterId, item);
+				}
+
+				equipmentItems.Add(equipmentItem);
+			}
 		}
 
-		List<InventorySlotData> inventorySlots = [];
+		List<ItemMatterData> inventorySlots = [];
 		{
 			const string sql = @"SELECT
-	  imt.item_id
+	  him.item_matter_id
+	, imt.item_id
 	, inm.item_name
 	, ite.can_equip
 	, imt.quantity
@@ -212,7 +229,8 @@ WHERE
 	him.human_id = :human_id
 ORDER BY
 	  him.human_id
-	, imt.item_id";
+	, imt.item_id
+	, him.item_matter_id";
 
 			var param = new
 			{
@@ -220,11 +238,11 @@ ORDER BY
 				language_code = _languageCode,
 			};
 
-			IEnumerable<InventorySlotRecord> sources = connection.Query<InventorySlotRecord>(sql, param);
+			IEnumerable<ItemMatterRecord> sources = connection.Query<ItemMatterRecord>(sql, param);
 
-			foreach (InventorySlotRecord source in sources)
+			foreach (ItemMatterRecord source in sources)
 			{
-				InventorySlotData inventorySlot;
+				ItemMatterData inventorySlot;
 				{
 					ItemData item;
 					{
@@ -235,7 +253,7 @@ ORDER BY
 
 					int quantity = (int)source.Quantity;
 
-					inventorySlot = new InventorySlotData(item, quantity);
+					inventorySlot = new ItemMatterData(source.ItemMatterId, item, quantity);
 				}
 
 				inventorySlots.Add(inventorySlot);
@@ -271,13 +289,22 @@ ORDER BY
 	private record class HumanRecord(string HumanId, string FirstName, string FamilyId, string FamilyName);
 
 	/// <summary>
-	/// インベントリースロットのレコード
+	/// 装備アイテム物質のレコード
 	/// </summary>
+	/// <param name="ItemMatterId">アイテム物質ID</param>
+	/// <param name="ItemId">アイテムID</param>
+	/// <param name="ItemName">アイテム名</param>
+	private record class EquipmentItemMatterRecord(string ItemMatterId, string ItemId, string ItemName);
+
+	/// <summary>
+	/// アイテム物質のレコード
+	/// </summary>
+	/// <param name="ItemMatterId">アイテム物質ID</param>
 	/// <param name="ItemId">アイテムID</param>
 	/// <param name="ItemName">アイテム名</param>
 	/// <param name="CanEquip">装備できるか</param>
 	/// <param name="Quantity">数量</param>
-	private record class InventorySlotRecord(string ItemId, string ItemName, string CanEquip, long Quantity);
+	private record class ItemMatterRecord(string ItemMatterId, string ItemId, string ItemName, string CanEquip, long Quantity);
 
 	#endregion
 }

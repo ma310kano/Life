@@ -18,31 +18,27 @@ public class HumanEquipmentRemovalService(IHumanContextFactory contextFactory) :
 	public void Remove(HumanEquipmentRemovalCommand command)
 	{
 		HumanId humanId = new(command.HumanId);
-		ItemId itemId = new(command.ItemId);
+		ItemMatterId itemMatterId = new(command.ItemMatterId);
 
 		using IHumanContext context = contextFactory.Create();
 
 		try
 		{
+			ItemMatter itemMatter = context.ItemMatterRepository.FindOrDefault(itemMatterId) ?? throw new InvalidOperationException("アイテムが見つかりません。");
+
 			// Equipment item
 			{
-				EquipmentItem equipmentItem = context.EquipmentItemRepository.Find(humanId, itemId);
-
-				context.EquipmentItemRepository.Delete(equipmentItem);
+				context.EquipmentItemRepository.Remove(humanId, itemMatter.ItemMatterId);
 			}
 
 			// Gthering item
 			{
-				context.GatheringItemRepository.Remove(humanId, itemId);
+				context.GatheringItemRepository.Remove(humanId, itemMatter.ItemId);
 			}
 
 			// Inventory slot
 			{
-				HumanInventorySlot inventorySlot = context.InventorySlotRepository.FindOrDefault(humanId, itemId) ?? context.InventorySlotFactory.Create(humanId, itemId);
-
-				inventorySlot.AddQuantity(1);
-
-				context.InventorySlotRepository.Save(inventorySlot);
+				context.InventorySlotRepository.Add(humanId, itemMatter.ItemMatterId);
 			}
 
 			context.Commit();

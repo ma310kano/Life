@@ -108,11 +108,11 @@
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (ItemSummaryData item in _human.EquipmentItems)
+			@foreach (EquipmentItemMatterData itemMatter in _human.EquipmentItems)
 			{
 				<tr>
-					<td class="id">@item.ItemId</td>
-					<td><a href="/humans/@_human.HumanId/equipment-items/@item.ItemId">@item.ItemName</a></td>
+					<td class="id">@itemMatter.Item.ItemId</td>
+					<td><a href="/humans/@_human.HumanId/equipment-items/@itemMatter.ItemMatterId">@itemMatter.Item.ItemName</a></td>
 				</tr>
 			}
 		</tbody>
@@ -128,11 +128,11 @@
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (InventorySlotData inventorySlot in _human.InventorySlots)
+			@foreach (ItemMatterData inventorySlot in _human.InventorySlots)
 			{
 				<tr>
 					<td class="id">@inventorySlot.Item.ItemId</td>
-					<td><a href="/humans/@_human.HumanId/inventory-slots/@inventorySlot.Item.ItemId">@inventorySlot.Item.ItemName</a></td>
+					<td><a href="/humans/@_human.HumanId/inventory-slots/@inventorySlot.ItemMatterId">@inventorySlot.Item.ItemName</a></td>
 					<td>@inventorySlot.Quantity</td>
 				</tr>
 			}

@@ -1,23 +1,29 @@
 ﻿namespace Life.Domain.Model;
 
 /// <summary>
-/// 装備アイテム
+/// アイテム物質
 /// </summary>
-/// <param name="humanId">人間ID</param>
+/// <param name="itemMatterId">アイテム物質ID</param>
 /// <param name="itemId">アイテムID</param>
-public class EquipmentItem(HumanId humanId, ItemId itemId) : IEquatable<EquipmentItem>
+/// <param name="quantity">数量</param>
+public class ItemMatter(ItemMatterId itemMatterId, ItemId itemId, Quantity quantity) : IEquatable<ItemMatter>
 {
     #region Properties
 
     /// <summary>
-    /// 人間IDを取得します。
+    /// アイテム物質IDを取得します。
     /// </summary>
-    public HumanId HumanId { get; } = humanId;
+    public ItemMatterId ItemMatterId { get; } = itemMatterId;
 
     /// <summary>
     /// アイテムIDを取得します。
     /// </summary>
     public ItemId ItemId { get; } = itemId;
+
+    /// <summary>
+    /// 数量を取得します。
+    /// </summary>
+    public Quantity Quantity { get; private set; } = quantity;
 
     #endregion
 
@@ -29,7 +35,7 @@ public class EquipmentItem(HumanId humanId, ItemId itemId) : IEquatable<Equipmen
     /// <param name="lhs">左辺</param>
     /// <param name="rhs">右辺</param>
     /// <returns>オペランドが等しい場合は、 <c>true</c>。それ以外の場合は、 <c>false</c>。</returns>
-    public static bool operator ==(EquipmentItem lhs, EquipmentItem rhs)
+    public static bool operator ==(ItemMatter lhs, ItemMatter rhs)
     {
         if (lhs is null) return rhs is null;
 
@@ -44,7 +50,7 @@ public class EquipmentItem(HumanId humanId, ItemId itemId) : IEquatable<Equipmen
     /// <param name="lhs">左辺</param>
     /// <param name="rhs">右辺</param>
     /// <returns>オペランドが等しくない場合は、 <c>true</c>。それ以外の場合は、 <c>false</c>。</returns>
-    public static bool operator !=(EquipmentItem lhs, EquipmentItem rhs)
+    public static bool operator !=(ItemMatter lhs, ItemMatter rhs)
     {
         bool result = !(lhs == rhs);
 
@@ -56,6 +62,24 @@ public class EquipmentItem(HumanId humanId, ItemId itemId) : IEquatable<Equipmen
     #region Methods
 
     /// <summary>
+    /// 数量を加算します。
+    /// </summary>
+    /// <param name="quantity">数量</param>
+    public void AddQuantity(Quantity quantity)
+    {
+        Quantity += quantity;
+    }
+
+    /// <summary>
+    /// 数量を減算します。
+    /// </summary>
+    /// <param name="quantity">数量</param>
+    public void SubtractQuantity(Quantity quantity)
+    {
+        Quantity -= quantity;
+    }
+
+    /// <summary>
     /// 指定されたオブジェクトが現在のオブジェクトと等しいかどうかを判断します。
     /// </summary>
     /// <param name="obj">現在のオブジェクトと比較するオブジェクト。</param>
@@ -64,7 +88,7 @@ public class EquipmentItem(HumanId humanId, ItemId itemId) : IEquatable<Equipmen
     {
         bool result = obj switch
         {
-            EquipmentItem other => Equals(other),
+            ItemMatter other => Equals(other),
             _ => base.Equals(obj),
         };
 
@@ -75,11 +99,11 @@ public class EquipmentItem(HumanId humanId, ItemId itemId) : IEquatable<Equipmen
     /// </summary>
     /// <param name="other">このオブジェクトと比較するオブジェクト。</param>
     /// <returns>現在のオブジェクトが <c>other</c> パラメーターと等しい場合は <c>true</c>、それ以外の場合は <c>false</c> です。</returns>
-    public bool Equals(EquipmentItem? other)
+    public bool Equals(ItemMatter? other)
     {
         if (other is null) return false;
 
-        bool result = HumanId == other.HumanId && ItemId == other.ItemId;
+        bool result = ItemMatterId == other.ItemMatterId;
 
         return result;
     }
@@ -90,7 +114,7 @@ public class EquipmentItem(HumanId humanId, ItemId itemId) : IEquatable<Equipmen
     /// <returns>現在のオブジェクトのハッシュ コード。</returns>
     public override int GetHashCode()
     {
-        int result = HashCode.Combine(HumanId, ItemId);
+        int result = HashCode.Combine(ItemMatterId);
 
         return result;
     }
@@ -101,7 +125,7 @@ public class EquipmentItem(HumanId humanId, ItemId itemId) : IEquatable<Equipmen
     /// <returns>現在のオブジェクトを表す文字列。</returns>
     public override string ToString()
     {
-        string str = $"{nameof(EquipmentItem)} {{ {nameof(HumanId)} = {HumanId}, {nameof(ItemId)} = {ItemId} }}";
+        string str = $"{nameof(ItemMatter)} {{ {nameof(ItemMatterId)} = {ItemMatterId}, {nameof(ItemId)} = {ItemId}, {nameof(Quantity)} = {Quantity} }}";
 
         return str;
     }
