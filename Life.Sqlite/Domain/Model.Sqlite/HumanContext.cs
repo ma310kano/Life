@@ -26,11 +26,6 @@ public class HumanContext : IHumanContext
 	private IHumanRepository? _repository;
 
 	/// <summary>
-	/// 採集アイテムのリポジトリー
-	/// </summary>
-	private IHumanGatheringItemRepository? _gatheringItemRepository;
-
-	/// <summary>
 	/// 建造物レシピのリポジトリー
 	/// </summary>
 	private IBuildingRecipeRepository? _buildingRecipeRepository;
@@ -98,11 +93,6 @@ public class HumanContext : IHumanContext
 	/// リポジトリーを取得します。
 	/// </summary>
 	public IHumanRepository Repository => _repository ??= new HumanRepository(_connection, _transaction);
-
-	/// <summary>
-	/// 採集アイテムのリポジトリーを取得します。
-	/// </summary>
-	public IHumanGatheringItemRepository GatheringItemRepository => _gatheringItemRepository ??= new HumanGatheringItemRepository(_connection, _transaction);
 
 	/// <summary>
 	/// 建造物レシピのリポジトリーを取得します。

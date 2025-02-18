@@ -79,11 +79,19 @@
 			AreaData area = await AreaQueryService.QuerySingleAsync(_human.Area.AreaId);
 
 			List<ItemModel> itemModels = [];
-			foreach (ItemSummaryData source in area.Items)
+			foreach (AreaItemData source in area.Items)
 			{
 				ItemModel itemModel;
 				{
-					bool isValid = _human.GatheringItems.Any(x => x.ItemId == source.ItemId);
+					bool isValid;
+					if (!source.EquipmentItemIds.Any())
+					{
+						isValid = true;
+					}
+					else
+					{
+						isValid = source.EquipmentItemIds.Any(equipmentItemId => _human.EquipmentItems.Any(y => y.Item.ItemId == equipmentItemId));
+					}
 
 					itemModel = new ItemModel(source.ItemId, source.ItemName, isValid);
 				}

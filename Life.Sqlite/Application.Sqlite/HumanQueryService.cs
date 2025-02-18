@@ -82,33 +82,6 @@ WHERE
 			area = connection.QuerySingle<AreaSummaryData>(sql, param);
 		}
 
-		List<ItemSummaryData> gatheringItems;
-		{
-			const string sql = @"SELECT
-	  hgi.item_id
-	, inm.item_name
-FROM
-	human_gathering_items hgi
-	INNER JOIN items ite
-		ON hgi.item_id = ite.item_id
-	INNER JOIN item_names inm
-		ON  ite.item_id = inm.item_id
-		AND language_code = :language_code
-WHERE
-	hgi.human_id = :human_id
-ORDER BY
-	  hgi.human_id
-	, hgi.item_id";
-
-			var param = new
-			{
-				human_id = humanId,
-				language_code = _languageCode,
-			};
-
-			gatheringItems = connection.Query<ItemSummaryData>(sql, param).ToList();
-		}
-
 		List<BuildingRecipeSummaryData> buildingRecipes;
 		{
 			const string sql = @"SELECT
@@ -260,7 +233,7 @@ ORDER BY
 			}
 		}
 
-		HumanData result = new(record.HumanId, record.FirstName, family, area, gatheringItems, buildingRecipes, itemRecipes, equipmentItems, inventorySlots);
+		HumanData result = new(record.HumanId, record.FirstName, family, area, buildingRecipes, itemRecipes, equipmentItems, inventorySlots);
 
 		return result;
 	}

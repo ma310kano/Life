@@ -36,11 +36,6 @@ public class HumanEquipmentService(IHumanContextFactory contextFactory) : IHuman
 				context.EquipmentItemRepository.Add(humanId, itemMatter.ItemMatterId);
 			}
 
-			// Gathering item
-			{
-				context.GatheringItemRepository.Add(humanId, itemMatter.ItemId);
-			}
-
 			context.Commit();
 		}
 		catch

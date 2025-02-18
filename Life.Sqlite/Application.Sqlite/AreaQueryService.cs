@@ -104,9 +104,11 @@ ORDER BY
 			humans = connection.Query<HumanSummaryData>(sql, param).ToList();
 		}
 
-		List<ItemSummaryData> items;
+		List<AreaItemData> items = [];
 		{
-			const string sql = @"SELECT
+			IEnumerable<ItemSummaryData> sources;
+			{
+				const string sql = @"SELECT
 	  ait.item_id
 	, inm.item_name
 FROM
@@ -119,13 +121,47 @@ FROM
 WHERE
 	ait.area_id = :area_id";
 
-			var param = new
-			{
-				area_id = areaId,
-				language_code = _languageCode,
-			};
+				var param = new
+				{
+					area_id = areaId,
+					language_code = _languageCode,
+				};
 
-			items = connection.Query<ItemSummaryData>(sql, param).ToList();
+				sources = connection.Query<ItemSummaryData>(sql, param);
+			}
+
+			IEnumerable<ItemGatheringEquipmentItemRecord> itemGatheringEquipmentItemRecords;
+			{
+				const string sql = @"SELECT
+	  item_id
+	, equipment_item_id
+FROM
+	item_gathering_equipment_items
+WHERE
+	item_id IN :item_ids
+ORDER BY
+	  item_id
+	, equipment_item_id";
+
+				var param = new
+				{
+					item_ids = sources.Select(x => x.ItemId),
+				};
+
+				itemGatheringEquipmentItemRecords = connection.Query<ItemGatheringEquipmentItemRecord>(sql, param);
+			}
+
+			foreach (ItemSummaryData source in sources)
+			{
+				AreaItemData item;
+				{
+					string[] equipmentItems = itemGatheringEquipmentItemRecords.Where(x => x.ItemId == source.ItemId).Select(x => x.EquipmentItemId).ToArray();
+
+					item = new(source.ItemId, source.ItemName, equipmentItems);
+				}
+
+				items.Add(item);
+			}
 		}
 
 		AreaData result = new(record.AreaId, record.AreaName, buildings, humans, items);
@@ -153,6 +189,13 @@ WHERE
 	/// <param name="AreaId">エリアID</param>
 	/// <param name="AreaName">エリア名</param>
 	private record class AreaRecord(string AreaId, string AreaName);
+
+	/// <summary>
+	/// アイテム採集装備アイテムのレコード
+	/// </summary>
+	/// <param name="ItemId">アイテムID</param>
+	/// <param name="EquipmentItemId">装備アイテムID</param>
+	private record class ItemGatheringEquipmentItemRecord(string ItemId, string EquipmentItemId);
 
 	#endregion
 }

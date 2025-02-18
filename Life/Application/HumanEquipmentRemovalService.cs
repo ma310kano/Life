@@ -31,11 +31,6 @@ public class HumanEquipmentRemovalService(IHumanContextFactory contextFactory) :
 				context.EquipmentItemRepository.Remove(humanId, itemMatter.ItemMatterId);
 			}
 
-			// Gthering item
-			{
-				context.GatheringItemRepository.Remove(humanId, itemMatter.ItemId);
-			}
-
 			// Inventory slot
 			{
 				context.InventorySlotRepository.Add(humanId, itemMatter.ItemMatterId);
