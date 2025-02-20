@@ -140,7 +140,9 @@ ORDER BY
 
 		List<EquipmentItemMatterData> equipmentItems = [];
 		{
-			const string sql = @"SELECT
+			IEnumerable<EquipmentItemMatterRecord> sources;
+			{
+				const string sql = @"SELECT
 	  hei.item_matter_id
 	, imt.item_id
 	, inm.item_name
@@ -160,13 +162,49 @@ ORDER BY
 	, imt.item_id
 	, hei.item_matter_id";
 
-			var param = new
-			{
-				human_id = humanId,
-				language_code = _languageCode,
-			};
+				var param = new
+				{
+					human_id = humanId,
+					language_code = _languageCode,
+				};
 
-			IEnumerable<EquipmentItemMatterRecord> sources = connection.Query<EquipmentItemMatterRecord>(sql, param);
+				sources = connection.Query<EquipmentItemMatterRecord>(sql, param);
+			}
+
+			IEnumerable<ContentItemMatterRecord> contentSources = [];
+			{
+				const string sql = @"SELECT
+	  hii.item_matter_id
+	, hii.content_item_matter_id
+	, imt.item_id
+	, inm.item_name
+	, imt.quantity
+FROM
+	human_equipment_items hei
+	INNER JOIN human_item_matters_item_matters hii
+		ON hei.item_matter_id = hii.item_matter_id
+	INNER JOIN item_matters imt
+		ON hii.content_item_matter_id = imt.item_matter_id
+	INNER JOIN items ite
+		ON imt.item_id = ite.item_id
+	INNER JOIN item_names inm
+		ON  ite.item_id = inm.item_id
+		AND language_code = :language_code
+WHERE
+	hei.human_id = :human_id
+ORDER BY
+	  hii.item_matter_id
+	, ite.item_id
+	, hii.content_item_matter_id";
+
+				var param = new
+				{
+					human_id = humanId,
+					language_code = _languageCode,
+				};
+
+				contentSources = connection.Query<ContentItemMatterRecord>(sql, param);
+			}
 
 			foreach (EquipmentItemMatterRecord source in sources)
 			{
@@ -174,7 +212,21 @@ ORDER BY
 				{
 					ItemSummaryData item = new(source.ItemId, source.ItemName);
 
-					equipmentItem = new EquipmentItemMatterData(source.ItemMatterId, item);
+					List<ContentItemMatterData> contents = [];
+					IEnumerable<ContentItemMatterRecord> contentSourcesInItemMatter = contentSources.Where(x => x.ItemMatterId == source.ItemMatterId);
+					foreach (ContentItemMatterRecord contentSource in contentSourcesInItemMatter)
+					{
+						ContentItemMatterData content;
+						{
+							int quantity = (int)contentSource.Quantity;
+
+							content = new ContentItemMatterData(contentSource.ItemMatterId, contentSource.ItemId, contentSource.ItemName, quantity);
+						}
+
+						contents.Add(content);
+					}
+
+					equipmentItem = new EquipmentItemMatterData(source.ItemMatterId, item, contents);
 				}
 
 				equipmentItems.Add(equipmentItem);
@@ -183,7 +235,9 @@ ORDER BY
 
 		List<ItemMatterData> inventorySlots = [];
 		{
-			const string sql = @"SELECT
+			IEnumerable<ItemMatterRecord> sources;
+			{
+				const string sql = @"SELECT
 	  him.item_matter_id
 	, imt.item_id
 	, inm.item_name
@@ -205,13 +259,49 @@ ORDER BY
 	, imt.item_id
 	, him.item_matter_id";
 
-			var param = new
-			{
-				human_id = humanId,
-				language_code = _languageCode,
-			};
+				var param = new
+				{
+					human_id = humanId,
+					language_code = _languageCode,
+				};
 
-			IEnumerable<ItemMatterRecord> sources = connection.Query<ItemMatterRecord>(sql, param);
+				sources = connection.Query<ItemMatterRecord>(sql, param);
+			}
+
+			IEnumerable<ContentItemMatterRecord> contentSources = [];
+			{
+				const string sql = @"SELECT
+	  hii.item_matter_id
+	, hii.content_item_matter_id
+	, imt.item_id
+	, inm.item_name
+	, imt.quantity
+FROM
+	human_item_matters him
+	INNER JOIN human_item_matters_item_matters hii
+		ON him.item_matter_id = hii.item_matter_id
+	INNER JOIN item_matters imt
+		ON hii.content_item_matter_id = imt.item_matter_id
+	INNER JOIN items ite
+		ON imt.item_id = ite.item_id
+	INNER JOIN item_names inm
+		ON  ite.item_id = inm.item_id
+		AND language_code = :language_code
+WHERE
+	him.human_id = :human_id
+ORDER BY
+	  hii.item_matter_id
+	, ite.item_id
+	, hii.content_item_matter_id";
+
+				var param = new
+				{
+					human_id = humanId,
+					language_code = _languageCode,
+				};
+
+				contentSources = connection.Query<ContentItemMatterRecord>(sql, param);
+			}
 
 			foreach (ItemMatterRecord source in sources)
 			{
@@ -226,7 +316,21 @@ ORDER BY
 
 					int quantity = (int)source.Quantity;
 
-					inventorySlot = new ItemMatterData(source.ItemMatterId, item, quantity);
+					List<ContentItemMatterData> contents = [];
+					IEnumerable<ContentItemMatterRecord> contentSourcesInItemMatter = contentSources.Where(x => x.ItemMatterId == source.ItemMatterId);
+					foreach (ContentItemMatterRecord contentSource in contentSourcesInItemMatter)
+					{
+						ContentItemMatterData content;
+						{
+							int contentQuantity = (int)contentSource.Quantity;
+
+							content = new ContentItemMatterData(contentSource.ItemMatterId, contentSource.ItemId, contentSource.ItemName, contentQuantity);
+						}
+
+						contents.Add(content);
+					}
+
+					inventorySlot = new ItemMatterData(source.ItemMatterId, item, quantity, contents);
 				}
 
 				inventorySlots.Add(inventorySlot);
@@ -278,6 +382,16 @@ ORDER BY
 	/// <param name="CanEquip">装備できるか</param>
 	/// <param name="Quantity">数量</param>
 	private record class ItemMatterRecord(string ItemMatterId, string ItemId, string ItemName, string CanEquip, long Quantity);
+
+	/// <summary>
+	/// 内容アイテム物質のレコード
+	/// </summary>
+	/// <param name="ItemMatterId">アイテム物質ID</param>
+	/// <param name="ContentItemMatterId">内容アイテム物質ID</param>
+	/// <param name="ItemId">アイテムID</param>
+	/// <param name="ItemName">アイテム名</param>
+	/// <param name="Quantity">数量</param>
+	private record class ContentItemMatterRecord(string ItemMatterId, string ContentItemMatterId, string ItemId, string ItemName, long Quantity);
 
 	#endregion
 }

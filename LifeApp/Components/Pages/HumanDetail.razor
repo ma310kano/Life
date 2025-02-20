@@ -4,8 +4,9 @@
 @using Life.Application.Data
 
 @inject IHumanQueryService HumanQueryService
+@inject IAreaQueryService AreaQueryService
 
-@if (_human is not null)
+@if (_human is not null && _area is not null)
 {
 	<nav aria-label="breadcrumb">
 		<ol class="breadcrumb">
@@ -60,6 +61,21 @@
 	</table>
 	<a class="btn btn-secondary" href="/humans/@_human.HumanId/move-area">エリア移動</a>
 	<a class="btn btn-secondary" href="/humans/@_human.HumanId/gather">採集</a>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>建造物</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (BuildingSummaryData building in _area.Buildings)
+			{
+				<tr>
+					<td><a href="/humans/@_human.HumanId/buildings/@building.BuildingId">@building.BuildingName</a></td>
+				</tr>
+			}
+		</tbody>
+	</table>
 
 	<h2 class="mt-4">レシピ(建造物)</h2>
 	<table class="table">
@@ -148,6 +164,11 @@
 	/// </summary>
 	private HumanData? _human;
 
+	/// <summary>
+	/// エリア
+	/// </summary>
+	private AreaData? _area;
+
 	#endregion
 
 	#region Properties
@@ -169,6 +190,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		_human = await HumanQueryService.QuerySingleAsync(HumanId);
+		_area = await AreaQueryService.QuerySingleAsync(_human.Area.AreaId);
 	}
 
 	#endregion

@@ -23,7 +23,7 @@
 	<h1>@(_human.Area.AreaName)で採集</h1>
 }
 
-@if (_model is not null)
+@if (_human is not null && _model is not null)
 {
 	<EditForm Model="_model" OnValidSubmit="SubmitAsync">
 		@foreach (ItemModel item in _model.Items)
@@ -34,6 +34,21 @@
 			</div>
 			<InputNumber class="form-control" disabled="@(!item.IsSubject)" min="1" @bind-Value="item.Quantity" />
 		}
+
+		@foreach (FluidItemModel item in _model.FluidItems)
+		{
+			<div class="form-check">
+				<InputCheckbox class="form-check-input" id="@item.ItemId" disabled="@(item.IsValid ? null : "disabled")" @bind-Value="item.IsSubject" />
+				<label class="form-check-label" for="@item.ItemId">@item.ItemName</label>
+			</div>
+			<InputSelect class="form-select" disabled="@(!item.IsSubject)" @bind-Value="item.StorageItemMatterId">
+				@foreach (EquipmentItemMatterData equipmentItemMatter in _human.EquipmentItems)
+				{
+					<option value="@equipmentItemMatter.ItemMatterId">@equipmentItemMatter.Item.ItemName</option>
+				}
+			</InputSelect>
+		}
+
 		<div class="mt-3">
 			<button type="submit" class="btn btn-primary">採集</button>
 		</div>
@@ -79,7 +94,7 @@
 			AreaData area = await AreaQueryService.QuerySingleAsync(_human.Area.AreaId);
 
 			List<ItemModel> itemModels = [];
-			foreach (AreaItemData source in area.Items)
+			foreach (AreaItemData source in area.Items.Where(x => !x.IsFluid))
 			{
 				ItemModel itemModel;
 				{
@@ -99,7 +114,28 @@
 				itemModels.Add(itemModel);
 			}
 
-			_model = new GatheringModel(HumanId, itemModels);
+			List<FluidItemModel> fluidItemModels = [];
+			foreach (AreaItemData source in area.Items.Where(x => x.IsFluid))
+			{
+				FluidItemModel fluidItemModel;
+				{
+					bool isValid;
+					if (!source.EquipmentItemIds.Any())
+					{
+						isValid = true;
+					}
+					else
+					{
+						isValid = source.EquipmentItemIds.Any(equipmentItemId => _human.EquipmentItems.Any(y => y.Item.ItemId == equipmentItemId));
+					}
+
+					fluidItemModel = new FluidItemModel(source.ItemId, source.ItemName, isValid);
+				}
+
+				fluidItemModels.Add(fluidItemModel);
+			}
+
+			_model = new GatheringModel(HumanId, itemModels, fluidItemModels);
 		}
 	}
 
@@ -127,7 +163,7 @@
 	/// </summary>
 	/// <param name="humanId">人間ID</param>
 	/// <param name="items">アイテムのコレクション</param>
-	private class GatheringModel(string humanId, IReadOnlyCollection<ItemModel> items)
+	private class GatheringModel(string humanId, IReadOnlyCollection<ItemModel> items, IReadOnlyCollection<FluidItemModel> fluidItems)
 	{
 		#region Properties
 
@@ -140,6 +176,11 @@
 		/// アイテムのコレクションを取得します。
 		/// </summary>
 		public IReadOnlyCollection<ItemModel> Items { get; } = items;
+
+		/// <summary>
+		/// 流体アイテムのコレクションを取得します。
+		/// </summary>
+		public IReadOnlyCollection<FluidItemModel> FluidItems { get; } = fluidItems;
 
 		#endregion
 
@@ -154,8 +195,9 @@
 			HumanGatheringCommand command;
 			{
 				List<HumanGatheringItemCommand> items = Items.Where(x => x.IsSubject).Select(x => new HumanGatheringItemCommand(x.ItemId, x.Quantity)).ToList();
+				List<HumanGatheringFluidItemCommand> fluidItems = FluidItems.Where(x => x.IsSubject).Select(x => new HumanGatheringFluidItemCommand(x.ItemId, x.StorageItemMatterId)).ToList();
 
-				command = new HumanGatheringCommand(HumanId, items);
+				command = new HumanGatheringCommand(HumanId, items, fluidItems);
 			}
 
 			return command;
@@ -193,6 +235,44 @@
 		/// 数量を設定または取得します。
 		/// </summary>
 		public int Quantity { get; set; } = 1;
+
+		/// <summary>
+		/// 対象かどうかを設定または取得します。
+		/// </summary>
+		public bool IsSubject { get; set; }
+
+		#endregion
+	}
+
+	/// <summary>
+	/// 流体アイテムモデル
+	/// </summary>
+	/// <param name="itemId">アイテムID</param>
+	/// <param name="itemName">アイテム名</param>
+	/// <param name="isValid">有効かどうか
+	private class FluidItemModel(string itemId, string itemName, bool isValid)
+	{
+		#region Properties
+
+		/// <summary>
+		/// アイテムIDを取得します。
+		/// </summary>
+		public string ItemId { get; } = itemId;
+
+		/// <summary>
+		/// アイテム名を取得します。
+		/// </summary>
+		public string ItemName { get; } = itemName;
+
+		/// <summary>
+		/// 有効かどうかを取得します。
+		/// </summary>
+		public bool IsValid { get; } = isValid;
+
+		/// <summary>
+		/// 収納アイテム物質IDを取得します。
+		/// </summary>
+		public string StorageItemMatterId { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 対象かどうかを設定または取得します。

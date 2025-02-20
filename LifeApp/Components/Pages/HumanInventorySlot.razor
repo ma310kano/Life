@@ -33,6 +33,25 @@
 			</tr>
 		</tbody>
 	</table>
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>アイテム名</th>
+				<th>数量</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (ContentItemMatterData content in _inventorySlot.Contents)
+			{
+				<tr>
+					<td>@content.ItemName</td>
+					<td>@content.Quantity</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+
 	<button type="button" class="btn btn-secondary" disabled="@(!_inventorySlot.Item.CanEquip ? "disabled" : null)" @onclick="EquipAsync">装備</button>
 }
 

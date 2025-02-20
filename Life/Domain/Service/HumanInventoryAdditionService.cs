@@ -67,5 +67,24 @@ public class HumanInventoryAdditionService(IHumanContext context, HumanId humanI
 		}
 	}
 
+	/// <summary>
+	/// 流体を追加します。
+	/// </summary>
+	/// <param name="itemId">アイテムID</param>
+	/// <param name="storageItemMatterId">収納アイテム物質ID</param>
+	public void AddFluid(ItemId itemId, ItemMatterId storageItemMatterId)
+	{
+		ItemMatter itemMatter;
+		{
+			Quantity quantity = new(1);
+
+			itemMatter = context.ItemMatterFactory.Create(itemId, quantity);
+		}
+
+		context.ItemMatterRepository.Save(itemMatter);
+
+		context.InventorySlotRepository.AddInItem(storageItemMatterId, itemMatter.ItemMatterId);
+	}
+
 	#endregion
 }

@@ -106,11 +106,12 @@ ORDER BY
 
 		List<AreaItemData> items = [];
 		{
-			IEnumerable<ItemSummaryData> sources;
+			IEnumerable<ItemRecord> sources;
 			{
 				const string sql = @"SELECT
 	  ait.item_id
 	, inm.item_name
+	, ite.is_fluid
 FROM
 	area_items ait
 	INNER JOIN items ite
@@ -127,7 +128,7 @@ WHERE
 					language_code = _languageCode,
 				};
 
-				sources = connection.Query<ItemSummaryData>(sql, param);
+				sources = connection.Query<ItemRecord>(sql, param);
 			}
 
 			IEnumerable<ItemGatheringEquipmentItemRecord> itemGatheringEquipmentItemRecords;
@@ -151,13 +152,14 @@ ORDER BY
 				itemGatheringEquipmentItemRecords = connection.Query<ItemGatheringEquipmentItemRecord>(sql, param);
 			}
 
-			foreach (ItemSummaryData source in sources)
+			foreach (ItemRecord source in sources)
 			{
 				AreaItemData item;
 				{
+					bool isFluid = source.IsFluid == "1";
 					string[] equipmentItems = itemGatheringEquipmentItemRecords.Where(x => x.ItemId == source.ItemId).Select(x => x.EquipmentItemId).ToArray();
 
-					item = new(source.ItemId, source.ItemName, equipmentItems);
+					item = new(source.ItemId, source.ItemName, isFluid, equipmentItems);
 				}
 
 				items.Add(item);
@@ -189,6 +191,14 @@ ORDER BY
 	/// <param name="AreaId">エリアID</param>
 	/// <param name="AreaName">エリア名</param>
 	private record class AreaRecord(string AreaId, string AreaName);
+
+	/// <summary>
+	/// アイテムのレコード
+	/// </summary>
+	/// <param name="ItemId">アイテムID</param>
+	/// <param name="ItemName">アイテム名</param>
+	/// <param name="IsFluid">流体かどうか</param>
+	private record class ItemRecord(string ItemId, string ItemName, string IsFluid);
 
 	/// <summary>
 	/// アイテム採集装備アイテムのレコード

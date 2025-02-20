@@ -1,0 +1,148 @@
+﻿@page "/humans/{HumanId}/buildings/{BuildingId}"
+
+@using Life.Application
+@using Life.Application.Command
+@using Life.Application.Data
+
+@inject NavigationManager NavigationManager
+@inject IHumanQueryService HumanQueryService
+@inject IBuildingQueryService BuildingQueryService
+@inject IHumanBuildingOperationService HumanBuildingOperationService
+
+@if (_human is not null && _building is not null && _model is not null)
+{
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">ホーム</a></li>
+			<li class="breadcrumb-item"><a href="/humans">人間</a></li>
+			<li class="breadcrumb-item"><a href="/humans/@_human.HumanId">@_human.FirstName @_human.Family.FamilyName</a></li>
+			<li class="breadcrumb-item active" aria-current="page">@_building.BuildingName</li>
+		</ol>
+	</nav>
+
+	<h1>@_building.BuildingName</h1>
+
+	<EditForm Model="_model" OnValidSubmit="SubmitAsync">
+		<InputSelect class="form-select" @bind-Value="_model.StorageItemMatterId">
+			@foreach (EquipmentItemMatterData equipment in _human.EquipmentItems)
+			{
+				<option value="@equipment.ItemMatterId">@equipment.Item.ItemName</option>
+			}
+		</InputSelect>
+		<button type="submit" class="btn btn-primary">作成</button>
+	</EditForm>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// 人間
+	/// </summary>
+	private HumanData? _human;
+
+	/// <summary>
+	/// 建造物
+	/// </summary>
+	private BuildingData? _building;
+
+	/// <summary>
+	/// モデル
+	/// </summary>
+	private Model? _model;
+
+	#endregion
+
+	#region Properties
+
+	/// <summary>
+	/// 人間IDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string HumanId { get; set; } = string.Empty;
+
+	/// <summary>
+	/// 建造物IDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string BuildingId { get; set; } = string.Empty;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		_human = await HumanQueryService.QuerySingleAsync(HumanId);
+		_building = await BuildingQueryService.QuerySingleAsync(BuildingId);
+
+		_model = new Model(_human.HumanId, _building.BuildingId);
+	}
+
+	/// <summary>
+	/// 送信します。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	private async Task SubmitAsync()
+	{
+		HumanBuildingOperationCommand command = _model.CreateCommand();
+
+		await HumanBuildingOperationService.OperateAsync(command);
+
+		NavigationManager.NavigateTo($"/humans/{_human.HumanId}");
+	}
+
+	#endregion
+
+	#region Nested types
+
+	/// <summary>
+	/// モデル
+	/// </summary>
+	private class Model(string humanId, string buildingId)
+	{
+		#region Fields
+
+		/// <summary>
+		/// 人間ID
+		/// </summary>
+		private readonly string _humanId = humanId;
+
+		/// <summary>
+		/// 建造物ID
+		/// </summary>
+		private readonly string _buildingId = buildingId;
+
+		#endregion
+
+		#region Properties
+
+		/// <summary>
+		/// 収納アイテム物質IDを設定または取得します。
+		/// </summary>
+		public string StorageItemMatterId { get; set; } = string.Empty;
+
+		#endregion
+
+		#region Methods
+
+		/// <summary>
+		/// コマンドを作成します。
+		/// </summary>
+		/// <returns>作成したコマンドを返します。</returns>
+		public HumanBuildingOperationCommand CreateCommand()
+		{
+			HumanBuildingOperationCommand command = new(_humanId, _buildingId, StorageItemMatterId);
+
+			return command;
+		}
+
+		#endregion
+	}
+
+	#endregion
+}

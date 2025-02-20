@@ -25,12 +25,21 @@ public class HumanGatheringService(IHumanContextFactory contextFactory) : IHuman
 		try
 		{
 			HumanInventoryAdditionService inventoryAdditionService = new(context, humanId);
+			
 			foreach (HumanGatheringItemCommand source in command.Items)
 			{
 				ItemId itemId = new(source.ItemId);
 				Quantity quantity = new(source.Quantity);
 
 				inventoryAdditionService.Add(itemId, quantity);
+			}
+
+			foreach (HumanGatheringFluidItemCommand source in command.FluidItems)
+			{
+				ItemId itemId = new(source.ItemId);
+				ItemMatterId storageItemMatterId = new(source.StorageItemMatterId);
+
+				inventoryAdditionService.AddFluid(itemId, storageItemMatterId);
 			}
 
 			context.Commit();
