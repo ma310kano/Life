@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Life.Sqlite.TypeHandlers;
 using Microsoft.Data.Sqlite;
 using System.Data;
 using System.Reflection;
@@ -26,6 +27,8 @@ public static class ConnectionFactory
 	/// </summary>
 	static ConnectionFactory()
 	{
+		SqlMapper.AddTypeHandler(new BoolHandler());
+
 		DefaultTypeMap.MatchNamesWithUnderscores = true;
 
 		{

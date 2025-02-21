@@ -216,46 +216,38 @@ ORDER BY
 			{
 				IItemMatterData equipmentItem;
 				{
-					bool isContainer = source.IsContainer == "1";
-					bool canStack = source.CanStack == "1";
-
-					bool canEquip = source.CanEquip == "1";
-
-					if (isContainer)
+					if (source.IsContainer)
 					{
 						List<IItemMatterData> contents = [];
 						IEnumerable<ContentItemMatterRecord> contentSources = allContentSources.Where(x => x.ContainerItemMatterId == source.ItemMatterId);
 						foreach (ContentItemMatterRecord contentSource in contentSources)
 						{
-							bool contentCanStack = contentSource.CanStack == "1";
-
 							IItemMatterData content;
-							bool contentCanEquip = contentSource.CanEquip == "1";
-							if (contentCanStack)
+							if (contentSource.CanStack)
 							{
 								int contentQuantity = (int)contentSource.Quantity;
 
-								content = new StackItemMatterData(contentSource.ContainerItemMatterId, contentSource.ItemId, contentSource.ItemName, contentCanEquip, contentQuantity);
+								content = new StackItemMatterData(contentSource.ContainerItemMatterId, contentSource.ItemId, contentSource.ItemName, contentSource.CanEquip, contentQuantity);
 							}
 							else
 							{
-								content = new ItemMatterData(contentSource.ContainerItemMatterId, contentSource.ItemId, contentSource.ItemName, contentCanEquip);
+								content = new ItemMatterData(contentSource.ContainerItemMatterId, contentSource.ItemId, contentSource.ItemName, contentSource.CanEquip);
 							}
 
 							contents.Add(content);
 						}
 
-						equipmentItem = new ContainerItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, canEquip, contents);
+						equipmentItem = new ContainerItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, source.CanEquip, contents);
 					}
-					else if (canStack)
+					else if (source.CanStack)
 					{
 						int quantity = (int)source.Quantity;
 
-						equipmentItem = new StackItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, canEquip, quantity);
+						equipmentItem = new StackItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, source.CanEquip, quantity);
 					}
 					else
 					{
-						equipmentItem = new ItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, canEquip);
+						equipmentItem = new ItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, source.CanEquip);
 					}
 				}
 
@@ -341,46 +333,38 @@ ORDER BY
 			{
 				IItemMatterData inventorySlot;
 				{
-					bool isContainer = source.IsContainer == "1";
-					bool canStack = source.CanStack == "1";
-
-					bool canEquip = source.CanEquip == "1";
-
-					if (isContainer)
+					if (source.IsContainer)
 					{
 						List<IItemMatterData> contents = [];
 						IEnumerable<ContentItemMatterRecord> contentSources = allContentSources.Where(x => x.ContainerItemMatterId == source.ItemMatterId);
 						foreach (ContentItemMatterRecord contentSource in contentSources)
 						{
-							bool contentCanStack = contentSource.CanStack == "1";
-
 							IItemMatterData content;
-							bool contentCanEquip = contentSource.CanEquip == "1";
-							if (contentCanStack)
+							if (contentSource.CanStack)
 							{
 								int contentQuantity = (int)contentSource.Quantity;
 
-								content = new StackItemMatterData(contentSource.ContainerItemMatterId, contentSource.ItemId, contentSource.ItemName, contentCanEquip, contentQuantity);
+								content = new StackItemMatterData(contentSource.ContainerItemMatterId, contentSource.ItemId, contentSource.ItemName, contentSource.CanEquip, contentQuantity);
 							}
 							else
 							{
-								content = new ItemMatterData(contentSource.ContainerItemMatterId, contentSource.ItemId, contentSource.ItemName, contentCanEquip);
+								content = new ItemMatterData(contentSource.ContainerItemMatterId, contentSource.ItemId, contentSource.ItemName, contentSource.CanEquip);
 							}
 
 							contents.Add(content);
 						}
 
-						inventorySlot = new ContainerItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, canEquip, contents);
+						inventorySlot = new ContainerItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, source.CanEquip, contents);
 					}
-					else if (canStack)
+					else if (source.CanStack)
 					{
 						int quantity = (int)source.Quantity;
 
-						inventorySlot = new StackItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, canEquip, quantity);
+						inventorySlot = new StackItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, source.CanEquip, quantity);
 					}
 					else
 					{
-						inventorySlot = new ItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, canEquip);
+						inventorySlot = new ItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, source.CanEquip);
 					}
 				}
 
@@ -426,7 +410,7 @@ ORDER BY
 	/// <param name="CanStack">スタック可能かどうか</param>
 	/// <param name="CanEquip">装備できるか</param>
 	/// <param name="Quantity">数量</param>
-	private record class ItemMatterRecord(string ItemMatterId, string ItemId, string ItemName, string IsContainer, string CanStack, string CanEquip, long Quantity);
+	private record class ItemMatterRecord(string ItemMatterId, string ItemId, string ItemName, bool IsContainer, bool CanStack, bool CanEquip, long Quantity);
 
 	/// <summary>
 	/// 内容アイテム物質のレコード
@@ -438,7 +422,7 @@ ORDER BY
 	/// <param name="CanStack">スタック可能かどうか</param>
 	/// <param name="CanEquip">装備可能かどうか</param>
 	/// <param name="Quantity">数量</param>
-	private record class ContentItemMatterRecord(string ContainerItemMatterId, string ItemMatterId, string ItemId, string ItemName, string CanStack, string CanEquip, long Quantity);
+	private record class ContentItemMatterRecord(string ContainerItemMatterId, string ItemMatterId, string ItemId, string ItemName, bool CanStack, bool CanEquip, long Quantity);
 
 	#endregion
 }
