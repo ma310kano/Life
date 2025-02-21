@@ -24,9 +24,9 @@
 
 	<EditForm Model="_model" OnValidSubmit="SubmitAsync">
 		<InputSelect class="form-select" @bind-Value="_model.StorageItemMatterId">
-			@foreach (EquipmentItemMatterData equipment in _human.EquipmentItems)
+			@foreach (ItemMatterData equipment in _human.EquipmentItems)
 			{
-				<option value="@equipment.ItemMatterId">@equipment.Item.ItemName</option>
+				<option value="@equipment.ItemMatterId">@equipment.ItemName</option>
 			}
 		</InputSelect>
 		<button type="submit" class="btn btn-primary">作成</button>

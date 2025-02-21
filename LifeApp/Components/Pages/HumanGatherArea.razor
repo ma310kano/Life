@@ -42,9 +42,9 @@
 				<label class="form-check-label" for="@item.ItemId">@item.ItemName</label>
 			</div>
 			<InputSelect class="form-select" disabled="@(!item.IsSubject)" @bind-Value="item.StorageItemMatterId">
-				@foreach (EquipmentItemMatterData equipmentItemMatter in _human.EquipmentItems)
+				@foreach (ItemMatterData equipmentItemMatter in _human.EquipmentItems)
 				{
-					<option value="@equipmentItemMatter.ItemMatterId">@equipmentItemMatter.Item.ItemName</option>
+					<option value="@equipmentItemMatter.ItemMatterId">@equipmentItemMatter.ItemName</option>
 				}
 			</InputSelect>
 		}
@@ -105,7 +105,7 @@
 					}
 					else
 					{
-						isValid = source.EquipmentItemIds.Any(equipmentItemId => _human.EquipmentItems.Any(y => y.Item.ItemId == equipmentItemId));
+						isValid = source.EquipmentItemIds.Any(equipmentItemId => _human.EquipmentItems.Any(y => y.ItemId == equipmentItemId));
 					}
 
 					itemModel = new ItemModel(source.ItemId, source.ItemName, isValid);
@@ -126,7 +126,7 @@
 					}
 					else
 					{
-						isValid = source.EquipmentItemIds.Any(equipmentItemId => _human.EquipmentItems.Any(y => y.Item.ItemId == equipmentItemId));
+						isValid = source.EquipmentItemIds.Any(equipmentItemId => _human.EquipmentItems.Any(y => y.ItemId == equipmentItemId));
 					}
 
 					fluidItemModel = new FluidItemModel(source.ItemId, source.ItemName, isValid);

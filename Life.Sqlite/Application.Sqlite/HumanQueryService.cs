@@ -138,14 +138,16 @@ ORDER BY
 			itemRecipes = connection.Query<ItemRecipeSummaryData>(sql, param).ToList();
 		}
 
-		List<EquipmentItemMatterData> equipmentItems = [];
+		List<ItemMatterData> equipmentItems = [];
 		{
-			IEnumerable<EquipmentItemMatterRecord> sources;
+			IEnumerable<ItemMatterRecord> sources;
 			{
 				const string sql = @"SELECT
 	  hei.item_matter_id
 	, imt.item_id
 	, inm.item_name
+	, ite.can_equip
+	, imt.quantity
 FROM
 	human_equipment_items hei
 	INNER JOIN item_matters imt
@@ -168,7 +170,7 @@ ORDER BY
 					language_code = _languageCode,
 				};
 
-				sources = connection.Query<EquipmentItemMatterRecord>(sql, param);
+				sources = connection.Query<ItemMatterRecord>(sql, param);
 			}
 
 			IEnumerable<ContentItemMatterRecord> contentSources = [];
@@ -206,11 +208,12 @@ ORDER BY
 				contentSources = connection.Query<ContentItemMatterRecord>(sql, param);
 			}
 
-			foreach (EquipmentItemMatterRecord source in sources)
+			foreach (ItemMatterRecord source in sources)
 			{
-				EquipmentItemMatterData equipmentItem;
+				ItemMatterData equipmentItem;
 				{
-					ItemSummaryData item = new(source.ItemId, source.ItemName);
+					bool canEquip = source.CanEquip == "1";
+					int quantity = (int)source.Quantity;
 
 					List<ContentItemMatterData> contents = [];
 					IEnumerable<ContentItemMatterRecord> contentSourcesInItemMatter = contentSources.Where(x => x.ItemMatterId == source.ItemMatterId);
@@ -218,15 +221,15 @@ ORDER BY
 					{
 						ContentItemMatterData content;
 						{
-							int quantity = (int)contentSource.Quantity;
+							int contentQuantity = (int)contentSource.Quantity;
 
-							content = new ContentItemMatterData(contentSource.ItemMatterId, contentSource.ItemId, contentSource.ItemName, quantity);
+							content = new ContentItemMatterData(contentSource.ItemMatterId, contentSource.ItemId, contentSource.ItemName, contentQuantity);
 						}
 
 						contents.Add(content);
 					}
 
-					equipmentItem = new EquipmentItemMatterData(source.ItemMatterId, item, contents);
+					equipmentItem = new ItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, canEquip, quantity, contents);
 				}
 
 				equipmentItems.Add(equipmentItem);
@@ -307,13 +310,7 @@ ORDER BY
 			{
 				ItemMatterData inventorySlot;
 				{
-					ItemData item;
-					{
-						bool canEquip = source.CanEquip == "1";
-
-						item = new ItemData(source.ItemId, source.ItemName, canEquip);
-					}
-
+					bool canEquip = source.CanEquip == "1";
 					int quantity = (int)source.Quantity;
 
 					List<ContentItemMatterData> contents = [];
@@ -330,7 +327,7 @@ ORDER BY
 						contents.Add(content);
 					}
 
-					inventorySlot = new ItemMatterData(source.ItemMatterId, item, quantity, contents);
+					inventorySlot = new ItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, canEquip, quantity, contents);
 				}
 
 				inventorySlots.Add(inventorySlot);
@@ -364,14 +361,6 @@ ORDER BY
 	/// <param name="FamilyId">家族ID</param>
 	/// <param name="FamilyName">家族名</param>
 	private record class HumanRecord(string HumanId, string FirstName, string FamilyId, string FamilyName);
-
-	/// <summary>
-	/// 装備アイテム物質のレコード
-	/// </summary>
-	/// <param name="ItemMatterId">アイテム物質ID</param>
-	/// <param name="ItemId">アイテムID</param>
-	/// <param name="ItemName">アイテム名</param>
-	private record class EquipmentItemMatterRecord(string ItemMatterId, string ItemId, string ItemName);
 
 	/// <summary>
 	/// アイテム物質のレコード

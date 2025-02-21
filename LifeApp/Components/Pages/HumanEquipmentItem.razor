@@ -16,17 +16,17 @@
 			<li class="breadcrumb-item"><a href="/humans">人間</a></li>
 			<li class="breadcrumb-item"><a href="/humans/@_human.HumanId">@_human.FirstName @_human.Family.FamilyName</a></li>
 			<li class="breadcrumb-item">装備</li>
-			<li class="breadcrumb-item active" aria-current="page">@_equipmentItemMatter.Item.ItemName</li>
+			<li class="breadcrumb-item active" aria-current="page">@_equipmentItemMatter.ItemName</li>
 		</ol>
 	</nav>
 
-	<h1>@_equipmentItemMatter.Item.ItemName</h1>
+	<h1>@_equipmentItemMatter.ItemName</h1>
 
 	<table class="table">
 		<tbody>
 			<tr>
 				<th>アイテム</th>
-				<td>@_equipmentItemMatter.Item.ItemName</td>
+				<td>@_equipmentItemMatter.ItemName</td>
 			</tr>
 		</tbody>
 	</table>
@@ -63,7 +63,7 @@
 	/// <summary>
 	/// アイテム
 	/// </summary>
-	private EquipmentItemMatterData? _equipmentItemMatter;
+	private ItemMatterData? _equipmentItemMatter;
 
 	#endregion
 

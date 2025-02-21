@@ -164,7 +164,7 @@
 				(
 					from ing in _itemRecipe.Ingredients
 					join his in _human.InventorySlots
-					on ing.Item.ItemId equals his.Item.ItemId into hisJoin
+					on ing.Item.ItemId equals his.ItemId into hisJoin
 					from hij in hisJoin.DefaultIfEmpty()
 					select new ItemRow(ing.Item.ItemName, ing.Quantity, _frequency, hij?.Quantity ?? 0)
 				).ToList();

@@ -16,16 +16,16 @@
 			<li class="breadcrumb-item"><a href="/humans">人間</a></li>
 			<li class="breadcrumb-item"><a href="/humans/@_human.HumanId">@_human.FirstName @_human.Family.FamilyName</a></li>
 			<li class="breadcrumb-item">インベントリー</li>
-			<li class="breadcrumb-item active" aria-current="page">@_inventorySlot.Item.ItemName</li>
+			<li class="breadcrumb-item active" aria-current="page">@_inventorySlot.ItemName</li>
 		</ol>
 	</nav>
 
-	<h1>@_inventorySlot.Item.ItemName</h1>
+	<h1>@_inventorySlot.ItemName</h1>
 	<table class="table">
 		<tbody>
 			<tr>
 				<th>アイテム</th>
-				<td>@_inventorySlot.Item.ItemName</td>
+				<td>@_inventorySlot.ItemName</td>
 			</tr>
 			<tr>
 				<th>数量</th>
@@ -52,7 +52,7 @@
 		</tbody>
 	</table>
 
-	<button type="button" class="btn btn-secondary" disabled="@(!_inventorySlot.Item.CanEquip ? "disabled" : null)" @onclick="EquipAsync">装備</button>
+	<button type="button" class="btn btn-secondary" disabled="@(!_inventorySlot.CanEquip ? "disabled" : null)" @onclick="EquipAsync">装備</button>
 }
 
 @code {

@@ -11,4 +11,4 @@
 /// <param name="ItemRecipes">アイテムレシピのコレクション</param>
 /// <param name="EquipmentItems">装備アイテムのコレクション</param>
 /// <param name="InventorySlots">インベントリースロットのコレクション</param>
-public record class HumanData(string HumanId, string FirstName, FamilySummaryData Family, AreaSummaryData Area, IReadOnlyCollection<BuildingRecipeSummaryData> BuildingRecipes, IReadOnlyCollection<ItemRecipeSummaryData> ItemRecipes, IReadOnlyCollection<EquipmentItemMatterData> EquipmentItems, IReadOnlyCollection<ItemMatterData> InventorySlots);
+public record class HumanData(string HumanId, string FirstName, FamilySummaryData Family, AreaSummaryData Area, IReadOnlyCollection<BuildingRecipeSummaryData> BuildingRecipes, IReadOnlyCollection<ItemRecipeSummaryData> ItemRecipes, IReadOnlyCollection<ItemMatterData> EquipmentItems, IReadOnlyCollection<ItemMatterData> InventorySlots);
