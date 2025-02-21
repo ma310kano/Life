@@ -138,7 +138,7 @@ ORDER BY
 			itemRecipes = connection.Query<ItemRecipeSummaryData>(sql, param).ToList();
 		}
 
-		List<ItemMatterData> equipmentItems = [];
+		List<IItemMatterData> equipmentItems = [];
 		{
 			IEnumerable<ItemMatterRecord> sources;
 			{
@@ -146,6 +146,8 @@ ORDER BY
 	  hei.item_matter_id
 	, imt.item_id
 	, inm.item_name
+	, ite.is_container
+	, ite.can_stack
 	, ite.can_equip
 	, imt.quantity
 FROM
@@ -173,13 +175,15 @@ ORDER BY
 				sources = connection.Query<ItemMatterRecord>(sql, param);
 			}
 
-			IEnumerable<ContentItemMatterRecord> contentSources = [];
+			IEnumerable<ContentItemMatterRecord> allContentSources;
 			{
 				const string sql = @"SELECT
-	  hii.item_matter_id
-	, hii.content_item_matter_id
+	  hii.item_matter_id AS container_item_matter_id
+	, hii.content_item_matter_id AS item_matter_id
 	, imt.item_id
 	, inm.item_name
+	, ite.can_stack
+	, ite.can_equip
 	, imt.quantity
 FROM
 	human_equipment_items hei
@@ -205,38 +209,61 @@ ORDER BY
 					language_code = _languageCode,
 				};
 
-				contentSources = connection.Query<ContentItemMatterRecord>(sql, param);
+				allContentSources = connection.Query<ContentItemMatterRecord>(sql, param);
 			}
 
 			foreach (ItemMatterRecord source in sources)
 			{
-				ItemMatterData equipmentItem;
+				IItemMatterData equipmentItem;
 				{
+					bool isContainer = source.IsContainer == "1";
+					bool canStack = source.CanStack == "1";
+
 					bool canEquip = source.CanEquip == "1";
-					int quantity = (int)source.Quantity;
 
-					List<ContentItemMatterData> contents = [];
-					IEnumerable<ContentItemMatterRecord> contentSourcesInItemMatter = contentSources.Where(x => x.ItemMatterId == source.ItemMatterId);
-					foreach (ContentItemMatterRecord contentSource in contentSourcesInItemMatter)
+					if (isContainer)
 					{
-						ContentItemMatterData content;
+						List<IItemMatterData> contents = [];
+						IEnumerable<ContentItemMatterRecord> contentSources = allContentSources.Where(x => x.ContainerItemMatterId == source.ItemMatterId);
+						foreach (ContentItemMatterRecord contentSource in contentSources)
 						{
-							int contentQuantity = (int)contentSource.Quantity;
+							bool contentCanStack = contentSource.CanStack == "1";
 
-							content = new ContentItemMatterData(contentSource.ItemMatterId, contentSource.ItemId, contentSource.ItemName, contentQuantity);
+							IItemMatterData content;
+							bool contentCanEquip = contentSource.CanEquip == "1";
+							if (contentCanStack)
+							{
+								int contentQuantity = (int)contentSource.Quantity;
+
+								content = new StackItemMatterData(contentSource.ContainerItemMatterId, contentSource.ItemId, contentSource.ItemName, contentCanEquip, contentQuantity);
+							}
+							else
+							{
+								content = new ItemMatterData(contentSource.ContainerItemMatterId, contentSource.ItemId, contentSource.ItemName, contentCanEquip);
+							}
+
+							contents.Add(content);
 						}
 
-						contents.Add(content);
+						equipmentItem = new ContainerItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, canEquip, contents);
 					}
+					else if (canStack)
+					{
+						int quantity = (int)source.Quantity;
 
-					equipmentItem = new ItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, canEquip, quantity, contents);
+						equipmentItem = new StackItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, canEquip, quantity);
+					}
+					else
+					{
+						equipmentItem = new ItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, canEquip);
+					}
 				}
 
 				equipmentItems.Add(equipmentItem);
 			}
 		}
 
-		List<ItemMatterData> inventorySlots = [];
+		List<IItemMatterData> inventorySlots = [];
 		{
 			IEnumerable<ItemMatterRecord> sources;
 			{
@@ -244,6 +271,8 @@ ORDER BY
 	  him.item_matter_id
 	, imt.item_id
 	, inm.item_name
+	, ite.is_container
+	, ite.can_stack
 	, ite.can_equip
 	, imt.quantity
 FROM
@@ -271,13 +300,15 @@ ORDER BY
 				sources = connection.Query<ItemMatterRecord>(sql, param);
 			}
 
-			IEnumerable<ContentItemMatterRecord> contentSources = [];
+			IEnumerable<ContentItemMatterRecord> allContentSources;
 			{
 				const string sql = @"SELECT
-	  hii.item_matter_id
-	, hii.content_item_matter_id
+	  hii.item_matter_id AS container_item_matter_id
+	, hii.content_item_matter_id AS item_matter_id
 	, imt.item_id
 	, inm.item_name
+	, ite.can_stack
+	, ite.can_equip
 	, imt.quantity
 FROM
 	human_item_matters him
@@ -303,31 +334,54 @@ ORDER BY
 					language_code = _languageCode,
 				};
 
-				contentSources = connection.Query<ContentItemMatterRecord>(sql, param);
+				allContentSources = connection.Query<ContentItemMatterRecord>(sql, param);
 			}
 
 			foreach (ItemMatterRecord source in sources)
 			{
-				ItemMatterData inventorySlot;
+				IItemMatterData inventorySlot;
 				{
+					bool isContainer = source.IsContainer == "1";
+					bool canStack = source.CanStack == "1";
+
 					bool canEquip = source.CanEquip == "1";
-					int quantity = (int)source.Quantity;
 
-					List<ContentItemMatterData> contents = [];
-					IEnumerable<ContentItemMatterRecord> contentSourcesInItemMatter = contentSources.Where(x => x.ItemMatterId == source.ItemMatterId);
-					foreach (ContentItemMatterRecord contentSource in contentSourcesInItemMatter)
+					if (isContainer)
 					{
-						ContentItemMatterData content;
+						List<IItemMatterData> contents = [];
+						IEnumerable<ContentItemMatterRecord> contentSources = allContentSources.Where(x => x.ContainerItemMatterId == source.ItemMatterId);
+						foreach (ContentItemMatterRecord contentSource in contentSources)
 						{
-							int contentQuantity = (int)contentSource.Quantity;
+							bool contentCanStack = contentSource.CanStack == "1";
 
-							content = new ContentItemMatterData(contentSource.ItemMatterId, contentSource.ItemId, contentSource.ItemName, contentQuantity);
+							IItemMatterData content;
+							bool contentCanEquip = contentSource.CanEquip == "1";
+							if (contentCanStack)
+							{
+								int contentQuantity = (int)contentSource.Quantity;
+
+								content = new StackItemMatterData(contentSource.ContainerItemMatterId, contentSource.ItemId, contentSource.ItemName, contentCanEquip, contentQuantity);
+							}
+							else
+							{
+								content = new ItemMatterData(contentSource.ContainerItemMatterId, contentSource.ItemId, contentSource.ItemName, contentCanEquip);
+							}
+
+							contents.Add(content);
 						}
 
-						contents.Add(content);
+						inventorySlot = new ContainerItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, canEquip, contents);
 					}
+					else if (canStack)
+					{
+						int quantity = (int)source.Quantity;
 
-					inventorySlot = new ItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, canEquip, quantity, contents);
+						inventorySlot = new StackItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, canEquip, quantity);
+					}
+					else
+					{
+						inventorySlot = new ItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, canEquip);
+					}
 				}
 
 				inventorySlots.Add(inventorySlot);
@@ -368,19 +422,23 @@ ORDER BY
 	/// <param name="ItemMatterId">アイテム物質ID</param>
 	/// <param name="ItemId">アイテムID</param>
 	/// <param name="ItemName">アイテム名</param>
+	/// <param name="IsContainer">コンテナーかどうか</param>
+	/// <param name="CanStack">スタック可能かどうか</param>
 	/// <param name="CanEquip">装備できるか</param>
 	/// <param name="Quantity">数量</param>
-	private record class ItemMatterRecord(string ItemMatterId, string ItemId, string ItemName, string CanEquip, long Quantity);
+	private record class ItemMatterRecord(string ItemMatterId, string ItemId, string ItemName, string IsContainer, string CanStack, string CanEquip, long Quantity);
 
 	/// <summary>
 	/// 内容アイテム物質のレコード
 	/// </summary>
+	/// <param name="ContainerItemMatterId">コンテナーアイテム物質ID</param>
 	/// <param name="ItemMatterId">アイテム物質ID</param>
-	/// <param name="ContentItemMatterId">内容アイテム物質ID</param>
 	/// <param name="ItemId">アイテムID</param>
 	/// <param name="ItemName">アイテム名</param>
+	/// <param name="CanStack">スタック可能かどうか</param>
+	/// <param name="CanEquip">装備可能かどうか</param>
 	/// <param name="Quantity">数量</param>
-	private record class ContentItemMatterRecord(string ItemMatterId, string ContentItemMatterId, string ItemId, string ItemName, long Quantity);
+	private record class ContentItemMatterRecord(string ContainerItemMatterId, string ItemMatterId, string ItemId, string ItemName, string CanStack, string CanEquip, long Quantity);
 
 	#endregion
 }

@@ -100,7 +100,7 @@
 			join his in _human.InventorySlots
 			on ing.Item.ItemId equals his.ItemId into hisJoin
 			from hij in hisJoin.DefaultIfEmpty()
-			select new ItemRow(ing.Item.ItemName, ing.Quantity, hij?.Quantity ?? 0);
+			select new ItemRow(ing.Item.ItemName, ing.Quantity, (hij as StackItemMatterData)?.Quantity ?? 0);
 
 		_disabled = _rows.Any(row => row.RequiredQuantity > row.PossessionQuantity) ? "disabled" : null;
 	}

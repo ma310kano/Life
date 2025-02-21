@@ -31,24 +31,6 @@
 		</tbody>
 	</table>
 
-	<table class="table">
-		<thead>
-			<tr>
-				<th>アイテム名</th>
-				<th>数量</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (ContentItemMatterData content in _equipmentItemMatter.Contents)
-			{
-				<tr>
-					<td>@content.ItemName</td>
-					<td>@content.Quantity</td>
-				</tr>
-			}
-		</tbody>
-	</table>
-
 	<button type="button" class="btn btn-secondary" @onclick="RemoveAsync">解除</button>
 }
 
@@ -63,7 +45,7 @@
 	/// <summary>
 	/// アイテム
 	/// </summary>
-	private ItemMatterData? _equipmentItemMatter;
+	private IItemMatterData? _equipmentItemMatter;
 
 	#endregion
 

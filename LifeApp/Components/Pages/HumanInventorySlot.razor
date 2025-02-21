@@ -27,30 +27,40 @@
 				<th>アイテム</th>
 				<td>@_inventorySlot.ItemName</td>
 			</tr>
-			<tr>
-				<th>数量</th>
-				<td>@_inventorySlot.Quantity.ToString("#,0")</td>
-			</tr>
-		</tbody>
-	</table>
-
-	<table class="table">
-		<thead>
-			<tr>
-				<th>アイテム名</th>
-				<th>数量</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (ContentItemMatterData content in _inventorySlot.Contents)
-			{
-				<tr>
-					<td>@content.ItemName</td>
-					<td>@content.Quantity</td>
-				</tr>
+			@{
+				StackItemMatterData? stack = _inventorySlot as StackItemMatterData;
+				if (stack is not null)
+				{
+					<tr>
+						<th>数量</th>
+						<td>@stack.Quantity.ToString("#,0")</td>
+					</tr>
+				}
 			}
 		</tbody>
 	</table>
+
+	ContainerItemMatterData? container = _inventorySlot as ContainerItemMatterData;
+	if (container is not null)
+	{
+		<table class="table">
+			<thead>
+				<tr>
+					<th>アイテム名</th>
+					<th>数量</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (StackItemMatterData content in container.Contents)
+				{
+					<tr>
+						<td>@content.ItemName</td>
+						<td>@content.Quantity</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	}
 
 	<button type="button" class="btn btn-secondary" disabled="@(!_inventorySlot.CanEquip ? "disabled" : null)" @onclick="EquipAsync">装備</button>
 }
@@ -66,7 +76,7 @@
 	/// <summary>
 	/// インベントリースロット
 	/// </summary>
-	private ItemMatterData? _inventorySlot;
+	private IItemMatterData? _inventorySlot;
 
 	#endregion
 

@@ -144,12 +144,22 @@
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (ItemMatterData inventorySlot in _human.InventorySlots)
+			@foreach (IItemMatterData inventorySlot in _human.InventorySlots)
 			{
 				<tr>
 					<td class="id">@inventorySlot.ItemId</td>
 					<td><a href="/humans/@_human.HumanId/inventory-slots/@inventorySlot.ItemMatterId">@inventorySlot.ItemName</a></td>
-					<td>@inventorySlot.Quantity</td>
+					@{
+						StackItemMatterData? stack = inventorySlot as StackItemMatterData;
+						if (stack is not null)
+						{
+							<td>@stack.Quantity</td>
+						}
+						else
+						{
+							<td></td>
+						}
+					}
 				</tr>
 			}
 		</tbody>
