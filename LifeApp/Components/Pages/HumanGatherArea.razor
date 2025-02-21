@@ -42,7 +42,7 @@
 				<label class="form-check-label" for="@item.ItemId">@item.ItemName</label>
 			</div>
 			<InputSelect class="form-select" disabled="@(!item.IsSubject)" @bind-Value="item.StorageItemMatterId">
-				@foreach (ItemMatterData equipmentItemMatter in _human.EquipmentItems)
+				@foreach (IItemMatterData equipmentItemMatter in _human.EquipmentItems)
 				{
 					<option value="@equipmentItemMatter.ItemMatterId">@equipmentItemMatter.ItemName</option>
 				}

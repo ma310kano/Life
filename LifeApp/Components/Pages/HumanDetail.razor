@@ -124,7 +124,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (ItemMatterData itemMatter in _human.EquipmentItems)
+			@foreach (IItemMatterData itemMatter in _human.EquipmentItems)
 			{
 				<tr>
 					<td class="id">@itemMatter.ItemId</td>
