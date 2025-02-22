@@ -1,4 +1,4 @@
-﻿@page "/humans/{HumanId}/buildings/{BuildingId}"
+﻿@page "/humans/{HumanId}/buildings/filter"
 
 @using Life.Application
 @using Life.Application.Command
@@ -9,7 +9,7 @@
 @inject IBuildingQueryService BuildingQueryService
 @inject IHumanBuildingOperationService HumanBuildingOperationService
 
-@if (_human is not null && _building is not null && _model is not null)
+@if (_human is not null && _containers is not null && _building is not null && _model is not null)
 {
 	<nav aria-label="breadcrumb">
 		<ol class="breadcrumb">
@@ -23,13 +23,13 @@
 	<h1>@_building.BuildingName</h1>
 
 	<EditForm Model="_model" OnValidSubmit="SubmitAsync">
-		<InputSelect class="form-select" @bind-Value="_model.StorageItemMatterId">
-			@foreach (IItemMatterData equipment in _human.EquipmentItems)
+		<InputSelect class="form-select" @bind-Value="_model.ContainerItemMatterId">
+			@foreach (ContainerItemMatterData container in _containers)
 			{
-				<option value="@equipment.ItemMatterId">@equipment.ItemName</option>
+				<option value="@container.ItemMatterId">@container.ItemName</option>
 			}
 		</InputSelect>
-		<button type="submit" class="btn btn-primary">作成</button>
+		<button type="submit" class="btn btn-primary">濾過</button>
 	</EditForm>
 }
 
@@ -40,6 +40,11 @@
 	/// 人間
 	/// </summary>
 	private HumanData? _human;
+
+	/// <summary>
+	/// コンテナーのコレクション
+	/// </summary>
+	private IReadOnlyCollection<ContainerItemMatterData>? _containers;
 
 	/// <summary>
 	/// 建造物
@@ -61,12 +66,6 @@
 	[Parameter]
 	public string HumanId { get; set; } = string.Empty;
 
-	/// <summary>
-	/// 建造物IDを設定または取得します。
-	/// </summary>
-	[Parameter]
-	public string BuildingId { get; set; } = string.Empty;
-
 	#endregion
 
 	#region Methods
@@ -78,7 +77,22 @@
 	protected override async Task OnInitializedAsync()
 	{
 		_human = await HumanQueryService.QuerySingleAsync(HumanId);
-		_building = await BuildingQueryService.QuerySingleAsync(BuildingId);
+
+		{
+			List<ContainerItemMatterData> containers = [];
+
+			foreach (IItemMatterData itemMatter in _human.InventorySlots)
+			{
+				ContainerItemMatterData? container = itemMatter as ContainerItemMatterData;
+				if (container is null) continue;
+
+				containers.Add(container);
+			}
+
+			_containers = containers;
+		}
+
+		_building = await BuildingQueryService.QuerySingleAsync("filter");
 
 		_model = new Model(_human.HumanId, _building.BuildingId);
 	}
@@ -89,11 +103,11 @@
 	/// <returns>非同期操作を返します。</returns>
 	private async Task SubmitAsync()
 	{
-		HumanBuildingOperationCommand command = _model.CreateCommand();
+		HumanBuildingOperationCommand command = _model!.CreateCommand();
 
 		await HumanBuildingOperationService.OperateAsync(command);
 
-		NavigationManager.NavigateTo($"/humans/{_human.HumanId}");
+		NavigationManager.NavigateTo($"/humans/{_human!.HumanId}");
 	}
 
 	#endregion
@@ -122,9 +136,9 @@
 		#region Properties
 
 		/// <summary>
-		/// 収納アイテム物質IDを設定または取得します。
+		/// コンテナーアイテム物質IDを設定または取得します。
 		/// </summary>
-		public string StorageItemMatterId { get; set; } = string.Empty;
+		public string ContainerItemMatterId { get; set; } = string.Empty;
 
 		#endregion
 
@@ -136,7 +150,7 @@
 		/// <returns>作成したコマンドを返します。</returns>
 		public HumanBuildingOperationCommand CreateCommand()
 		{
-			HumanBuildingOperationCommand command = new(_humanId, _buildingId, StorageItemMatterId);
+			HumanBuildingOperationCommand command = new(_humanId, _buildingId, ContainerItemMatterId);
 
 			return command;
 		}

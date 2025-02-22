@@ -51,11 +51,11 @@
 				</tr>
 			</thead>
 			<tbody>
-				@foreach (StackItemMatterData content in container.Contents)
+				@foreach (IItemMatterData content in container.Contents)
 				{
 					<tr>
 						<td>@content.ItemName</td>
-						<td>@content.Quantity</td>
+						<td>@((content as StackItemMatterData)?.Quantity)</td>
 					</tr>
 				}
 			</tbody>
