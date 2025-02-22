@@ -3,23 +3,23 @@
 namespace Life.Application;
 
 /// <summary>
-/// 人間の建造物操作サービス
+/// 水の濾過サービス
 /// </summary>
-public interface IHumanBuildingOperationService
+public interface IWaterFilteringService
 {
 	#region Methods
 
 	/// <summary>
-	/// 建造物を操作します。
+	/// 水を濾過します。
 	/// </summary>
 	/// <param name="command">コマンド</param>
-	void Operate(HumanBuildingOperationCommand command);
+	void Filter(HumanBuildingOperationCommand command);
 
 	/// <summary>
-	/// 建造物を操作します。
+	/// 水を濾過します。
 	/// </summary>
 	/// <param name="command">コマンド</param>
-	Task OperateAsync(HumanBuildingOperationCommand command);
+	Task FilterAsync(HumanBuildingOperationCommand command);
 
 	#endregion
 }

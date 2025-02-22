@@ -7,7 +7,7 @@
 @inject NavigationManager NavigationManager
 @inject IHumanQueryService HumanQueryService
 @inject IBuildingQueryService BuildingQueryService
-@inject IHumanBuildingOperationService HumanBuildingOperationService
+@inject IWaterFilteringService WaterFilteringService
 
 @if (_human is not null && _containers is not null && _building is not null && _model is not null)
 {
@@ -105,7 +105,7 @@
 	{
 		HumanBuildingOperationCommand command = _model!.CreateCommand();
 
-		await HumanBuildingOperationService.OperateAsync(command);
+		await WaterFilteringService.FilterAsync(command);
 
 		NavigationManager.NavigateTo($"/humans/{_human!.HumanId}");
 	}

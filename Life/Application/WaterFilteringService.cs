@@ -7,15 +7,15 @@ namespace Life.Application;
 /// 人間の建造物操作サービス
 /// </summary>
 /// <param name="contextFactory">コンテキストのファクトリー</param>
-public class HumanBuildingOperationService(IHumanContextFactory contextFactory) : IHumanBuildingOperationService
+public class WaterFilteringService(IHumanContextFactory contextFactory) : IWaterFilteringService
 {
 	#region Methods
 
 	/// <summary>
-	/// 建造物を操作します。
+	/// 水を濾過します。
 	/// </summary>
 	/// <param name="command">コマンド</param>
-	public void Operate(HumanBuildingOperationCommand command)
+	public void Filter(HumanBuildingOperationCommand command)
 	{
 		HumanId humanId = new(command.HumanId);
 		BuildingId buildingId = new(command.BuildingId);
@@ -64,12 +64,12 @@ public class HumanBuildingOperationService(IHumanContextFactory contextFactory) 
 	}
 
 	/// <summary>
-	/// 建造物を操作します。
+	/// 水を濾過します。
 	/// </summary>
 	/// <param name="command">コマンド</param>
-	public async Task OperateAsync(HumanBuildingOperationCommand command)
+	public async Task FilterAsync(HumanBuildingOperationCommand command)
 	{
-		await Task.Run(() => Operate(command));
+		await Task.Run(() => Filter(command));
 	}
 
 	#endregion
