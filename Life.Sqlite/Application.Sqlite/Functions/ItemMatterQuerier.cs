@@ -149,7 +149,19 @@ ORDER BY
 							contents.Add(content);
 						}
 
-						result = new ContainerItemMatterData(source.ItemMatterId, source.ItemId, source.ItemName, source.CanEquip, contents);
+						string itemName;
+						if (contents.Count == 1)
+						{
+							IItemMatterData content = contents.Single();
+
+							itemName = $"{source.ItemName}({content.ItemName})";
+						}
+						else
+						{
+							itemName = source.ItemName;
+						}
+
+						result = new ContainerItemMatterData(source.ItemMatterId, source.ItemId, itemName, source.CanEquip, contents);
 					}
 					else if (source.CanStack)
 					{
