@@ -1,0 +1,52 @@
+﻿@page "/humans/{HumanId}/buildings/kiln"
+
+@using Life.Application
+@using Life.Application.Data
+
+@inject IHumanQueryService HumanQueryService
+@inject IBuildingQueryService BuildingQueryService
+
+@if (_building is not null)
+{
+	<h1>@_building.BuildingName</h1>
+}
+
+@code {
+	#region Fields
+
+	/// <summary>
+	/// 人間
+	/// </summary>
+	private HumanData? _human;
+
+	/// <summary>
+	/// 建造物
+	/// </summary>
+	private BuildingData? _building;
+
+	#endregion
+
+	#region Properties
+
+	/// <summary>
+	/// 人間IDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string HumanId { get; set; } = string.Empty;
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 初期化された際に呼び出されます。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	protected override async Task OnInitializedAsync()
+	{
+		_human = await HumanQueryService.QuerySingleAsync(HumanId);
+		_building = await BuildingQueryService.QuerySingleAsync("kiln");
+	}
+
+	#endregion
+}
