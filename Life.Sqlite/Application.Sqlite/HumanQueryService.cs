@@ -119,7 +119,8 @@ ORDER BY
 FROM
 	human_item_recipes hir
 	INNER JOIN item_recipes irc
-		ON hir.item_recipe_id = irc.item_recipe_id
+		ON  hir.item_recipe_id = irc.item_recipe_id
+		AND needs_building = :needs_building
 	INNER JOIN items ite
 		ON irc.item_id = ite.item_id
 	INNER JOIN item_names inm
@@ -133,6 +134,7 @@ ORDER BY
 			var param = new
 			{
 				human_id = humanId,
+				needs_building = false,
 				language_code = _languageCode,
 			};
 
