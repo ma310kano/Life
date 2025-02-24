@@ -1,14 +1,74 @@
 ﻿@page "/humans/{HumanId}/buildings/workbench-wood"
 
 @using Life.Application
+@using Life.Application.Command
 @using Life.Application.Data
 
+@inject NavigationManager NavigationManager
 @inject IHumanQueryService HumanQueryService
 @inject IBuildingQueryService BuildingQueryService
+@inject IItemRecipeQueryService ItemRecipeQueryService
+@inject IHumanItemMakingService HumanItemMakingService
 
 @if (_building is not null)
 {
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/">ホーム</a></li>
+			<li class="breadcrumb-item"><a href="/humans">人間</a></li>
+			<li class="breadcrumb-item"><a href="/humans/@_human.HumanId">@_human.FirstName @_human.Family.FamilyName</a></li>
+			<li class="breadcrumb-item active" aria-current="page">@_building.BuildingName</li>
+		</ol>
+	</nav>
+
 	<h1>@_building.BuildingName</h1>
+
+	<h2>レシピ</h2>
+	<select class="form-select mb-3" value="@_itemRecipeId" onchange="@ChangeItemRecipeIdAsync">
+		@foreach (ItemRecipeSummaryData itemRecipe in _building.ItemRecipes)
+		{
+			<option value="@itemRecipe.ItemRecipeId">@itemRecipe.ItemName</option>
+		}
+	</select>
+
+	@if (_itemRecipeModel is not null)
+	{
+		<EditForm Model="_itemRecipeModel" OnValidSubmit="MakeAsync">
+			<h2>@(_itemRecipeModel.Item.ItemName)を作成</h2>
+			<table class="table">
+				<tbody>
+					<tr>
+						<th>回数</th>
+						<td><InputNumber class="form-control" min="1" @bind-Value="_itemRecipeModel.Frequency" /></td>
+					</tr>
+					<tr>
+						<th>数量</th>
+						<td>@_itemRecipeModel.Quantity.ToString("#,0")</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<table class="table">
+				<thead>
+					<tr>
+						<th>アイテム</th>
+						<th>必要数 / 所持数</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (ItemRow item in _itemRecipeModel.Items)
+					{
+						<tr>
+							<td class="id">@item.ItemName</td>
+							<td>@item.RequiredQuantity.ToString("#,0") / @item.PossessionQuantity.ToString("#,0")</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+
+			<button type="submit" class="btn btn-primary" disabled="@(!_itemRecipeModel.IsValid ? "disabled" : null)">作成</button>
+		</EditForm>
+	}
 }
 
 @code {
@@ -23,6 +83,16 @@
 	/// 建造物
 	/// </summary>
 	private BuildingData? _building;
+
+	/// <summary>
+	/// アイテムレシピID
+	/// </summary>
+	private string _itemRecipeId = string.Empty;
+
+	/// <summary>
+	/// アイテムレシピのモデル
+	/// </summary>
+	private ItemRecipeModel? _itemRecipeModel;
 
 	#endregion
 
@@ -46,6 +116,189 @@
 	{
 		_human = await HumanQueryService.QuerySingleAsync(HumanId);
 		_building = await BuildingQueryService.QuerySingleAsync("workbench-wood");
+	}
+
+	/// <summary>
+	/// アイテムレシピIDを変更します。
+	/// </summary>
+	/// <param name="e">イベント引数</param>
+	/// <returns>非同期操作を返します。</returns>
+	private async Task ChangeItemRecipeIdAsync(ChangeEventArgs e)
+	{
+		ItemRecipeData itemRecipe = await ItemRecipeQueryService.QuerySingleAsync(e.Value.ToString());
+
+		_itemRecipeId = itemRecipe.ItemRecipeId;
+
+		_itemRecipeModel = new ItemRecipeModel(_human, itemRecipe);
+	}
+
+	/// <summary>
+	/// 作成します。
+	/// </summary>
+	/// <returns>非同期操作を返します。</returns>
+	private async Task MakeAsync()
+	{
+		HumanItemMakingCommand command = _itemRecipeModel!.CreateCommand();
+
+		await HumanItemMakingService.MakeAsync(command);
+
+		NavigationManager.NavigateTo($"/humans/{_human!.HumanId}");
+	}
+
+	#endregion
+
+	#region Nested types
+
+	/// <summary>
+	/// アイテムレシピのモデル
+	/// </summary>
+	private class ItemRecipeModel
+	{
+		#region Fields
+
+		/// <summary>
+		/// 人間
+		/// </summary>
+		private readonly HumanData _human;
+
+		/// <summary>
+		/// アイテムレシピ
+		/// </summary>
+		private readonly ItemRecipeData _itemRecipe;
+
+		/// <summary>
+		/// 回数
+		/// </summary>
+		private int _frequency = 1;
+
+		#endregion
+
+		#region Constructors
+
+		/// <summary>
+		/// アイテムレシピのモデルを初期化します。
+		/// </summary>
+		/// <param name="human">人間</param>
+		/// <param name="itemRecipe">アイテムレシピ</param>
+		public ItemRecipeModel(HumanData human, ItemRecipeData itemRecipe)
+		{
+			_human = human;
+			_itemRecipe = itemRecipe;
+			Items =
+				(
+					from ing in _itemRecipe.Ingredients
+					join his in _human.InventorySlots
+					on ing.Item.ItemId equals his.ItemId into hisJoin
+					from hij in hisJoin.DefaultIfEmpty()
+					select new ItemRow(ing.Item.ItemName, ing.Quantity, _frequency, (hij as StackItemMatterData)?.Quantity ?? 0)
+				).ToList();
+		}
+
+		#endregion
+
+		#region Properties
+
+		/// <summary>
+		/// アイテムを取得します。
+		/// </summary>
+		public ItemSummaryData Item => _itemRecipe.Item;
+
+		/// <summary>
+		/// 回数を設定または取得します。
+		/// </summary>
+		public int Frequency
+		{
+			get
+			{
+				return _frequency;
+			}
+
+			set
+			{
+				_frequency = value;
+
+				foreach (ItemRow item in Items)
+				{
+					item.Frequency = value;
+				}
+			}
+		}
+
+		/// <summary>
+		/// 数量を取得します。
+		/// </summary>
+		public int Quantity => _itemRecipe.Quantity * _frequency;
+
+		/// <summary>
+		/// アイテムのコレクションを取得します。
+		/// </summary>
+		public IReadOnlyCollection<ItemRow> Items { get; }
+
+		/// <summary>
+		/// 有効かどうかを取得します。
+		/// </summary>
+		/// <remarks>All ではなく Any の否定を使用 (All は全件走査だが、Any は 1 件の検出で終了する)</remarks>
+		public bool IsValid => !Items.Any(x => x.RequiredQuantity > x.PossessionQuantity);
+
+		#endregion
+
+		#region Methods
+
+		/// <summary>
+		/// コマンドを作成します。
+		/// </summary>
+		/// <returns>作成したコマンドを返します。</returns>
+		public HumanItemMakingCommand CreateCommand()
+		{
+			HumanItemMakingCommand command = new(_human.HumanId, _itemRecipe.ItemRecipeId, _frequency);
+
+			return command;
+		}
+
+		#endregion
+	}
+
+	/// <summary>
+	/// アイテム行
+	/// </summary>
+	/// <param name="itemName">アイテム名</param>
+	/// <param name="requiredQuantity">必要数</param>
+	/// <param name="frequency">回数</param>
+	/// <param name="possessionQuantity">所持数</param>
+	private class ItemRow(string itemName, int requiredQuantity, int frequency, int possessionQuantity)
+	{
+		#region Fields
+
+		/// <summary>
+		/// 必要数
+		/// </summary>
+		private readonly int _requiredQuantity = requiredQuantity;
+
+		#endregion
+
+		#region Properties
+
+		/// <summary>
+		/// アイテム名を取得します。
+		/// </summary>
+		public string ItemName { get; } = itemName;
+
+		/// <summary>
+		/// 必要数を取得します。
+		/// </summary>
+		public int RequiredQuantity => _requiredQuantity * Frequency;
+
+		/// <summary>
+		/// 回数を取得します。
+		/// </summary>
+		public int Frequency { get; set; } = frequency;
+
+		/// <summary>
+		/// 所持数を取得します。
+		/// </summary>
+		public int PossessionQuantity { get; } = possessionQuantity;
+
+		#endregion
 	}
 
 	#endregion
