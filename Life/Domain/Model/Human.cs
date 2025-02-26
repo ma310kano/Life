@@ -73,6 +73,8 @@ public class Human(HumanId humanId, FirstName firstName, FamilyId familyId, Area
     /// <param name="areaId">エリアID</param>
     public void ChangeArea(AreaId areaId)
     {
+        if (areaId == AreaId) throw new InvalidOperationException("エリアの移動元と移動先が同じです。");
+
         AreaId = areaId;
     }
 

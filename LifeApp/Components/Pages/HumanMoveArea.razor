@@ -24,8 +24,12 @@
 
 	<EditForm Model="_model" OnValidSubmit="SubmitAsync">
 		<div class="mb-3">
-			<label class="form-label" for="area">エリア</label>
-			<InputSelect class="form-control" id="area" @bind-Value="_model.AreaId">
+			<label class="form-label" for="source">移動元</label>
+			<p id="source">@_human.Area.AreaName</p>
+		</div>
+		<div class="mb-3">
+			<label class="form-label" for="destination">移動先</label>
+			<InputSelect class="form-control" id="destination" @bind-Value="_model.AreaId">
 				@foreach (AreaSummaryData area in _areas)
 				{
 					<option value="@area.AreaId">@area.AreaName</option>
@@ -77,9 +81,12 @@
 	protected override async Task OnInitializedAsync()
 	{
 		_human = await HumanQueryService.QuerySingleAsync(HumanId);
-		_model = new Model(_human.Area.AreaId);
 
-		_areas = await AreaSummaryQueryService.QueryAsync();
+		// 移動元のエリアは除外する
+		_areas = (await AreaSummaryQueryService.QueryAsync()).Where(x => x.AreaId != _human.Area.AreaId);
+
+		string initialAreaId = _areas.FirstOrDefault()?.AreaId ?? string.Empty;
+		_model = new Model(initialAreaId);
 	}
 
 	/// <summary>
