@@ -1,6 +1,4 @@
-﻿@page "/humans/{HumanId}/buildings/workbench-wood"
-
-@using Life.Application
+﻿@using Life.Application
 @using Life.Application.Command
 @using Life.Application.Data
 
@@ -10,7 +8,7 @@
 @inject IItemRecipeQueryService ItemRecipeQueryService
 @inject IHumanItemMakingService HumanItemMakingService
 
-@if (_building is not null)
+@if (_human is not null && _building is not null)
 {
 	<nav aria-label="breadcrumb">
 		<ol class="breadcrumb">
@@ -104,6 +102,12 @@
 	[Parameter]
 	public string HumanId { get; set; } = string.Empty;
 
+	/// <summary>
+	/// 建造物IDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string BuildingId { get; set; } = string.Empty;
+
 	#endregion
 
 	#region Methods
@@ -115,7 +119,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		_human = await HumanQueryService.QuerySingleAsync(HumanId);
-		_building = await BuildingQueryService.QuerySingleAsync("workbench-wood");
+		_building = await BuildingQueryService.QuerySingleAsync(BuildingId);
 	}
 
 	/// <summary>

@@ -1,0 +1,34 @@
+﻿@page "/humans/{HumanId}/buildings/{BuildingId}"
+
+@using Life.Application
+@using Life.Application.Data
+
+@inject IHumanQueryService HumanQueryService
+@inject IBuildingQueryService BuildingQueryService
+
+@if (BuildingId == "filter")
+{
+	<FilterWater HumanId="@HumanId" />
+}
+else
+{
+	<MakyByBuilding HumanId="@HumanId" BuildingId="@BuildingId" />
+}
+
+@code {
+	#region Properties
+
+	/// <summary>
+	/// 人間IDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string HumanId { get; set; } = string.Empty;
+
+	/// <summary>
+	/// 建造物IDを設定または取得します。
+	/// </summary>
+	[Parameter]
+	public string BuildingId { get; set; } = string.Empty;
+
+	#endregion
+}
