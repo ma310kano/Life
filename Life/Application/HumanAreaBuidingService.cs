@@ -34,7 +34,7 @@ public class HumanAreaBuidingService(IHumanContextFactory contextFactory) : IHum
 
 				itemMatter.SubtractQuantity(ingredient.Quantity);
 
-				if (itemMatter.Quantity.Value > 0)
+				if (itemMatter.Remains)
 				{
 					context.ItemMatterRepository.Save(itemMatter);
 				}

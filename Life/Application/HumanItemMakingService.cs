@@ -43,7 +43,7 @@ public class HumanItemMakingService(IHumanContextFactory contextFactory) : IHuma
 
 				itemMatter.SubtractQuantity(quantity);
 
-				if (itemMatter.Quantity.Value > 0)
+				if (itemMatter.Remains)
 				{
 					context.ItemMatterRepository.Save(itemMatter);
 				}

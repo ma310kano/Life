@@ -25,6 +25,11 @@ public class ItemMatter(ItemMatterId itemMatterId, ItemId itemId, Quantity quant
     /// </summary>
     public Quantity Quantity { get; private set; } = quantity;
 
+    /// <summary>
+    /// 残っているかどうかを取得します。
+    /// </summary>
+    public bool Remains => Quantity.Value > 0;
+
     #endregion
 
     #region Operators
