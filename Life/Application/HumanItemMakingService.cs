@@ -36,24 +36,8 @@ public class HumanItemMakingService(IHumanContextFactory contextFactory) : IHuma
 			}
 
 			// Ingredients
-			foreach (ItemRecipeIngredient ingredient in itemRecipe.Ingredients)
-			{
-				ItemMatter itemMatter = context.ItemMatterRepository.FindInHumanInventory(humanId, ingredient.ItemId).Single();
-
-				Quantity quantity = ingredient.Quantity * frequency;
-
-				itemMatter.SubtractQuantity(quantity);
-
-				if (itemMatter.Remains)
-				{
-					context.ItemMatterRepository.Save(itemMatter);
-				}
-				else
-				{
-					context.InventorySlotRepository.Remove(humanId, itemMatter.ItemMatterId);
-					context.ItemMatterRepository.Delete(itemMatter);
-				}
-			}
+			HumanInventorySubstractionService inventorySubstractionService = new(context, humanId);
+			inventorySubstractionService.Subtract(itemRecipe.Ingredients, frequency);
 
 			// Product
 			{

@@ -1,11 +1,11 @@
 ﻿namespace Life.Domain.Model;
 
 /// <summary>
-/// 建造物レシピの材料
+/// レシピの材料
 /// </summary>
 /// <param name="itemId">アイテムID</param>
 /// <param name="quantity">数量</param>
-public class BuildingRecipeIngredient(ItemId itemId, Quantity quantity) : IEquatable<BuildingRecipeIngredient>
+public class RecipeIngredient(ItemId itemId, Quantity quantity) : IEquatable<RecipeIngredient>
 {
     #region Properties
 
@@ -29,7 +29,7 @@ public class BuildingRecipeIngredient(ItemId itemId, Quantity quantity) : IEquat
     /// <param name="lhs">左辺</param>
     /// <param name="rhs">右辺</param>
     /// <returns>オペランドが等しい場合は、 <c>true</c>。それ以外の場合は、 <c>false</c>。</returns>
-    public static bool operator ==(BuildingRecipeIngredient lhs, BuildingRecipeIngredient rhs)
+    public static bool operator ==(RecipeIngredient lhs, RecipeIngredient rhs)
     {
         if (lhs is null) return rhs is null;
 
@@ -44,7 +44,7 @@ public class BuildingRecipeIngredient(ItemId itemId, Quantity quantity) : IEquat
     /// <param name="lhs">左辺</param>
     /// <param name="rhs">右辺</param>
     /// <returns>オペランドが等しくない場合は、 <c>true</c>。それ以外の場合は、 <c>false</c>。</returns>
-    public static bool operator !=(BuildingRecipeIngredient lhs, BuildingRecipeIngredient rhs)
+    public static bool operator !=(RecipeIngredient lhs, RecipeIngredient rhs)
     {
         bool result = !(lhs == rhs);
 
@@ -64,7 +64,7 @@ public class BuildingRecipeIngredient(ItemId itemId, Quantity quantity) : IEquat
     {
         bool result = obj switch
         {
-            BuildingRecipeIngredient other => Equals(other),
+            RecipeIngredient other => Equals(other),
             _ => base.Equals(obj),
         };
 
@@ -75,7 +75,7 @@ public class BuildingRecipeIngredient(ItemId itemId, Quantity quantity) : IEquat
     /// </summary>
     /// <param name="other">このオブジェクトと比較するオブジェクト。</param>
     /// <returns>現在のオブジェクトが <c>other</c> パラメーターと等しい場合は <c>true</c>、それ以外の場合は <c>false</c> です。</returns>
-    public bool Equals(BuildingRecipeIngredient? other)
+    public bool Equals(RecipeIngredient? other)
     {
         if (other is null) return false;
 
@@ -101,7 +101,7 @@ public class BuildingRecipeIngredient(ItemId itemId, Quantity quantity) : IEquat
     /// <returns>現在のオブジェクトを表す文字列。</returns>
     public override string ToString()
     {
-        string str = $"{nameof(BuildingRecipeIngredient)} {{ {nameof(ItemId)} = {ItemId}, {nameof(Quantity)} = {Quantity} }}";
+        string str = $"{nameof(RecipeIngredient)} {{ {nameof(ItemId)} = {ItemId}, {nameof(Quantity)} = {Quantity} }}";
 
         return str;
     }

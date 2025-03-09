@@ -6,7 +6,7 @@
 /// <param name="buildingRecipeId">建造物レシピID</param>
 /// <param name="buildingId">建造物ID</param>
 /// <param name="ingredients">材料のコレクション</param>
-public class BuildingRecipe(BuildingRecipeId buildingRecipeId, BuildingId buildingId, IReadOnlyCollection<BuildingRecipeIngredient> ingredients) : IEquatable<BuildingRecipe>
+public class BuildingRecipe(BuildingRecipeId buildingRecipeId, BuildingId buildingId, IReadOnlyCollection<RecipeIngredient> ingredients) : IEquatable<BuildingRecipe>
 {
     #region Properties
 
@@ -23,7 +23,7 @@ public class BuildingRecipe(BuildingRecipeId buildingRecipeId, BuildingId buildi
     /// <summary>
     /// 材料のコレクションを取得します。
     /// </summary>
-    public IReadOnlyCollection<BuildingRecipeIngredient> Ingredients { get; } = ingredients;
+    public IReadOnlyCollection<RecipeIngredient> Ingredients { get; } = ingredients;
 
     #endregion
 

@@ -8,7 +8,7 @@
 /// <param name="quantity">数量</param>
 /// <param name="buildingId">建造物ID</param>
 /// <param name="ingredients">材料のコレクション</param>
-public class ItemRecipe(ItemRecipeId itemRecipeId, ItemId itemId, Quantity quantity, BuildingId? buildingId, IReadOnlyCollection<ItemRecipeIngredient> ingredients) : IEquatable<ItemRecipe>
+public class ItemRecipe(ItemRecipeId itemRecipeId, ItemId itemId, Quantity quantity, BuildingId? buildingId, IReadOnlyCollection<RecipeIngredient> ingredients) : IEquatable<ItemRecipe>
 {
     #region Properties
 
@@ -35,7 +35,7 @@ public class ItemRecipe(ItemRecipeId itemRecipeId, ItemId itemId, Quantity quant
     /// <summary>
     /// 材料のコレクションを取得します。
     /// </summary>
-    public IReadOnlyCollection<ItemRecipeIngredient> Ingredients { get; } = ingredients;
+    public IReadOnlyCollection<RecipeIngredient> Ingredients { get; } = ingredients;
 
     #endregion
 

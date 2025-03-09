@@ -66,15 +66,15 @@ ORDER BY
 			Quantity rQuantity = new((int)recipe.Quantity);
 			BuildingId? rBuildingId = recipe.BuildingId is not null ? new(recipe.BuildingId) : null;
 
-			List<ItemRecipeIngredient> rIngredients = [];
+			List<RecipeIngredient> rIngredients = [];
 			foreach (ItemRecipeIngredientRecord recipeIngredient in recipeIngredients)
 			{
-				ItemRecipeIngredient rIngredient;
+				RecipeIngredient rIngredient;
 				{
 					ItemId rIngredientItemId = new(recipeIngredient.ItemId);
 					Quantity rIngredientQuantity = new((int)recipeIngredient.Quantity);
 
-					rIngredient = new ItemRecipeIngredient(rIngredientItemId, rIngredientQuantity);
+					rIngredient = new RecipeIngredient(rIngredientItemId, rIngredientQuantity);
 				}
 
 				rIngredients.Add(rIngredient);

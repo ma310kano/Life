@@ -1,5 +1,6 @@
 ﻿using Life.Application.Command;
 using Life.Domain.Model;
+using Life.Domain.Service;
 
 namespace Life.Application;
 
@@ -28,22 +29,8 @@ public class HumanAreaBuidingService(IHumanContextFactory contextFactory) : IHum
 
 			BuildingRecipe buildingRecipe = context.BuildingRecipeRepository.Find(buildingRecipeId);
 
-			foreach (BuildingRecipeIngredient ingredient in buildingRecipe.Ingredients)
-			{
-				ItemMatter itemMatter = context.ItemMatterRepository.FindInHumanInventory(humanId, ingredient.ItemId).Single();
-
-				itemMatter.SubtractQuantity(ingredient.Quantity);
-
-				if (itemMatter.Remains)
-				{
-					context.ItemMatterRepository.Save(itemMatter);
-				}
-				else
-				{
-					context.InventorySlotRepository.Remove(humanId, itemMatter.ItemMatterId);
-					context.ItemMatterRepository.Delete(itemMatter);
-				}
-			}
+			HumanInventorySubstractionService inventorySubstractionService = new(context, humanId);
+			inventorySubstractionService.Subtract(buildingRecipe.Ingredients);
 
 			context.AreaBuildingRepository.Add(human.AreaId, buildingRecipe.BuildingId);
 

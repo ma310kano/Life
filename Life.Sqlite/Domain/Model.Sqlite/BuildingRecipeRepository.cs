@@ -62,15 +62,15 @@ ORDER BY
 			BuildingRecipeId rBuildingRecipeId = new(recipe.BuildingRecipeId);
 			BuildingId rBuildingId = new(recipe.BuildingId);
 
-			List<BuildingRecipeIngredient> rIngredients = [];
+			List<RecipeIngredient> rIngredients = [];
 			foreach (BuildingRecipeIngredientRecord recipeIngredient in recipeIngredients)
 			{
-				BuildingRecipeIngredient rIngredient;
+				RecipeIngredient rIngredient;
 				{
 					ItemId rItemId = new(recipeIngredient.ItemId);
 					Quantity rQuantity = new((int)recipeIngredient.Quantity);
 
-					rIngredient = new BuildingRecipeIngredient(rItemId, rQuantity);
+					rIngredient = new RecipeIngredient(rItemId, rQuantity);
 				}
 
 				rIngredients.Add(rIngredient);
