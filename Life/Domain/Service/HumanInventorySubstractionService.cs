@@ -6,8 +6,7 @@ namespace Life.Domain.Service;
 /// 人間のインベントリーの減算サービス
 /// </summary>
 /// <param name="context">コンテキスト</param>
-/// <param name="humanId">人間ID</param>
-public class HumanInventorySubstractionService(IHumanContext context, HumanId humanId)
+public class HumanInventorySubstractionService(IHumanContext context)
 {
 	#region Methods
 
@@ -44,7 +43,7 @@ public class HumanInventorySubstractionService(IHumanContext context, HumanId hu
 	{
 		foreach (RecipeIngredient ingredient in ingredients)
 		{
-			ItemMatter itemMatter = context.ItemMatterRepository.FindInHumanInventory(humanId, ingredient.ItemId).Single();
+			ItemMatter itemMatter = context.InventorySlotRepository.Find(ingredient.ItemId).Single();
 
 			Quantity quantity = calculateQuantity(ingredient.Quantity);
 
@@ -56,7 +55,7 @@ public class HumanInventorySubstractionService(IHumanContext context, HumanId hu
 			}
 			else
 			{
-				context.InventorySlotRepository.Remove(humanId, itemMatter.ItemMatterId);
+				context.InventorySlotRepository.Remove(itemMatter.ItemMatterId);
 				context.ItemMatterRepository.Delete(itemMatter);
 			}
 		}

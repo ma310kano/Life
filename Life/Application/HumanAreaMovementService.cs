@@ -20,11 +20,11 @@ public class HumanAreaMovementService(IHumanContextFactory contextFactory) : IHu
 		HumanId humanId = new(command.HumanId);
 		AreaId areaId = new(command.AreaId);
 
-		using IHumanContext context = contextFactory.Create();
+		using IHumanContext context = contextFactory.Create(humanId);
 
 		try
 		{
-			Human human = context.Repository.Find(humanId);
+			Human human = context.Repository.Find();
 
 			human.ChangeArea(areaId);
 

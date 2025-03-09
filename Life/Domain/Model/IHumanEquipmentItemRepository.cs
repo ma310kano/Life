@@ -1,25 +1,23 @@
 ﻿namespace Life.Domain.Model;
 
 /// <summary>
-/// 装備アイテムのファクトリー
+/// 人間の装備アイテムのファクトリー
 /// </summary>
-public interface IEquipmentItemRepository
+public interface IHumanEquipmentItemRepository
 {
 	#region Methods
 
 	/// <summary>
 	/// 装備アイテムを追加します。
 	/// </summary>
-	/// <param name="humanId">人間ID</param>
 	/// <param name="itemMatterId">アイテム物質ID</param>
-	void Add(HumanId humanId, ItemMatterId itemMatterId);
+	void Add(ItemMatterId itemMatterId);
 
 	/// <summary>
 	/// 装備アイテムを除去します。
 	/// </summary>
-	/// <param name="humanId">人間ID</param>
 	/// <param name="itemMatterId">アイテム物質ID</param>
-	void Remove(HumanId humanId, ItemMatterId itemMatterId);
+	void Remove(ItemMatterId itemMatterId);
 
 	#endregion
 }

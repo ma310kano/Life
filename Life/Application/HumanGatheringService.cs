@@ -20,11 +20,11 @@ public class HumanGatheringService(IHumanContextFactory contextFactory) : IHuman
 	{
 		HumanId humanId = new(command.HumanId);
 
-		using IHumanContext context = contextFactory.Create();
+		using IHumanContext context = contextFactory.Create(humanId);
 
 		try
 		{
-			HumanInventoryAdditionService inventoryAdditionService = new(context, humanId);
+			HumanInventoryAdditionService inventoryAdditionService = new(context);
 			
 			foreach (HumanGatheringItemCommand source in command.Items)
 			{

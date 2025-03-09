@@ -14,14 +14,6 @@ public interface IItemMatterRepository
 	void Delete(ItemMatter itemMatter);
 
 	/// <summary>
-	/// 人間のインベントリー内を検索します。
-	/// </summary>
-	/// <param name="humanId">人間ID</param>
-	/// <param name="itemId">アイテムID</param>
-	/// <returns>検索したアイテム物質のコレクションを返します。</returns>
-	IEnumerable<ItemMatter> FindInHumanInventory(HumanId humanId, ItemId itemId);
-
-	/// <summary>
 	/// アイテム物質を検索します。
 	/// </summary>
 	/// <param name="itemMatterId">アイテム物質ID</param>

@@ -8,16 +8,15 @@ namespace Life.Domain.Model.Sqlite;
 /// </summary>
 /// <param name="connection">コネクション</param>
 /// <param name="transaction">トランザクション</param>
-public class HumanRepository(IDbConnection connection, IDbTransaction transaction) : IHumanRepository
+public class HumanRepository(HumanId humanId, IDbConnection connection, IDbTransaction transaction) : IHumanRepository
 {
 	#region Methods
 
 	/// <summary>
 	/// 人間を検索します。
 	/// </summary>
-	/// <param name="humanId">人間ID</param>
 	/// <returns>検索した人間を返します。</returns>
-	public Human Find(HumanId humanId)
+	public Human Find()
 	{
 		const string sql = @"SELECT
 	  human_id

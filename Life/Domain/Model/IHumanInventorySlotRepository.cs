@@ -10,16 +10,14 @@ public interface IHumanInventorySlotRepository
 	/// <summary>
 	/// インベントリースロットを追加します。
 	/// </summary>
-	/// <param name="humanId">人間ID</param>
 	/// <param name="itemMatterId">アイテム物質ID</param>
-	void Add(HumanId humanId, ItemMatterId itemMatterId);
+	void Add(ItemMatterId itemMatterId);
 
 	/// <summary>
 	/// 人間のインベントリースロットを除去します。
 	/// </summary>
-	/// <param name="humanId">人間ID</param>
 	/// <param name="itemMatterId">アイテム物質ID</param>
-	void Remove(HumanId humanId, ItemMatterId itemMatterId);
+	void Remove(ItemMatterId itemMatterId);
 
 	/// <summary>
 	/// アイテムの中にアイテムを追加します。
@@ -27,6 +25,13 @@ public interface IHumanInventorySlotRepository
 	/// <param name="storageItemMatterId">収納アイテム物質ID</param>
 	/// <param name="itemMatterId">アイテム物質ID</param>
 	void AddInItem(ItemMatterId storageItemMatterId, ItemMatterId itemMatterId);
+
+	/// <summary>
+	/// 検索します。
+	/// </summary>
+	/// <param name="itemId">アイテムID</param>
+	/// <returns>検索したアイテム物質のコレクションを返します。</returns>
+	IEnumerable<ItemMatter> Find(ItemId itemId);
 
 	/// <summary>
 	/// アイテムの中を検索します。

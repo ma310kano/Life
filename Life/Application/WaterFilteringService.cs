@@ -21,7 +21,7 @@ public class WaterFilteringService(IHumanContextFactory contextFactory) : IWater
 		BuildingId buildingId = new(command.BuildingId);
 		ItemMatterId storageItemMatterId = new(command.StorageItemMatterId);
 
-		using IHumanContext context = contextFactory.Create();
+		using IHumanContext context = contextFactory.Create(humanId);
 
 		try
 		{

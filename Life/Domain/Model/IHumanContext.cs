@@ -40,7 +40,7 @@ public interface IHumanContext : IDisposable
 	/// <summary>
 	/// 装備アイテムのリポジトリーを取得します。
 	/// </summary>
-	IEquipmentItemRepository EquipmentItemRepository { get; }
+	IHumanEquipmentItemRepository EquipmentItemRepository { get; }
 
 	/// <summary>
 	/// インベントリースロットのリポジトリーを取得します。

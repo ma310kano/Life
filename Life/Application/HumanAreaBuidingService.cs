@@ -21,15 +21,15 @@ public class HumanAreaBuidingService(IHumanContextFactory contextFactory) : IHum
 		HumanId humanId = new(command.HumanId);
 		BuildingRecipeId buildingRecipeId = new(command.BuildingRecipeId);
 
-		using IHumanContext context = contextFactory.Create();
+		using IHumanContext context = contextFactory.Create(humanId);
 
 		try
 		{
-			Human human = context.Repository.Find(humanId);
+			Human human = context.Repository.Find();
 
 			BuildingRecipe buildingRecipe = context.BuildingRecipeRepository.Find(buildingRecipeId);
 
-			HumanInventorySubstractionService inventorySubstractionService = new(context, humanId);
+			HumanInventorySubstractionService inventorySubstractionService = new(context);
 			inventorySubstractionService.Subtract(buildingRecipe.Ingredients);
 
 			context.AreaBuildingRepository.Add(human.AreaId, buildingRecipe.BuildingId);

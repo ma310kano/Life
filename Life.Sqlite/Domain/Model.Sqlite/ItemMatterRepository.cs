@@ -32,52 +32,6 @@ WHERE
 	}
 
 	/// <summary>
-	/// 人間のインベントリー内を検索します。
-	/// </summary>
-	/// <param name="humanId">人間ID</param>
-	/// <param name="itemId">アイテムID</param>
-	/// <returns>検索したアイテム物質のコレクションを返します。</returns>
-	public IEnumerable<ItemMatter> FindInHumanInventory(HumanId humanId, ItemId itemId)
-	{
-		const string sql = @"SELECT
-	  him.item_matter_id
-	, imt.item_id
-	, imt.quantity
-FROM
-	human_item_matters him
-	INNER JOIN item_matters imt
-		ON him.item_matter_id = imt.item_matter_id
-WHERE
-		him.human_id = :human_id
-	AND imt.item_id = :item_id";
-
-		var param = new
-		{
-			human_id = humanId.Value,
-			item_id = itemId.Value,
-		};
-
-		IEnumerable<ItemMatterRecord> sources = connection.Query<ItemMatterRecord>(sql, param, transaction);
-
-		List<ItemMatter> results = [];
-		foreach (ItemMatterRecord source in sources)
-		{
-			ItemMatter result;
-			{
-				ItemMatterId rItemMatterId = new(source.ItemMatterId);
-				ItemId rItemId = new(source.ItemId);
-				Quantity rQuantity = new((int)source.Quantity);
-
-				result = new ItemMatter(rItemMatterId, rItemId, rQuantity);
-			}
-
-			results.Add(result);
-		}
-
-		return results;
-	}
-
-	/// <summary>
 	/// アイテム物質を検索します。
 	/// </summary>
 	/// <param name="itemMatterId">アイテム物質ID</param>

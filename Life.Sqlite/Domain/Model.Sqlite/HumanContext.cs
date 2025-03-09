@@ -11,6 +11,11 @@ public class HumanContext : IHumanContext
 	#region Fields
 
 	/// <summary>
+	/// 人間ID
+	/// </summary>
+	private readonly HumanId _humanId;
+
+	/// <summary>
 	/// コネクション
 	/// </summary>
 	private readonly IDbConnection _connection;
@@ -53,7 +58,7 @@ public class HumanContext : IHumanContext
 	/// <summary>
 	/// 装備アイテムのリポジトリー
 	/// </summary>
-	private IEquipmentItemRepository? _equipmentItemRepository;
+	private IHumanEquipmentItemRepository? _equipmentItemRepository;
 
 	/// <summary>
 	/// インベントリースロットのリポジトリー
@@ -77,8 +82,11 @@ public class HumanContext : IHumanContext
 	/// <summary>
 	/// 人間のコンテキストを初期化します。
 	/// </summary>
-	public HumanContext()
+	/// <param name="humanId">人間ID</param>
+	public HumanContext(HumanId humanId)
 	{
+		_humanId = humanId;
+
 		_connection = ConnectionFactory.Create();
 		_connection.Open();
 
@@ -92,7 +100,7 @@ public class HumanContext : IHumanContext
 	/// <summary>
 	/// リポジトリーを取得します。
 	/// </summary>
-	public IHumanRepository Repository => _repository ??= new HumanRepository(_connection, _transaction);
+	public IHumanRepository Repository => _repository ??= new HumanRepository(_humanId, _connection, _transaction);
 
 	/// <summary>
 	/// 建造物レシピのリポジトリーを取得します。
@@ -122,12 +130,12 @@ public class HumanContext : IHumanContext
 	/// <summary>
 	/// 装備アイテムのリポジトリーを取得します。
 	/// </summary>
-	public IEquipmentItemRepository EquipmentItemRepository => _equipmentItemRepository ??= new EquipmentItemRepository(_connection, _transaction);
+	public IHumanEquipmentItemRepository EquipmentItemRepository => _equipmentItemRepository ??= new HumanEquipmentItemRepository(_humanId, _connection, _transaction);
 
 	/// <summary>
 	/// インベントリースロットのリポジトリーを取得します。
 	/// </summary>
-	public IHumanInventorySlotRepository InventorySlotRepository => _inventorySlotRepository ??= new HumanInventorySlotRepository(_connection, _transaction);
+	public IHumanInventorySlotRepository InventorySlotRepository => _inventorySlotRepository ??= new HumanInventorySlotRepository(_humanId, _connection, _transaction);
 
 	/// <summary>
 	/// エリアの建造物のリポジトリーを取得します。

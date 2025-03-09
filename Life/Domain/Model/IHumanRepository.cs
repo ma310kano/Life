@@ -10,9 +10,8 @@ public interface IHumanRepository
 	/// <summary>
 	/// 人間を検索します。
 	/// </summary>
-	/// <param name="humanId">人間ID</param>
 	/// <returns>検索した人間を返します。</returns>
-	Human Find(HumanId humanId);
+	Human Find();
 
 	/// <summary>
 	/// 人間を保存します。

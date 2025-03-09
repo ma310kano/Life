@@ -10,8 +10,9 @@ public interface IHumanContextFactory
 	/// <summary>
 	/// コンテキストを作成します。
 	/// </summary>
+	/// <param name="humanId">人間ID</param>
 	/// <returns>作成したコンテキストを返します。</returns>
-	IHumanContext Create();
+	IHumanContext Create(HumanId humanId);
 
 	#endregion
 }

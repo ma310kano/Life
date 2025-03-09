@@ -6,8 +6,7 @@ namespace Life.Domain.Service;
 /// インベントリーの追加サービス
 /// </summary>
 /// <param name="context">コンテキスト</param>
-/// <param name="humanId">人間ID</param>
-public class HumanInventoryAdditionService(IHumanContext context, HumanId humanId)
+public class HumanInventoryAdditionService(IHumanContext context)
 {
 	#region Methods
 
@@ -24,7 +23,7 @@ public class HumanInventoryAdditionService(IHumanContext context, HumanId humanI
 		{
 			ItemMatter? itemMatter;
 			{
-				IEnumerable<ItemMatter> itemMatters = context.ItemMatterRepository.FindInHumanInventory(humanId, itemId);
+				IEnumerable<ItemMatter> itemMatters = context.InventorySlotRepository.Find(itemId);
 
 				itemMatter = itemMatters.SingleOrDefault();
 			}
@@ -37,7 +36,7 @@ public class HumanInventoryAdditionService(IHumanContext context, HumanId humanI
 			{
 				itemMatter = context.ItemMatterFactory.Create(itemId, quantity);
 
-				context.InventorySlotRepository.Add(humanId, itemMatter.ItemMatterId);
+				context.InventorySlotRepository.Add(itemMatter.ItemMatterId);
 			}
 
 			context.ItemMatterRepository.Save(itemMatter);
@@ -62,7 +61,7 @@ public class HumanInventoryAdditionService(IHumanContext context, HumanId humanI
 
 			foreach (ItemMatter product in products)
 			{
-				context.InventorySlotRepository.Add(humanId, product.ItemMatterId);
+				context.InventorySlotRepository.Add(product.ItemMatterId);
 			}
 		}
 	}

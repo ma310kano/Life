@@ -10,10 +10,11 @@ public class HumanContextFactory : IHumanContextFactory
 	/// <summary>
 	/// コンテキストを作成します。
 	/// </summary>
+	/// <param name="humanId">人間ID</param>
 	/// <returns>作成したコンテキストを返します。</returns>
-	public IHumanContext Create()
+	public IHumanContext Create(HumanId humanId)
 	{
-		HumanContext context = new();
+		HumanContext context = new(humanId);
 
 		return context;
 	}

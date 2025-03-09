@@ -20,7 +20,7 @@ public class HumanEquipmentRemovalService(IHumanContextFactory contextFactory) :
 		HumanId humanId = new(command.HumanId);
 		ItemMatterId itemMatterId = new(command.ItemMatterId);
 
-		using IHumanContext context = contextFactory.Create();
+		using IHumanContext context = contextFactory.Create(humanId);
 
 		try
 		{
@@ -28,12 +28,12 @@ public class HumanEquipmentRemovalService(IHumanContextFactory contextFactory) :
 
 			// Equipment item
 			{
-				context.EquipmentItemRepository.Remove(humanId, itemMatter.ItemMatterId);
+				context.EquipmentItemRepository.Remove(itemMatter.ItemMatterId);
 			}
 
 			// Inventory slot
 			{
-				context.InventorySlotRepository.Add(humanId, itemMatter.ItemMatterId);
+				context.InventorySlotRepository.Add(itemMatter.ItemMatterId);
 			}
 
 			context.Commit();

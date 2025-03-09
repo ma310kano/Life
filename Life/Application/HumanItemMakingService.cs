@@ -22,7 +22,7 @@ public class HumanItemMakingService(IHumanContextFactory contextFactory) : IHuma
 		ItemRecipeId itemRecipeId = new(command.ItemRecipeId);
 		Frequency frequency = new(command.Frequency);
 
-		using IHumanContext context = contextFactory.Create();
+		using IHumanContext context = contextFactory.Create(humanId);
 
 		try
 		{
@@ -30,20 +30,20 @@ public class HumanItemMakingService(IHumanContextFactory contextFactory) : IHuma
 
 			if (itemRecipe.BuildingId is not null)
 			{
-				Human human = context.Repository.Find(humanId);
+				Human human = context.Repository.Find();
 				bool existsBuilding = context.AreaBuildingRepository.Exists(human.AreaId, itemRecipe.BuildingId);
 				if (!existsBuilding) throw new InvalidOperationException($"エリア {human.AreaId} に建造物 {itemRecipe.BuildingId} がありません。");
 			}
 
 			// Ingredients
-			HumanInventorySubstractionService inventorySubstractionService = new(context, humanId);
+			HumanInventorySubstractionService inventorySubstractionService = new(context);
 			inventorySubstractionService.Subtract(itemRecipe.Ingredients, frequency);
 
 			// Product
 			{
 				Quantity quantity = itemRecipe.Quantity * frequency;
 
-				HumanInventoryAdditionService inventoryAdditionService = new(context, humanId);
+				HumanInventoryAdditionService inventoryAdditionService = new(context);
 				inventoryAdditionService.Add(itemRecipe.ItemId, quantity);
 			}
 

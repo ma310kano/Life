@@ -4,20 +4,19 @@ using System.Data;
 namespace Life.Domain.Model.Sqlite;
 
 /// <summary>
-/// 装備アイテムのリポジトリー
+/// 人間の装備アイテムのリポジトリー
 /// </summary>
 /// <param name="connection">コネクション</param>
 /// <param name="transaction">トランザクション</param>
-public class EquipmentItemRepository(IDbConnection connection, IDbTransaction transaction) : IEquipmentItemRepository
+public class HumanEquipmentItemRepository(HumanId humanId, IDbConnection connection, IDbTransaction transaction) : IHumanEquipmentItemRepository
 {
 	#region Methods
 
 	/// <summary>
 	/// 装備アイテムを保存します。
 	/// </summary>
-	/// <param name="humanId">人間ID</param>
 	/// <param name="itemMatterId">アイテム物質ID</param>
-	public void Add(HumanId humanId, ItemMatterId itemMatterId)
+	public void Add(ItemMatterId itemMatterId)
 	{
 		const string sql = @"INSERT INTO
 	human_equipment_items
@@ -43,9 +42,8 @@ public class EquipmentItemRepository(IDbConnection connection, IDbTransaction tr
 	/// <summary>
 	/// 装備アイテムを除去します。
 	/// </summary>
-	/// <param name="humanId">人間ID</param>
 	/// <param name="itemMatterId">アイテム物質ID</param>
-	public void Remove(HumanId humanId, ItemMatterId itemMatterId)
+	public void Remove(ItemMatterId itemMatterId)
 	{
 		const string sql = @"DELETE FROM
 	human_equipment_items
