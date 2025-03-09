@@ -66,9 +66,9 @@ public class HumanContext : IHumanContext
 	private IHumanInventorySlotRepository? _inventorySlotRepository;
 
 	/// <summary>
-	/// エリアの建造物のリポジトリー
+	/// エリアの建造物を検索する機能
 	/// </summary>
-	private IAreaBuildingRepository? _areaBuildingRepository;
+	private IAreaBuildingFinder? _areaBuildingFinder;
 
 	/// <summary>
 	/// 破棄したかどうか
@@ -138,9 +138,9 @@ public class HumanContext : IHumanContext
 	public IHumanInventorySlotRepository InventorySlotRepository => _inventorySlotRepository ??= new HumanInventorySlotRepository(_humanId, _connection, _transaction);
 
 	/// <summary>
-	/// エリアの建造物のリポジトリーを取得します。
+	/// エリアの建造物を検索する機能を取得します。
 	/// </summary>
-	public IAreaBuildingRepository AreaBuildingRepository => _areaBuildingRepository ??= new AreaBuildingRepository(_connection, _transaction);
+	public IAreaBuildingFinder AreaBuildingFinder => _areaBuildingFinder ??= new AreaBuildingFinder(_connection, _transaction);
 
 	#endregion
 

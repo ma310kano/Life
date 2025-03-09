@@ -3,7 +3,7 @@
 /// <summary>
 /// 人間のコンテキスト
 /// </summary>
-public interface IHumanContext : IDisposable
+public interface IHumanContext : IContext
 {
 	#region Properties
 
@@ -48,23 +48,9 @@ public interface IHumanContext : IDisposable
 	IHumanInventorySlotRepository InventorySlotRepository { get; }
 
 	/// <summary>
-	/// エリアの建造物のリポジトリーを取得します。
+	/// エリアの建造物を検索する機能を取得します。
 	/// </summary>
-	IAreaBuildingRepository AreaBuildingRepository { get; }
-
-	#endregion
-
-	#region Methods
-
-	/// <summary>
-	/// コミットします。
-	/// </summary>
-	void Commit();
-
-	/// <summary>
-	/// ロールバックします。
-	/// </summary>
-	void Rollback();
+	IAreaBuildingFinder AreaBuildingFinder { get; }
 
 	#endregion
 }

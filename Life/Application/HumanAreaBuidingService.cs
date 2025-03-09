@@ -7,8 +7,9 @@ namespace Life.Application;
 /// <summary>
 /// 人間のエリア建造サービス
 /// </summary>
-/// <param name="contextFactory">コンテキストファクトリー</param>
-public class HumanAreaBuidingService(IHumanContextFactory contextFactory) : IHumanAreaBuidingService
+/// <param name="humanContextFactory">人間のコンテキストファクトリー</param>
+/// <param name="areaContextFactory">エリアのコンテキストファクトリー</param>
+public class HumanAreaBuidingService(IHumanContextFactory humanContextFactory, IAreaContextFactory areaContextFactory) : IHumanAreaBuidingService
 {
 	#region Methods
 
@@ -21,25 +22,46 @@ public class HumanAreaBuidingService(IHumanContextFactory contextFactory) : IHum
 		HumanId humanId = new(command.HumanId);
 		BuildingRecipeId buildingRecipeId = new(command.BuildingRecipeId);
 
-		using IHumanContext context = contextFactory.Create(humanId);
-
-		try
+		AreaId areaId;
+		BuildingId buildingId;
+		using (IHumanContext context = humanContextFactory.Create(humanId))
 		{
-			Human human = context.Repository.Find();
+			try
+			{
+				BuildingRecipe buildingRecipe = context.BuildingRecipeRepository.Find(buildingRecipeId);
 
-			BuildingRecipe buildingRecipe = context.BuildingRecipeRepository.Find(buildingRecipeId);
+				HumanInventorySubstractionService inventorySubstractionService = new(context);
+				inventorySubstractionService.Subtract(buildingRecipe.Ingredients);
 
-			HumanInventorySubstractionService inventorySubstractionService = new(context);
-			inventorySubstractionService.Subtract(buildingRecipe.Ingredients);
+				{
+					Human human = context.Repository.Find();
+					areaId = human.AreaId;
+				}
 
-			context.AreaBuildingRepository.Add(human.AreaId, buildingRecipe.BuildingId);
+				buildingId = buildingRecipe.BuildingId;
 
-			context.Commit();
+				context.Commit();
+			}
+			catch
+			{
+				context.Rollback();
+				throw;
+			}
 		}
-		catch
+
+		using (IAreaContext context = areaContextFactory.Create(areaId))
 		{
-			context.Rollback();
-			throw;
+			try
+			{
+				context.BuildingRepository.Add(buildingId);
+
+				context.Commit();
+			}
+			catch
+			{
+				context.Rollback();
+				throw;
+			}
 		}
 	}
 
