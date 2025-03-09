@@ -20,6 +20,7 @@ public class HumanItemMakingService(IHumanContextFactory contextFactory) : IHuma
 	{
 		HumanId humanId = new(command.HumanId);
 		ItemRecipeId itemRecipeId = new(command.ItemRecipeId);
+		Frequency frequency = new(command.Frequency);
 
 		using IHumanContext context = contextFactory.Create();
 
@@ -39,7 +40,7 @@ public class HumanItemMakingService(IHumanContextFactory contextFactory) : IHuma
 			{
 				ItemMatter itemMatter = context.ItemMatterRepository.FindInHumanInventory(humanId, ingredient.ItemId).Single();
 
-				Quantity quantity = new(ingredient.Quantity.Value * command.Frequencty);
+				Quantity quantity = ingredient.Quantity * frequency;
 
 				itemMatter.SubtractQuantity(quantity);
 
@@ -56,7 +57,7 @@ public class HumanItemMakingService(IHumanContextFactory contextFactory) : IHuma
 
 			// Product
 			{
-				Quantity quantity = new(itemRecipe.Quantity.Value * command.Frequencty);
+				Quantity quantity = itemRecipe.Quantity * frequency;
 
 				HumanInventoryAdditionService inventoryAdditionService = new(context, humanId);
 				inventoryAdditionService.Add(itemRecipe.ItemId, quantity);

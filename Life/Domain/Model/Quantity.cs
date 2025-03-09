@@ -51,6 +51,19 @@ public record class Quantity
         return result;
     }
 
+    /// <summary>
+    /// 左側のオペランドに右側のオペランドを乗算します。
+    /// </summary>
+    /// <param name="lhs">左辺のオペランド</param>
+    /// <param name="rhs">右辺のオペランド</param>
+    /// <returns>乗算した数量を返します。</returns>
+    public static Quantity operator *(Quantity lhs, Frequency rhs)
+    {
+        Quantity result = new(lhs.Value * rhs.Value);
+
+        return result;
+    }
+
 	#endregion
 
 	#region Properties
