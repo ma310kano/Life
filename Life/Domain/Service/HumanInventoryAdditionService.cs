@@ -82,7 +82,7 @@ public class HumanInventoryAdditionService(IHumanContext context)
 
 		context.ItemMatterRepository.Save(itemMatter);
 
-		context.InventorySlotRepository.AddInItem(storageItemMatterId, itemMatter.ItemMatterId);
+		context.ItemMatterRepository.AddInItem(storageItemMatterId, itemMatter.ItemMatterId);
 	}
 
 	#endregion

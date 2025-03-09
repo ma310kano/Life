@@ -68,34 +68,6 @@ WHERE
 	}
 
 	/// <summary>
-	/// アイテムの中にアイテムを追加します。
-	/// </summary>
-	/// <param name="storageItemMatterId">収納アイテム物質ID</param>
-	/// <param name="itemMatterId">アイテム物質ID</param>
-	public void AddInItem(ItemMatterId storageItemMatterId, ItemMatterId itemMatterId)
-	{
-		const string sql = @"INSERT INTO
-	human_item_matters_item_matters
-	(
-		  item_matter_id
-		, content_item_matter_id
-	)
-	VALUES
-	(
-		  :item_matter_id
-		, :content_item_matter_id
-	)";
-
-		var param = new
-		{
-			item_matter_id = storageItemMatterId.Value,
-			content_item_matter_id = itemMatterId.Value,
-		};
-
-		connection.Execute(sql, param, transaction);
-	}
-
-	/// <summary>
 	/// 検索します。
 	/// </summary>
 	/// <param name="itemId">アイテムID</param>
@@ -138,68 +110,6 @@ WHERE
 		}
 
 		return results;
-	}
-
-	/// <summary>
-	/// アイテムの中を検索します。
-	/// </summary>
-	/// <param name="storageItemMatterId">収納アイテム物質ID</param>
-	/// <param name="itemId">アイテムID</param>
-	/// <returns>検索したアイテム物質を返します。</returns>
-	public ItemMatter FindInItem(ItemMatterId storageItemMatterId, ItemId itemId)
-	{
-		const string sql = @"SELECT
-	  hii.content_item_matter_id AS item_matter_id
-	, imt.item_id
-	, imt.quantity
-FROM
-	human_item_matters_item_matters hii
-	INNER JOIN item_matters imt
-		ON hii.content_item_matter_id = imt.item_matter_id
-WHERE
-		hii.item_matter_id = :item_matter_id
-	AND imt.item_id = :item_id";
-
-		var param = new
-		{
-			item_matter_id = storageItemMatterId.Value,
-			item_id = itemId.Value,
-		};
-
-		ItemMatterRecord source = connection.QuerySingle<ItemMatterRecord>(sql, param, transaction);
-
-		ItemMatter result;
-		{
-			ItemMatterId rItemMatterId = new(source.ItemMatterId);
-			ItemId rItemId = new(source.ItemId);
-			Quantity rQuantity = new((int)source.Quantity);
-
-			result = new ItemMatter(rItemMatterId, rItemId, rQuantity);
-		}
-
-		return result;
-	}
-
-	/// <summary>
-	/// アイテムの中からアイテムを除去します。
-	/// </summary>
-	/// <param name="storageItemMatterId">収納アイテム物質ID</param>
-	/// <param name="itemMatterId">アイテム物質ID</param>
-	public void RemoveInItem(ItemMatterId storageItemMatterId, ItemMatterId itemMatterId)
-	{
-		const string sql = @"DELETE FROM
-	human_item_matters_item_matters
-WHERE
-		item_matter_id = :item_matter_id
-	AND content_item_matter_id = :content_item_matter_id";
-
-		var param = new
-		{
-			item_matter_id = storageItemMatterId.Value,
-			content_item_matter_id = itemMatterId.Value,
-		};
-
-		connection.Execute(sql, param, transaction);
 	}
 
 	#endregion

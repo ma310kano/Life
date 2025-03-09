@@ -32,10 +32,10 @@ public class WaterFilteringService(IHumanContextFactory contextFactory) : IWater
 					ItemMatter ingredient;
 					{
 						ItemId itemId = new("raw-water");
-						ingredient = context.InventorySlotRepository.FindInItem(storageItemMatterId, itemId);
+						ingredient = context.ItemMatterRepository.FindInItem(storageItemMatterId, itemId);
 					}
 
-					context.InventorySlotRepository.RemoveInItem(storageItemMatterId, ingredient.ItemMatterId);
+					context.ItemMatterRepository.RemoveInItem(storageItemMatterId, ingredient.ItemMatterId);
 					context.ItemMatterRepository.Delete(ingredient);
 				}
 
@@ -50,7 +50,7 @@ public class WaterFilteringService(IHumanContextFactory contextFactory) : IWater
 					}
 
 					context.ItemMatterRepository.Save(product);
-					context.InventorySlotRepository.AddInItem(storageItemMatterId, product.ItemMatterId);
+					context.ItemMatterRepository.AddInItem(storageItemMatterId, product.ItemMatterId);
 				}
 			}
 
