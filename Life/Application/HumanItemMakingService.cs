@@ -30,9 +30,8 @@ public class HumanItemMakingService(IHumanContextFactory contextFactory) : IHuma
 
 			if (itemRecipe.BuildingId is not null)
 			{
-				Human human = context.Repository.Find();
-				bool existsBuilding = context.AreaBuildingFinder.Exists(human.AreaId, itemRecipe.BuildingId);
-				if (!existsBuilding) throw new InvalidOperationException($"エリア {human.AreaId} に建造物 {itemRecipe.BuildingId} がありません。");
+				bool existsBuilding = context.AreaFinder.Exists(itemRecipe.BuildingId);
+				if (!existsBuilding) throw new InvalidOperationException($"エリアに建造物 {itemRecipe.BuildingId} がありません。");
 			}
 
 			// Ingredients

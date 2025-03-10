@@ -48,9 +48,9 @@ public interface IHumanContext : IContext
 	IHumanInventorySlotRepository InventorySlotRepository { get; }
 
 	/// <summary>
-	/// エリアの建造物を検索する機能を取得します。
+	/// エリアを検索する機能を取得します。
 	/// </summary>
-	IAreaBuildingFinder AreaBuildingFinder { get; }
+	IHumanAreaFinder AreaFinder { get; }
 
 	#endregion
 }
