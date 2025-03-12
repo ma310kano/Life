@@ -92,7 +92,7 @@
 
 		_building = await BuildingQueryService.QuerySingleAsync("filter");
 
-		_model = new Model(_human.HumanId, _building.BuildingId);
+		_model = new Model(_human.HumanId);
 	}
 
 	/// <summary>
@@ -101,7 +101,7 @@
 	/// <returns>非同期操作を返します。</returns>
 	private async Task SubmitAsync()
 	{
-		HumanBuildingOperationCommand command = _model!.CreateCommand();
+		HumanWaterFilteringCommand command = _model!.CreateCommand();
 
 		await WaterFilteringService.FilterAsync(command);
 
@@ -115,7 +115,8 @@
 	/// <summary>
 	/// モデル
 	/// </summary>
-	private class Model(string humanId, string buildingId)
+	/// <param name="humanId">人間ID</param>
+	private class Model(string humanId)
 	{
 		#region Fields
 
@@ -123,11 +124,6 @@
 		/// 人間ID
 		/// </summary>
 		private readonly string _humanId = humanId;
-
-		/// <summary>
-		/// 建造物ID
-		/// </summary>
-		private readonly string _buildingId = buildingId;
 
 		#endregion
 
@@ -146,9 +142,9 @@
 		/// コマンドを作成します。
 		/// </summary>
 		/// <returns>作成したコマンドを返します。</returns>
-		public HumanBuildingOperationCommand CreateCommand()
+		public HumanWaterFilteringCommand CreateCommand()
 		{
-			HumanBuildingOperationCommand command = new(_humanId, _buildingId, ContainerItemMatterId);
+			HumanWaterFilteringCommand command = new(_humanId, ContainerItemMatterId);
 
 			return command;
 		}

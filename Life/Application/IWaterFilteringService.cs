@@ -13,13 +13,13 @@ public interface IWaterFilteringService
 	/// 水を濾過します。
 	/// </summary>
 	/// <param name="command">コマンド</param>
-	void Filter(HumanBuildingOperationCommand command);
+	void Filter(HumanWaterFilteringCommand command);
 
 	/// <summary>
 	/// 水を濾過します。
 	/// </summary>
 	/// <param name="command">コマンド</param>
-	Task FilterAsync(HumanBuildingOperationCommand command);
+	Task FilterAsync(HumanWaterFilteringCommand command);
 
 	#endregion
 }

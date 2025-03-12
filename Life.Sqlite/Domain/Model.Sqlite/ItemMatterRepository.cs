@@ -13,11 +13,11 @@ public class ItemMatterRepository(IDbConnection connection, IDbTransaction trans
 	#region Methods
 
 	/// <summary>
-	/// アイテムの中にアイテムを追加します。
+	/// コンテナーにアイテムを追加します。
 	/// </summary>
 	/// <param name="storageItemMatterId">収納アイテム物質ID</param>
 	/// <param name="itemMatterId">アイテム物質ID</param>
-	public void AddInItem(ItemMatterId storageItemMatterId, ItemMatterId itemMatterId)
+	public void AddInContainer(ItemMatterId storageItemMatterId, ItemMatterId itemMatterId)
 	{
 		const string sql = @"INSERT INTO
 	human_item_matters_item_matters
@@ -60,12 +60,11 @@ WHERE
 	}
 
 	/// <summary>
-	/// アイテムの中を検索します。
+	/// コンテナーから単一のアイテムを検索します。
 	/// </summary>
 	/// <param name="storageItemMatterId">収納アイテム物質ID</param>
-	/// <param name="itemId">アイテムID</param>
 	/// <returns>検索したアイテム物質を返します。</returns>
-	public ItemMatter FindInItem(ItemMatterId storageItemMatterId, ItemId itemId)
+	public ItemMatter FindSingleInContainer(ItemMatterId storageItemMatterId)
 	{
 		const string sql = @"SELECT
 	  hii.content_item_matter_id AS item_matter_id
@@ -76,13 +75,11 @@ FROM
 	INNER JOIN item_matters imt
 		ON hii.content_item_matter_id = imt.item_matter_id
 WHERE
-		hii.item_matter_id = :item_matter_id
-	AND imt.item_id = :item_id";
+	hii.item_matter_id = :item_matter_id";
 
 		var param = new
 		{
 			item_matter_id = storageItemMatterId.Value,
-			item_id = itemId.Value,
 		};
 
 		ItemMatterRecord source = connection.QuerySingle<ItemMatterRecord>(sql, param, transaction);
@@ -136,22 +133,19 @@ WHERE
 	}
 
 	/// <summary>
-	/// アイテムの中からアイテムを除去します。
+	/// コンテナーからすべてのアイテムを除去します。
 	/// </summary>
 	/// <param name="storageItemMatterId">収納アイテム物質ID</param>
-	/// <param name="itemMatterId">アイテム物質ID</param>
-	public void RemoveInItem(ItemMatterId storageItemMatterId, ItemMatterId itemMatterId)
+	public void RemoveAllInContainer(ItemMatterId storageItemMatterId)
 	{
 		const string sql = @"DELETE FROM
 	human_item_matters_item_matters
 WHERE
-		item_matter_id = :item_matter_id
-	AND content_item_matter_id = :content_item_matter_id";
+	item_matter_id = :item_matter_id";
 
 		var param = new
 		{
 			item_matter_id = storageItemMatterId.Value,
-			content_item_matter_id = itemMatterId.Value,
 		};
 
 		connection.Execute(sql, param, transaction);

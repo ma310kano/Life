@@ -4,7 +4,7 @@ using Life.Domain.Model;
 namespace Life.Application;
 
 /// <summary>
-/// 人間の建造物操作サービス
+/// 水の濾過サービス
 /// </summary>
 /// <param name="contextFactory">コンテキストのファクトリー</param>
 public class WaterFilteringService(IHumanContextFactory contextFactory) : IWaterFilteringService
@@ -15,43 +15,36 @@ public class WaterFilteringService(IHumanContextFactory contextFactory) : IWater
 	/// 水を濾過します。
 	/// </summary>
 	/// <param name="command">コマンド</param>
-	public void Filter(HumanBuildingOperationCommand command)
+	public void Filter(HumanWaterFilteringCommand command)
 	{
 		HumanId humanId = new(command.HumanId);
-		BuildingId buildingId = new(command.BuildingId);
 		ItemMatterId storageItemMatterId = new(command.StorageItemMatterId);
 
 		using IHumanContext context = contextFactory.Create(humanId);
 
 		try
 		{
-			if (buildingId.Value == "filter")
+			// 材料
 			{
-				// 材料
-				{
-					ItemMatter ingredient;
-					{
-						ItemId itemId = new("raw-water");
-						ingredient = context.ItemMatterRepository.FindInItem(storageItemMatterId, itemId);
-					}
+				ItemMatter ingredient = context.ItemMatterRepository.FindSingleInContainer(storageItemMatterId);
+				if (ingredient.ItemId.Value != "raw-water") throw new InvalidOperationException("濾過の材料が生水ではありません。");
 
-					context.ItemMatterRepository.RemoveInItem(storageItemMatterId, ingredient.ItemMatterId);
-					context.ItemMatterRepository.Delete(ingredient);
+				context.ItemMatterRepository.RemoveAllInContainer(storageItemMatterId);
+				context.ItemMatterRepository.Delete(ingredient);
+			}
+
+			// 作成物
+			{
+				ItemMatter product;
+				{
+					ItemId itemId = new("filtrate-water");
+					Quantity quantity = new(1);
+
+					product = context.ItemMatterFactory.Create(itemId, quantity);
 				}
 
-				// 作成物
-				{
-					ItemMatter product;
-					{
-						ItemId itemId = new("filtrate-water");
-						Quantity quantity = new(1);
-
-						product = context.ItemMatterFactory.Create(itemId, quantity);
-					}
-
-					context.ItemMatterRepository.Save(product);
-					context.ItemMatterRepository.AddInItem(storageItemMatterId, product.ItemMatterId);
-				}
+				context.ItemMatterRepository.Save(product);
+				context.ItemMatterRepository.AddInContainer(storageItemMatterId, product.ItemMatterId);
 			}
 
 			context.Commit();
@@ -67,7 +60,7 @@ public class WaterFilteringService(IHumanContextFactory contextFactory) : IWater
 	/// 水を濾過します。
 	/// </summary>
 	/// <param name="command">コマンド</param>
-	public async Task FilterAsync(HumanBuildingOperationCommand command)
+	public async Task FilterAsync(HumanWaterFilteringCommand command)
 	{
 		await Task.Run(() => Filter(command));
 	}
