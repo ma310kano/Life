@@ -4,5 +4,6 @@
 /// 人間の水濾過コマンド
 /// </summary>
 /// <param name="HumanId">人間ID</param>
-/// <param name="StorageItemMatterId">収納アイテム物質ID</param>
-public record class HumanWaterFilteringCommand(string HumanId, string StorageItemMatterId);
+/// <param name="SourceContainerItemMatterId">濾過元のコンテナーアイテム物質ID</param>
+/// <param name="DestinationContainerItemMatterId">濾過先のコンテナーアイテム物質ID</param>
+public record class HumanWaterFilteringCommand(string HumanId, string SourceContainerItemMatterId, string DestinationContainerItemMatterId);

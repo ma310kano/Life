@@ -21,13 +21,27 @@
 	<h1>@_building.BuildingName</h1>
 
 	<EditForm Model="_model" OnValidSubmit="SubmitAsync">
-		<InputSelect class="form-select" @bind-Value="_model.ContainerItemMatterId">
-			@foreach (ContainerItemMatterData container in _containers)
-			{
-				<option value="@container.ItemMatterId">@container.ItemName</option>
-			}
-		</InputSelect>
-		<button type="submit" class="btn btn-primary">濾過</button>
+		<div class="mb-3">
+			<label for="source-container-item-matter-id">濾過元の容器</label>
+			<InputSelect class="form-select" @bind-Value="_model.SourceContainerItemMatterId">
+				@foreach (ContainerItemMatterData container in _containers)
+				{
+					<option value="@container.ItemMatterId">@container.ItemName</option>
+				}
+			</InputSelect>
+		</div>
+		<div class="mb-3">
+			<label for="destination-container-item-matter-id">濾過先の容器</label>
+			<InputSelect class="form-select" @bind-Value="_model.DestinationContainerItemMatterId">
+				@foreach (ContainerItemMatterData container in _containers)
+				{
+					<option value="@container.ItemMatterId">@container.ItemName</option>
+				}
+			</InputSelect>
+		</div>
+		<div class="mb-3">
+			<button type="submit" class="btn btn-primary">濾過</button>
+		</div>
 	</EditForm>
 }
 
@@ -130,9 +144,14 @@
 		#region Properties
 
 		/// <summary>
-		/// コンテナーアイテム物質IDを設定または取得します。
+		/// 濾過元のコンテナーアイテム物質IDを設定または取得します。
 		/// </summary>
-		public string ContainerItemMatterId { get; set; } = string.Empty;
+		public string SourceContainerItemMatterId { get; set; } = string.Empty;
+
+		/// <summary>
+		/// 濾過先のコンテナーアイテム物質IDを設定または取得します。
+		/// </summary>
+		public string DestinationContainerItemMatterId { get; set; } = string.Empty;
 
 		#endregion
 
@@ -144,7 +163,7 @@
 		/// <returns>作成したコマンドを返します。</returns>
 		public HumanWaterFilteringCommand CreateCommand()
 		{
-			HumanWaterFilteringCommand command = new(_humanId, ContainerItemMatterId);
+			HumanWaterFilteringCommand command = new(_humanId, SourceContainerItemMatterId, DestinationContainerItemMatterId);
 
 			return command;
 		}

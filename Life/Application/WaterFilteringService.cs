@@ -18,7 +18,8 @@ public class WaterFilteringService(IHumanContextFactory contextFactory) : IWater
 	public void Filter(HumanWaterFilteringCommand command)
 	{
 		HumanId humanId = new(command.HumanId);
-		ItemMatterId storageItemMatterId = new(command.StorageItemMatterId);
+		ItemMatterId sourceContainerItemMatterId = new(command.SourceContainerItemMatterId);
+		ItemMatterId destinationContainerItemMatterId = new(command.DestinationContainerItemMatterId);
 
 		using IHumanContext context = contextFactory.Create(humanId);
 
@@ -26,10 +27,10 @@ public class WaterFilteringService(IHumanContextFactory contextFactory) : IWater
 		{
 			// 材料
 			{
-				ItemMatter ingredient = context.ItemMatterRepository.FindSingleInContainer(storageItemMatterId);
+				ItemMatter ingredient = context.ItemMatterRepository.FindSingleInContainer(sourceContainerItemMatterId);
 				if (ingredient.ItemId.Value != "raw-water") throw new InvalidOperationException("濾過の材料が生水ではありません。");
 
-				context.ItemMatterRepository.RemoveAllInContainer(storageItemMatterId);
+				context.ItemMatterRepository.RemoveAllInContainer(sourceContainerItemMatterId);
 				context.ItemMatterRepository.Delete(ingredient);
 			}
 
@@ -44,7 +45,7 @@ public class WaterFilteringService(IHumanContextFactory contextFactory) : IWater
 				}
 
 				context.ItemMatterRepository.Save(product);
-				context.ItemMatterRepository.AddInContainer(storageItemMatterId, product.ItemMatterId);
+				context.ItemMatterRepository.AddInContainer(destinationContainerItemMatterId, product.ItemMatterId);
 			}
 
 			context.Commit();
